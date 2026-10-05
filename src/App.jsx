@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { runAgent } from "./lib/ezcoworker.js";
+import PolicyManagement from "./components/PolicyManagement.jsx";
 import SchedulerApp from "./scheduler/SchedulerApp.jsx";
 import { SCHED_NAV } from "./scheduler/nav.js";
 
@@ -1447,6 +1448,7 @@ export default function App() {
   }
 
   function openDashboard() { setView("dashboard"); setActiveChatId(null); }
+  function openPolicies() { setView("policies"); setActiveChatId(null); setActiveAgent(null); }
 
   /** Get most recent file meta from any uploaded file */
   function getActiveMeta(fileNames) {
@@ -1769,6 +1771,7 @@ export default function App() {
 
         {[
           { id:"dashboard", icon:"⊞", label:"CFO Intelligence Platform", fn:openDashboard },
+          { id:"policies",  icon:"📋", label:"Policy Management",         fn:openPolicies },
         ].map(nav => (
           <div key={nav.id} onClick={nav.fn}
             style={{margin:"2px 8px",padding:"7px 10px",borderRadius:6,cursor:"pointer",background:view===nav.id?"#1f2d3d":"transparent",border:view===nav.id?"1px solid #1f6feb33":"1px solid transparent",display:"flex",alignItems:"center",gap:8,transition:"all .12s"}}
@@ -1865,14 +1868,7 @@ export default function App() {
           ) : view==="scheduler" ? (
             <SchedulerApp page={schedPage} editingId={schedEditingId} navigate={schedNavigate} />
           ) : view==="policies" ? (
-            <PolicyView
-              policies={policies} setPolicies={setPolicies}
-              selectedPolicy={selectedPolicy} setSelectedPolicy={setSelectedPolicy}
-              policyTab={policyTab} setPolicyTab={setPolicyTab}
-              showNewPolicy={showNewPolicy} setShowNewPolicy={setShowNewPolicy}
-              editingPolicy={editingPolicy} setEditingPolicy={setEditingPolicy}
-              newPol={newPol} setNewPol={setNewPol}
-            />
+            <PolicyManagement />
           ) : (
             <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
               <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
@@ -2194,313 +2190,6 @@ function ChatMessages({ messages }) {
 }
 
 // ─── POLICY VIEW ──────────────────────────────────────────────────────────────
-function PolicyView({ policies, setPolicies, selectedPolicy, setSelectedPolicy, policyTab, setPolicyTab, showNewPolicy, setShowNewPolicy, editingPolicy, setEditingPolicy, newPol, setNewPol }) {
-
-  const criticalCount = policies.filter(p => p.status === "warn" || p.critical).length;
-  const agentCount    = [...new Set(policies.flatMap(p => p.agents || []))].length;
-
-  function handleCreatePolicy() {
-    if (!newPol.id || !newPol.name) return;
-    const pol = {
-      id: newPol.id.toUpperCase(),
-      name: newPol.name,
-      version: "v1.0",
-      category: "Governance",
-      status: newPol.critical ? "warn" : "pass",
-      critical: newPol.critical,
-      lastChecked: new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}),
-      agents: [],
-      rules: newPol.content.split("\n").filter(l => l.trim().startsWith("-")).map(l => l.replace(/^-\s*/,"").trim()).filter(Boolean),
-      description: newPol.description,
-      content: newPol.content,
-    };
-    setPolicies(p => [...p, pol]);
-    setSelectedPolicy(pol);
-    setShowNewPolicy(false);
-    setNewPol({ id:"", name:"", owner:"", critical:false, description:"", content:"" });
-  }
-
-  function handleDeletePolicy(polId) {
-    setPolicies(p => p.filter(x => x.id !== polId));
-    if (selectedPolicy?.id === polId) setSelectedPolicy(null);
-  }
-
-  function handleExportPolicy(pol) {
-    const content = `# ${pol.name}\n**ID:** ${pol.id} | **Version:** ${pol.version} | **Owner:** ${pol.owner || "Controller"}\n\n## Summary\n${pol.description || ""}\n\n## Rules\n${(pol.rules||[]).map(r=>`- ${r}`).join("\n")}\n\n## Agents Consuming This Policy\n${(pol.agents||[]).join(", ")}`;
-    const blob = new Blob([content], { type:"text/markdown" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a"); a.href=url; a.download=`${pol.id}.md`; a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  // ── Colour palette per agent name ────────────────────────────────────────────
-  const agentColour = (agentId) => AGENT_REGISTRY.find(a=>a.id===agentId)?.color || "#58a6ff";
-  const agentName   = (agentId) => AGENT_REGISTRY.find(a=>a.id===agentId)?.name  || agentId;
-  const agentIcon   = (agentId) => AGENT_REGISTRY.find(a=>a.id===agentId)?.icon  || "⊛";
-
-  return (
-    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",background:"#0d1117"}}>
-      {/* ── Page header ── */}
-      <div style={{padding:"22px 28px 16px",flexShrink:0}}>
-        <div style={{fontSize:22,fontWeight:700,color:"#e6edf3",letterSpacing:"-0.4px"}}>Policy Management</div>
-        <div style={{fontSize:12,color:"#8b949e",marginTop:5,lineHeight:1.6}}>
-          Business policies loaded at runtime by agents. Upload new policy documents, edit existing ones, or create from scratch. Changes take effect on the next agent run — no restart required.
-        </div>
-        {/* Stats row */}
-        <div style={{display:"flex",gap:14,marginTop:16}}>
-          {[
-            { label:"TOTAL POLICIES",         val:policies.length,   color:"#58a6ff" },
-            { label:"CRITICAL",               val:criticalCount,     color:"#f85149" },
-            { label:"AGENTS LOADING POLICIES",val:agentCount,        color:"#3fb950" },
-          ].map(stat => (
-            <div key={stat.label} style={{flex:1,background:"#161b22",border:"1px solid #21262d",borderRadius:10,padding:"14px 18px"}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#8b949e",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>{stat.label}</div>
-              {stat.text
-                ? <div style={{fontSize:16,fontWeight:700,color:"#e6edf3"}}>{stat.val}</div>
-                : <div style={{fontSize:28,fontWeight:700,color:stat.color}}>{stat.val}</div>
-              }
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Tabs + action buttons ── */}
-      <div style={{padding:"0 28px 12px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{display:"flex",gap:0,borderBottom:"1px solid #21262d"}}>
-          {["list","matrix"].map(tab=>(
-            <button key={tab} onClick={()=>setPolicyTab(tab)}
-              style={{padding:"7px 18px",background:"none",border:"none",borderBottom:policyTab===tab?"2px solid #1f6feb":"2px solid transparent",color:policyTab===tab?"#58a6ff":"#8b949e",fontSize:13,fontWeight:policyTab===tab?600:400,cursor:"pointer",fontFamily:"inherit",marginBottom:-1,transition:"color .15s"}}>
-              {tab==="list"?"Policy List":"Agent Matrix"}
-            </button>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={()=>setShowNewPolicy(true)}
-            style={{padding:"6px 14px",background:"#1f6feb",border:"none",borderRadius:7,color:"#fff",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
-            + New Policy
-          </button>
-        </div>
-      </div>
-
-      {/* ── Body ── */}
-      <div style={{flex:1,overflow:"hidden",display:"flex"}}>
-        {policyTab === "list" ? (
-          // ── Split: list left, detail right ──────────────────────────────────
-          <>
-            {/* Policy list */}
-            <div style={{width: selectedPolicy ? 340 : "100%", overflowY:"auto", borderRight: selectedPolicy ? "1px solid #21262d" : "none", flexShrink:0}}>
-              {policies.map(pol => {
-                const isSel = selectedPolicy?.id === pol.id;
-                return (
-                  <div key={pol.id} onClick={()=>setSelectedPolicy(isSel?null:pol)}
-                    style={{padding:"16px 22px",borderBottom:"1px solid #21262d",cursor:"pointer",background:isSel?"#161b22":"transparent",borderLeft:isSel?"3px solid #1f6feb":"3px solid transparent",transition:"all .12s"}}
-                    onMouseEnter={e=>{ if(!isSel) e.currentTarget.style.background="#0e1117"; }}
-                    onMouseLeave={e=>{ if(!isSel) e.currentTarget.style.background="transparent"; }}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-                      <span style={{fontSize:12,fontWeight:700,color:"#f0883e"}}>{pol.id}</span>
-                      <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                        <span style={{fontSize:10,padding:"2px 8px",background:"#1f6feb22",border:"1px solid #1f6feb44",borderRadius:10,color:"#58a6ff",fontWeight:600}}>{pol.version}</span>
-                        {(pol.critical || pol.status==="warn") && <span style={{fontSize:10,padding:"2px 8px",background:"#f8514922",border:"1px solid #f8514944",borderRadius:10,color:"#f85149",fontWeight:600}}>Critical</span>}
-                      </div>
-                    </div>
-                    <div style={{fontSize:13,fontWeight:600,color:"#e6edf3",marginBottom:4}}>{pol.name}</div>
-                    <div style={{fontSize:11,color:"#8b949e",marginBottom:8}}>{pol.owner||"Controller"} · Updated {pol.lastChecked}</div>
-                    <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                      {(pol.agents||[]).slice(0,5).map(ag=>(
-                        <span key={ag} style={{fontSize:10,padding:"1px 6px",background:`${agentColour(ag)}18`,border:`1px solid ${agentColour(ag)}33`,borderRadius:4,color:agentColour(ag)}}>{ag}</span>
-                      ))}
-                      {(pol.agents||[]).length > 5 && <span style={{fontSize:10,color:"#8b949e"}}>+{(pol.agents||[]).length-5} more</span>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Policy detail panel */}
-            {selectedPolicy && (
-              <div style={{flex:1,overflowY:"auto",padding:"22px 28px"}}>
-                {/* Header row */}
-                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:14}}>
-                  <div>
-                    <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
-                      <span style={{fontSize:13,fontWeight:700,color:"#f0883e"}}>{selectedPolicy.id}</span>
-                      <span style={{fontSize:11,padding:"2px 8px",background:"#1f6feb22",border:"1px solid #1f6feb44",borderRadius:10,color:"#58a6ff",fontWeight:600}}>{selectedPolicy.version}</span>
-                      {(selectedPolicy.critical||selectedPolicy.status==="warn") && <span style={{fontSize:11,padding:"2px 8px",background:"#f8514922",border:"1px solid #f8514944",borderRadius:10,color:"#f85149",fontWeight:600}}>Critical</span>}
-                    </div>
-                    <div style={{fontSize:20,fontWeight:700,color:"#e6edf3",marginBottom:5}}>{selectedPolicy.name}</div>
-                    <div style={{fontSize:12,color:"#8b949e"}}>Owner: {selectedPolicy.owner||"Controller"} · Updated: {selectedPolicy.lastChecked} · {(selectedPolicy.agents||[]).length} agents consume</div>
-                  </div>
-                  <div style={{display:"flex",gap:8,flexShrink:0}}>
-                    <button onClick={()=>handleExportPolicy(selectedPolicy)}
-                      style={{padding:"6px 12px",background:"#161b22",border:"1px solid #30363d",borderRadius:6,color:"#c9d1d9",cursor:"pointer",fontSize:11,fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
-                      ↗ Export
-                    </button>
-                    <button onClick={()=>setEditingPolicy(selectedPolicy)}
-                      style={{padding:"6px 12px",background:"#161b22",border:"1px solid #30363d",borderRadius:6,color:"#c9d1d9",cursor:"pointer",fontSize:11,fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
-                      ✎ Edit
-                    </button>
-                    <button onClick={()=>handleDeletePolicy(selectedPolicy.id)}
-                      style={{padding:"6px 12px",background:"#f8514911",border:"1px solid #f8514944",borderRadius:6,color:"#f85149",cursor:"pointer",fontSize:11,fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
-                      🗑 Delete
-                    </button>
-                  </div>
-                </div>
-
-                {/* Consumed by agents */}
-                <div style={{marginBottom:16}}>
-                  <div style={{fontSize:10,fontWeight:700,color:"#8b949e",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>CONSUMED BY AGENTS AT RUNTIME</div>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-                    {(selectedPolicy.agents||[]).map(ag=>(
-                      <span key={ag} style={{fontSize:11,padding:"4px 10px",background:`${agentColour(ag)}18`,border:`1px solid ${agentColour(ag)}44`,borderRadius:16,color:agentColour(ag),display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
-                        <span style={{fontSize:10}}>{agentIcon(ag)}</span> {agentName(ag)}
-                      </span>
-                    ))}
-                    {(selectedPolicy.agents||[]).length === 0 && <span style={{fontSize:12,color:"#8b949e"}}>No agents assigned yet</span>}
-                  </div>
-                </div>
-
-                {/* Summary */}
-                {selectedPolicy.description && (
-                  <div style={{background:"#161b22",border:"1px solid #21262d",borderRadius:8,padding:"14px 18px",marginBottom:16}}>
-                    <div style={{fontSize:10,fontWeight:700,color:"#f0883e",letterSpacing:"0.08em",marginBottom:6}}>SUMMARY</div>
-                    <div style={{fontSize:13,color:"#c9d1d9",lineHeight:1.6}}>{selectedPolicy.description}</div>
-                  </div>
-                )}
-
-                {/* Rules / content */}
-                <div>
-                  <div style={{fontSize:10,fontWeight:700,color:"#8b949e",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>POLICY CONTENT — READ ONLY</div>
-                  <div style={{background:"#0a0e14",border:"1px solid #21262d",borderRadius:8,padding:"16px 18px",fontFamily:"'SF Mono','Fira Code',monospace",fontSize:12,color:"#c9d1d9",lineHeight:1.7}}>
-                    {selectedPolicy.content ? (
-                      <pre style={{margin:0,whiteSpace:"pre-wrap",fontFamily:"inherit"}}>{selectedPolicy.content}</pre>
-                    ) : (
-                      (selectedPolicy.rules||[]).map((rule,i)=>(
-                        <div key={i} style={{marginBottom:6,paddingBottom:6,borderBottom:i<(selectedPolicy.rules.length-1)?"1px solid #21262d22":"none"}}>
-                          <span style={{color:"#3fb950",marginRight:8}}>▸</span>{rule}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          // ── Agent Matrix view ────────────────────────────────────────────────
-          <div style={{flex:1,overflowY:"auto",padding:"22px 28px"}}>
-            <div style={{fontSize:12,color:"#8b949e",marginBottom:16}}>Which agents load which policies at runtime. Every cell shows a live policy load — green = loaded, empty = not applicable.</div>
-            <div style={{overflowX:"auto"}}>
-              <table style={{borderCollapse:"collapse",minWidth:"100%",fontSize:11}}>
-                <thead>
-                  <tr>
-                    <th style={{textAlign:"left",padding:"8px 12px",color:"#8b949e",fontWeight:600,borderBottom:"1px solid #21262d",minWidth:140,position:"sticky",left:0,background:"#0d1117",zIndex:1}}>Agent</th>
-                    {policies.map(pol=>(
-                      <th key={pol.id} style={{padding:"8px 10px",color:(pol.critical||pol.status==="warn")?"#f0883e":"#58a6ff",fontWeight:600,borderBottom:"1px solid #21262d",textAlign:"center",minWidth:80,whiteSpace:"nowrap",fontSize:10}}>{pol.id}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {AGENT_REGISTRY.map((agent,ri)=>(
-                    <tr key={agent.id} style={{background:ri%2===0?"transparent":"#0a0e14"}}>
-                      <td style={{padding:"8px 12px",borderBottom:"1px solid #21262d22",position:"sticky",left:0,background:ri%2===0?"#0d1117":"#0a0e14",zIndex:1}}>
-                        <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <span style={{color:agent.color,fontSize:11}}>{agent.icon}</span>
-                          <span style={{color:"#c9d1d9",fontWeight:500}}>{agent.name}</span>
-                        </div>
-                      </td>
-                      {policies.map(pol=>{
-                        const loads = (pol.agents||[]).includes(agent.id);
-                        return (
-                          <td key={pol.id} style={{padding:"8px 10px",borderBottom:"1px solid #21262d22",textAlign:"center"}}>
-                            {loads && (
-                              <span style={{display:"inline-block",width:10,height:10,borderRadius:"50%",background:"#238636",boxShadow:"0 0 6px #2386364a"}} title={`${agent.name} loads ${pol.id}`}/>
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── Create / Edit modal ── */}
-      {(showNewPolicy || editingPolicy) && (
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999}}>
-          <div style={{width:"min(760px,92vw)",maxHeight:"85vh",background:"#161b22",border:"1px solid #30363d",borderRadius:12,boxShadow:"0 24px 80px rgba(0,0,0,0.6)",display:"flex",flexDirection:"column"}}>
-            <div style={{padding:"18px 22px",borderBottom:"1px solid #21262d",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-              <div style={{fontSize:16,fontWeight:700,color:"#e6edf3"}}>{editingPolicy?"Edit Policy":"Create New Policy"}</div>
-              <button onClick={()=>{setShowNewPolicy(false);setEditingPolicy(null);}} style={{background:"none",border:"none",color:"#8b949e",cursor:"pointer",fontSize:18,padding:0}}>×</button>
-            </div>
-            <div style={{padding:"22px",overflowY:"auto",flex:1}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-                <div>
-                  <label style={{fontSize:11,color:"#8b949e",fontWeight:600,display:"block",marginBottom:6}}>Policy ID</label>
-                  <input value={editingPolicy?editingPolicy.id:newPol.id} onChange={e=>editingPolicy?setEditingPolicy({...editingPolicy,id:e.target.value}):setNewPol(p=>({...p,id:e.target.value}))}
-                    placeholder="e.g. POL-009"
-                    style={{width:"100%",background:"#0d1117",border:"1px solid #30363d",borderRadius:7,padding:"9px 12px",color:"#e6edf3",fontSize:13,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}}/>
-                </div>
-                <div>
-                  <label style={{fontSize:11,color:"#8b949e",fontWeight:600,display:"block",marginBottom:6}}>Name</label>
-                  <input value={editingPolicy?editingPolicy.name:newPol.name} onChange={e=>editingPolicy?setEditingPolicy({...editingPolicy,name:e.target.value}):setNewPol(p=>({...p,name:e.target.value}))}
-                    placeholder="Full policy name"
-                    style={{width:"100%",background:"#0d1117",border:"1px solid #30363d",borderRadius:7,padding:"9px 12px",color:"#e6edf3",fontSize:13,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}}/>
-                </div>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:16,alignItems:"start",marginBottom:16}}>
-                <div>
-                  <label style={{fontSize:11,color:"#8b949e",fontWeight:600,display:"block",marginBottom:6}}>Owner</label>
-                  <input value={editingPolicy?editingPolicy.owner||"":newPol.owner} onChange={e=>editingPolicy?setEditingPolicy({...editingPolicy,owner:e.target.value}):setNewPol(p=>({...p,owner:e.target.value}))}
-                    placeholder="Controller or CFO"
-                    style={{width:"100%",background:"#0d1117",border:"1px solid #30363d",borderRadius:7,padding:"9px 12px",color:"#e6edf3",fontSize:13,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}}/>
-                </div>
-                <div style={{paddingTop:22}}>
-                  <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:"#c9d1d9"}}>
-                    <input type="checkbox" checked={editingPolicy?!!editingPolicy.critical:newPol.critical}
-                      onChange={e=>editingPolicy?setEditingPolicy({...editingPolicy,critical:e.target.checked}):setNewPol(p=>({...p,critical:e.target.checked}))}
-                      style={{width:14,height:14}}/>
-                    Critical policy
-                  </label>
-                </div>
-              </div>
-              <div style={{marginBottom:16}}>
-                <label style={{fontSize:11,color:"#8b949e",fontWeight:600,display:"block",marginBottom:6}}>Description</label>
-                <input value={editingPolicy?editingPolicy.description||"":newPol.description} onChange={e=>editingPolicy?setEditingPolicy({...editingPolicy,description:e.target.value}):setNewPol(p=>({...p,description:e.target.value}))}
-                  placeholder="Brief description of what this policy governs..."
-                  style={{width:"100%",background:"#0d1117",border:"1px solid #30363d",borderRadius:7,padding:"9px 12px",color:"#e6edf3",fontSize:13,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}}/>
-              </div>
-              <div>
-                <label style={{fontSize:11,color:"#8b949e",fontWeight:600,display:"block",marginBottom:6}}>Policy Content (Markdown)</label>
-                <textarea value={editingPolicy?editingPolicy.content||editingPolicy.rules?.map(r=>`- ${r}`).join("\n")||"":newPol.content}
-                  onChange={e=>editingPolicy?setEditingPolicy({...editingPolicy,content:e.target.value}):setNewPol(p=>({...p,content:e.target.value}))}
-                  rows={10} placeholder={"## Section 1\nRule 1: ...\nRule 2: ..."}
-                  style={{width:"100%",background:"#0d1117",border:"1px solid #30363d",borderRadius:7,padding:"10px 12px",color:"#c9d1d9",fontSize:12,fontFamily:"'SF Mono','Fira Code',monospace",outline:"none",resize:"vertical",lineHeight:1.7,boxSizing:"border-box"}}/>
-              </div>
-            </div>
-            <div style={{padding:"14px 22px",borderTop:"1px solid #21262d",display:"flex",gap:10,flexShrink:0}}>
-              {editingPolicy ? (
-                <button onClick={()=>{
-                  setPolicies(p=>p.map(x=>x.id===editingPolicy.id?{...x,...editingPolicy}:x));
-                  setSelectedPolicy({...selectedPolicy,...editingPolicy});
-                  setEditingPolicy(null);
-                }} style={{padding:"8px 18px",background:"#1f6feb",border:"none",borderRadius:7,color:"#fff",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>Save Changes</button>
-              ) : (
-                <button onClick={handleCreatePolicy} style={{padding:"8px 18px",background:"#1f6feb",border:"none",borderRadius:7,color:"#fff",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6}}>
-                  ⊛ Create Policy
-                </button>
-              )}
-              <button onClick={()=>{setShowNewPolicy(false);setEditingPolicy(null);}} style={{padding:"8px 16px",background:"#21262d",border:"1px solid #30363d",borderRadius:7,color:"#e6edf3",fontSize:13,fontWeight:500,cursor:"pointer",fontFamily:"inherit"}}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── DASHBOARD VIEW ───────────────────────────────────────────────────────────
 function cardKpis(agentId, result) {
   const priority = {

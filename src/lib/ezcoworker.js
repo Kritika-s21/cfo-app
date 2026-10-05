@@ -41,6 +41,8 @@ export const PolicyAPI = {
   graph: () => api("/policies/graph"),
   search: (query, agentId) => api("/policies/search", { method: "POST", body: { query, agent_id: agentId } }),
   reindex: () => api("/policies/reindex", { method: "POST" }),
+  upload: (filename, content) => api("/policies/upload", { method: "POST", body: { filename, content } }),
+  status: () => api("/knowledge/status"),
 };
 
 export const SkillAPI = {

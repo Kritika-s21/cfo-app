@@ -1,0 +1,23 @@
+.sch-root .sched-table{ display: flex; flex-direction: column; gap: 2px; }
+.sch-root .sched-row{
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr 1.1fr 1.6fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 6px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.sch-root .sched-row:last-child{ border-bottom: none; }
+.sch-root .sched-row-main .sched-name{ font-weight: 600; font-size: 14px; }
+.sch-root .sched-row-main .sched-id{ font-size: 11.5px; color: var(--text-low); }
+.sch-root .sched-freq,.sch-root .sched-scan{ font-size: 12.5px; }
+.sch-root .data-table{ width: 100%; border-collapse: collapse; font-size: 13px; }
+.sch-root .data-table th{
+  text-align: left; padding: 10px 12px; color: var(--text-low);
+  font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-soft);
+}
+.sch-root .data-table td{ padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-hi); }
+.sch-root .data-table tr:hover td{ background: var(--bg-3); }
+.sch-root .content-inner{ padding: 24px 28px 60px; max-width: 1400px; }
+@media (max-width: 900px){.sch-root .sched-row{ grid-template-columns: 1fr; align-items: flex-start; }}

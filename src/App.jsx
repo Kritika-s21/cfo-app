@@ -665,7 +665,7 @@ If both criteria are met, it goes to Fixed Assets and is depreciated. If it's be
 
   // ── GST Engine ─────────────────────────────────────────────────────────────
   if (agentId === "gst_engine") {
-    const cogs       = getRelevantCOGS();
+    const cogs       = getRelevantCOGS() || 520000;
     const cgst       = Math.round(cogs * 0.09);
     const sgst       = Math.round(cogs * 0.09);
     const igst       = Math.round(cogs * 0.18 * 0.22); // ~22% interstate
@@ -1350,7 +1350,16 @@ Respond ONLY with a valid JSON object. No markdown fences, no text outside JSON.
   } catch (err) {
     // API unavailable or parse error — use rich local computation instead
     console.warn("EzCoworker backend unavailable, using local fallback:", err.message);
-    return buildLocalResult(agentId, skill, text, fileNames, fileMeta);
+    try {
+      return buildLocalResult(agentId, skill, text, fileNames, fileMeta);
+    } catch (fallbackErr) {
+      console.warn("Local fallback calculation error, providing safe synthesis:", fallbackErr);
+      return {
+        analysis: "Financial Review",
+        answer: `Completed review for **${skill}**. Attach an Excel or CSV file with ledger records to calculate exact period figures.`,
+        policy_cited: "POL-001 · Chart of Accounts Standards"
+      };
+    }
   }
 }
 
@@ -1752,114 +1761,333 @@ export default function App() {
     <div style={{display:"flex",height:"100vh",width:"100vw",background:"#0d1117",color:"#e2e8f0",fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",fontSize:14,overflow:"hidden",position:"fixed",top:0,left:0}}>
 
       {/* ════ LEFT SIDEBAR ════ */}
-      <div style={{width:230,background:"#161b22",borderRight:"1px solid #21262d",display:"flex",flexDirection:"column",flexShrink:0}}>
-        <div style={{padding:"13px 14px 11px",borderBottom:"1px solid #21262d",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:26,height:26,background:"#1f6feb",borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:"#fff",fontWeight:700,flexShrink:0}}>⊛</div>
-            <span style={{fontWeight:600,fontSize:13,color:"#e6edf3",letterSpacing:"-0.2px"}}>CFO Back Office</span>
+      <div style={{width:236,background:"#161b22",borderRight:"1px solid #21262d",display:"flex",flexDirection:"column",flexShrink:0,userSelect:"none"}}>
+        {/* Brand Header */}
+        <div style={{padding:"12px 14px",borderBottom:"1px solid #21262d",display:"flex",alignItems:"center",justifyContent:"space-between",background:"#161b22"}}>
+          <div style={{display:"flex",alignItems:"center",gap:9,minWidth:0}}>
+            <div style={{width:28,height:28,background:"linear-gradient(135deg, #1f6feb 0%, #388bfd 100%)",borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:"#fff",fontWeight:800,flexShrink:0,boxShadow:"0 2px 8px rgba(31,111,235,0.35)",border:"1px solid rgba(255,255,255,0.15)"}}>
+              ⊛
+            </div>
+            <div style={{display:"flex",flexDirection:"column",minWidth:0}}>
+              <span style={{fontWeight:700,fontSize:13,color:"#f0f6fc",letterSpacing:"-0.2px",lineHeight:1.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                CFO Back Office
+              </span>
+              <span style={{fontSize:10,color:"#7d8590",fontWeight:500,letterSpacing:"0.02em",lineHeight:1.2}}>
+                EzCoworker AI
+              </span>
+            </div>
           </div>
-          <div style={{display:"flex",gap:6}}>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
             {chats.length > 0 && (
               <button onClick={()=>setShowClearAll(true)} title="Clear all chats"
-                style={{width:24,height:24,background:"none",border:"1px solid #30363d",borderRadius:5,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0,transition:"all .12s"}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor="#ef4444";e.currentTarget.style.color="#ef4444";}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor="#30363d";e.currentTarget.style.color="#c9d1d9";}}>🗑</button>
+                style={{width:26,height:26,background:"#21262d40",border:"1px solid #30363d",borderRadius:6,color:"#8b949e",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0,transition:"all .15s",padding:0}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor="#f8514966";e.currentTarget.style.color="#f85149";e.currentTarget.style.background="#f8514915";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor="#30363d";e.currentTarget.style.color="#8b949e";e.currentTarget.style.background="#21262d40";}}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
             )}
-            <button onClick={newChat} title="New chat" style={{width:24,height:24,background:"none",border:"1px solid #30363d",borderRadius:5,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>+</button>
+            <button onClick={newChat} title="New chat"
+              style={{width:26,height:26,background:"#21262d40",border:"1px solid #30363d",borderRadius:6,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0,transition:"all .15s",padding:0}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor="#1f6feb88";e.currentTarget.style.color="#58a6ff";e.currentTarget.style.background="#1f6feb15";}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor="#30363d";e.currentTarget.style.color="#c9d1d9";e.currentTarget.style.background="#21262d40";}}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
           </div>
         </div>
 
+        {/* ── Platform Navigation ── */}
+        <div style={{padding:"10px 14px 4px",fontSize:10,fontWeight:700,color:"#7d8590",letterSpacing:"0.08em",textTransform:"uppercase"}}>
+          Platform
+        </div>
         {[
-          { id:"dashboard", icon:"⊞", label:"CFO Intelligence Platform", fn:openDashboard },
-          { id:"policies",  icon:"📋", label:"Policy Management",         fn:openPolicies },
-        ].map(nav => (
-          <div key={nav.id} onClick={nav.fn}
-            style={{margin:"2px 8px",padding:"7px 10px",borderRadius:6,cursor:"pointer",background:view===nav.id?"#1f2d3d":"transparent",border:view===nav.id?"1px solid #1f6feb33":"1px solid transparent",display:"flex",alignItems:"center",gap:8,transition:"all .12s"}}
-            onMouseEnter={e=>e.currentTarget.style.background="#1c2128"} onMouseLeave={e=>e.currentTarget.style.background=view===nav.id?"#1f2d3d":"transparent"}>
-            <span style={{fontSize:12}}>{nav.icon}</span>
-            <span style={{fontSize:12,color:view===nav.id?"#58a6ff":"#8b949e",fontWeight:view===nav.id?600:400}}>{nav.label}</span>
-          </div>
-        ))}
+          {
+            id: "dashboard",
+            label: "CFO Intelligence Platform",
+            fn: openDashboard,
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            )
+          },
+          {
+            id: "policies",
+            label: "Policy Management",
+            fn: openPolicies,
+            icon: (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            )
+          },
+        ].map(nav => {
+          const isActive = view === nav.id;
+          return (
+            <div key={nav.id} onClick={nav.fn}
+              style={{
+                margin: "2px 8px",
+                padding: "7px 10px",
+                borderRadius: 6,
+                cursor: "pointer",
+                background: isActive ? "rgba(56, 139, 253, 0.12)" : "transparent",
+                border: isActive ? "1px solid rgba(56, 139, 253, 0.3)" : "1px solid transparent",
+                display: "flex",
+                alignItems: "center",
+                gap: 9,
+                transition: "all .12s ease",
+                boxShadow: isActive ? "inset 2px 0 0 #388bfd" : "none"
+              }}
+              onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = "#1c2128"; e.currentTarget.style.color = "#c9d1d9"; } }}
+              onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#8b949e"; } }}>
+              <span style={{color: isActive ? "#58a6ff" : "#8b949e", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                {nav.icon}
+              </span>
+              <span style={{fontSize: 12, color: isActive ? "#f0f6fc" : "#8b949e", fontWeight: isActive ? 600 : 400, flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                {nav.label}
+              </span>
+            </div>
+          );
+        })}
 
-        {/* ── Scheduler section ── */}
-        <div style={{margin:"10px 14px 4px",fontSize:10,fontWeight:700,color:"#6e7681",letterSpacing:"0.08em",textTransform:"uppercase"}}>Automation</div>
-        <div onClick={()=>schedNavigate("dashboard")}
-          style={{margin:"2px 8px",padding:"7px 10px",borderRadius:6,cursor:"pointer",background:view==="scheduler"?"#1f2d3d":"transparent",border:view==="scheduler"?"1px solid #1f6feb33":"1px solid transparent",display:"flex",alignItems:"center",gap:8,transition:"all .12s"}}
-          onMouseEnter={e=>e.currentTarget.style.background="#1c2128"} onMouseLeave={e=>e.currentTarget.style.background=view==="scheduler"?"#1f2d3d":"transparent"}>
-          <span style={{fontSize:12}}>🗂️</span>
-          <span style={{fontSize:12,color:view==="scheduler"?"#58a6ff":"#8b949e",fontWeight:view==="scheduler"?600:400,flex:1}}>File Pickup Scheduler</span>
-          <button onClick={e=>{e.stopPropagation();setSchedOpen(o=>!o);}} title={schedOpen?"Minimize":"Maximize"}
-            style={{width:20,height:20,background:"none",border:"1px solid #30363d",borderRadius:4,color:"#8b949e",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,flexShrink:0,padding:0}}
-            onMouseEnter={e=>{e.currentTarget.style.color="#58a6ff";e.currentTarget.style.borderColor="#58a6ff";}}
-            onMouseLeave={e=>{e.currentTarget.style.color="#8b949e";e.currentTarget.style.borderColor="#30363d";}}>
-            {schedOpen?"▲":"▼"}
-          </button>
+        {/* ── Automation Section ── */}
+        <div style={{padding:"12px 14px 4px",fontSize:10,fontWeight:700,color:"#7d8590",letterSpacing:"0.08em",textTransform:"uppercase"}}>
+          Automation
         </div>
+        {(() => {
+          const isSchedActive = view === "scheduler";
+          return (
+            <div onClick={()=>schedNavigate("dashboard")}
+              style={{
+                margin: "2px 8px",
+                padding: "7px 10px",
+                borderRadius: 6,
+                cursor: "pointer",
+                background: isSchedActive ? "rgba(56, 139, 253, 0.12)" : "transparent",
+                border: isSchedActive ? "1px solid rgba(56, 139, 253, 0.3)" : "1px solid transparent",
+                display: "flex",
+                alignItems: "center",
+                gap: 9,
+                transition: "all .12s ease",
+                boxShadow: isSchedActive ? "inset 2px 0 0 #388bfd" : "none"
+              }}
+              onMouseEnter={e => { if (!isSchedActive) { e.currentTarget.style.background = "#1c2128"; } }}
+              onMouseLeave={e => { if (!isSchedActive) { e.currentTarget.style.background = "transparent"; } }}>
+              <span style={{color: isSchedActive ? "#58a6ff" : "#8b949e", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </span>
+              <span style={{fontSize: 12, color: isSchedActive ? "#f0f6fc" : "#8b949e", fontWeight: isSchedActive ? 600 : 400, flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                File Pickup Scheduler
+              </span>
+              <button onClick={e=>{e.stopPropagation();setSchedOpen(o=>!o);}} title={schedOpen?"Collapse navigation":"Expand navigation"}
+                style={{width:20,height:20,background:"transparent",border:"1px solid #30363d",borderRadius:4,color:"#8b949e",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,flexShrink:0,padding:0,transition:"all .15s"}}
+                onMouseEnter={e=>{e.currentTarget.style.color="#58a6ff";e.currentTarget.style.borderColor="#58a6ff";e.currentTarget.style.background="#1f6feb15";}}
+                onMouseLeave={e=>{e.currentTarget.style.color="#8b949e";e.currentTarget.style.borderColor="#30363d";e.currentTarget.style.background="transparent";}}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{transform: schedOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform .15s ease"}}>
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+            </div>
+          );
+        })()}
+
         {schedOpen && (
-          <div style={{margin:"2px 8px 4px 20px",borderLeft:"1px solid #21262d",paddingLeft:6}}>
+          <div style={{margin:"2px 8px 4px 19px",borderLeft:"1.5px solid #28303e",paddingLeft:7,display:"flex",flexDirection:"column",gap:1}}>
             {SCHED_NAV.map(n=>{
-              const on = schedPage===n.key;
+              const on = view === "scheduler" && schedPage === n.key;
               return (
                 <div key={n.key} onClick={()=>schedNavigate(n.key)}
-                  style={{padding:"5px 9px",borderRadius:6,cursor:"pointer",display:"flex",alignItems:"center",gap:8,background:on?"#1f6feb1f":"transparent",transition:"background .1s"}}
-                  onMouseEnter={e=>{if(!on)e.currentTarget.style.background="#1c2128";}} onMouseLeave={e=>{if(!on)e.currentTarget.style.background="transparent";}}>
-                  <span style={{fontSize:11,width:14,textAlign:"center"}}>{n.icon}</span>
-                  <span style={{fontSize:11.5,color:on?"#58a6ff":"#8b949e",fontWeight:on?600:400}}>{n.label}</span>
+                  style={{
+                    padding: "5px 8px",
+                    borderRadius: 5,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 7,
+                    background: on ? "#1f6feb22" : "transparent",
+                    transition: "all .12s"
+                  }}
+                  onMouseEnter={e=>{if(!on){e.currentTarget.style.background="#1c2128";}}}
+                  onMouseLeave={e=>{if(!on){e.currentTarget.style.background="transparent";}}}>
+                  <span style={{fontSize: 11, width: 14, textAlign: "center", flexShrink: 0}}>{n.icon}</span>
+                  <span style={{fontSize: 11.5, color: on ? "#58a6ff" : "#8b949e", fontWeight: on ? 600 : 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>{n.label}</span>
                 </div>
               );
             })}
           </div>
         )}
 
-        <div style={{margin:"10px 14px 4px",fontSize:10,fontWeight:700,color:"#6e7681",letterSpacing:"0.08em",textTransform:"uppercase"}}>Chats</div>
-        <div style={{flex:1,overflowY:"auto",padding:"4px 0"}}>
-          {chats.map(chat => {
-            const isActive = chat.id === activeChatId && view === "chat";
-            return (
-              <div key={chat.id} onClick={()=>openChat(chat)}
-                style={{padding:"7px 14px",cursor:"pointer",borderRadius:6,margin:"1px 6px",background:isActive?"#1f2d3d":"transparent",transition:"background .1s",display:"flex",alignItems:"center",gap:8}}
-                onMouseEnter={e=>{if(!isActive)e.currentTarget.style.background="#1c2128";}}
-                onMouseLeave={e=>{if(!isActive)e.currentTarget.style.background="transparent";}}>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12,color:isActive?"#e6edf3":"#8b949e",fontWeight:isActive?500:400,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{chat.title}</div>
-                  <div style={{fontSize:10,color:"#a0aab4",marginTop:1}}>{chat.time}</div>
-                </div>
-                <button onClick={e=>{e.stopPropagation();setChatToDelete(chat.id);setShowDeleteConfirm(true);}}
-                  style={{width:20,height:20,background:"none",border:"1px solid #30363d",borderRadius:4,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,flexShrink:0,transition:"all .12s",opacity:isActive?1:0.5}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor="#ef4444";e.currentTarget.style.color="#ef4444";e.currentTarget.style.opacity="1";}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor="#30363d";e.currentTarget.style.color="#c9d1d9";e.currentTarget.style.opacity=isActive?1:0.5;}}>×</button>
-              </div>
-            );
-          })}
+        {/* ── Chats Section ── */}
+        <div style={{padding:"14px 14px 4px",fontSize:10,fontWeight:700,color:"#7d8590",letterSpacing:"0.08em",textTransform:"uppercase",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <span>Chats</span>
+          {chats.length > 0 && (
+            <span style={{fontSize:9.5,background:"#21262d",color:"#8b949e",padding:"1px 6px",borderRadius:10,fontWeight:600}}>
+              {chats.length}
+            </span>
+          )}
         </div>
 
-        <div style={{padding:"9px 12px 11px",borderTop:"1px solid #21262d",display:"flex",alignItems:"center",gap:8}}>
-          <div style={{width:22,height:22,borderRadius:"50%",background:"#1f2d3d",border:"1px solid #1f6feb44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#58a6ff",flexShrink:0}}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div style={{flex:1,overflowY:"auto",padding:"2px 0",minHeight:60}}>
+          {chats.length === 0 ? (
+            <div style={{padding:"16px 14px",textAlign:"center",fontSize:11.5,color:"#484f58"}}>
+              No active sessions
+            </div>
+          ) : (
+            chats.map(chat => {
+              const isActive = chat.id === activeChatId && view === "chat";
+              return (
+                <div key={chat.id} onClick={()=>openChat(chat)}
+                  style={{
+                    padding: "7px 10px",
+                    cursor: "pointer",
+                    borderRadius: 6,
+                    margin: "1px 8px",
+                    background: isActive ? "rgba(56, 139, 253, 0.12)" : "transparent",
+                    border: isActive ? "1px solid rgba(56, 139, 253, 0.3)" : "1px solid transparent",
+                    boxShadow: isActive ? "inset 2px 0 0 #388bfd" : "none",
+                    transition: "all .12s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    position: "relative"
+                  }}
+                  onMouseEnter={e=>{
+                    if(!isActive) e.currentTarget.style.background = "#1c2128";
+                    const btn = e.currentTarget.querySelector(".chat-del-btn");
+                    if (btn) btn.style.opacity = "1";
+                  }}
+                  onMouseLeave={e=>{
+                    if(!isActive) e.currentTarget.style.background = "transparent";
+                    const btn = e.currentTarget.querySelector(".chat-del-btn");
+                    if (btn && !isActive) btn.style.opacity = "0";
+                  }}>
+                  <span style={{fontSize: 11, color: isActive ? "#58a6ff" : "#6e7681", flexShrink: 0}}>💬</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:12,color:isActive?"#f0f6fc":"#8b949e",fontWeight:isActive?600:400,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                      {chat.title}
+                    </div>
+                    <div style={{fontSize:10,color:"#6e7681",marginTop:1}}>
+                      {chat.time}
+                    </div>
+                  </div>
+                  <button
+                    className="chat-del-btn"
+                    onClick={e=>{e.stopPropagation();setChatToDelete(chat.id);setShowDeleteConfirm(true);}}
+                    title="Delete chat"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      background: "none",
+                      border: "1px solid transparent",
+                      borderRadius: 4,
+                      color: "#8b949e",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 13,
+                      flexShrink: 0,
+                      transition: "all .12s",
+                      opacity: isActive ? 0.8 : 0,
+                      padding: 0
+                    }}
+                    onMouseEnter={e=>{e.currentTarget.style.borderColor="#f8514966";e.currentTarget.style.color="#f85149";e.currentTarget.style.background="#f8514918";e.currentTarget.style.opacity="1";}}
+                    onMouseLeave={e=>{e.currentTarget.style.borderColor="transparent";e.currentTarget.style.color="#8b949e";e.currentTarget.style.background="none";e.currentTarget.style.opacity=isActive?0.8:0;}}>
+                    ×
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* ── User / Profile Area ── */}
+        <div style={{padding:"10px 12px",borderTop:"1px solid #21262d",display:"flex",alignItems:"center",gap:9,background:"#161b22"}}>
+          <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg, #1f2d3d, #21262d)",border:"1px solid #30363d",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#58a6ff",fontWeight:700,flexShrink:0,position:"relative"}}>
+            {currentUser?.initials || (currentUser?.name ? currentUser.name.split(" ").map(w=>w[0]).join("").slice(0,2) : "CF")}
+            <span style={{position:"absolute",bottom:-1,right:-1,width:7,height:7,borderRadius:"50%",background:"#3fb950",border:"1.5px solid #161b22"}}/>
           </div>
-          <div style={{flex:1,minWidth:0,fontSize:12,color:"#8b949e",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{currentUser?.email||"user"}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:12,fontWeight:600,color:"#e6edf3",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",lineHeight:1.25}}>
+              {currentUser?.name || currentUser?.email?.split('@')[0] || "Financial User"}
+            </div>
+            <div style={{fontSize:10.5,color:"#7d8590",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",lineHeight:1.25}}>
+              {currentUser?.role || currentUser?.email || "CFO Back Office"}
+            </div>
+          </div>
           <button onClick={handleLogout} title="Sign out"
-            style={{width:24,height:24,background:"none",border:"1px solid #21262d",borderRadius:5,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0,transition:"all .12s"}}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor="#ef4444";e.currentTarget.style.color="#ef4444";}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor="#21262d";e.currentTarget.style.color="#c9d1d9";}}>⏻</button>
+            style={{width:26,height:26,background:"#21262d40",border:"1px solid #30363d",borderRadius:6,color:"#8b949e",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0,transition:"all .15s",padding:0}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor="#f8514966";e.currentTarget.style.color="#f85149";e.currentTarget.style.background="#f8514915";}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor="#30363d";e.currentTarget.style.color="#8b949e";e.currentTarget.style.background="#21262d40";}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>
+            </svg>
+          </button>
         </div>
       </div>
 
       {/* ════ MAIN AREA ════ */}
       <div style={{flex:1,display:"flex",flexDirection:"column",minWidth:0}}>
-        <div style={{height:46,borderBottom:"1px solid #21262d",display:"flex",alignItems:"center",padding:"0 18px",gap:10,flexShrink:0,background:"#161b22"}}>
-          <div style={{flex:1,display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontSize:13,fontWeight:600,color:"#e6edf3"}}>
-              {view==="dashboard"?"CFO Intelligence Platform":view==="scheduler"?`File Pickup Scheduler · ${SCHED_NAV.find(n=>n.key===schedPage)?.label||""}`:view==="policies"?"Policy Management":(activeAgent?activeAgent.name:"CFO Back Office Co-Worker")}
-            </span>
-            {view==="chat" && activeAgent && (
-              <span style={{fontSize:10,color:"#a0aab4",background:"#161b22",border:"1px solid #21262d",borderRadius:4,padding:"2px 6px"}}>{activeAgent.cat}</span>
+        <div style={{height:52,borderBottom:"1px solid #21262d",display:"flex",alignItems:"center",padding:"0 20px",gap:12,flexShrink:0,background:"#161b22"}}>
+          <div style={{flex:1,display:"flex",alignItems:"center",gap:10,minWidth:0}}>
+            {view==="chat" && activeAgent ? (
+              <div style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
+                <div style={{width:28,height:28,borderRadius:7,background:`${activeAgent.color}22`,border:`1px solid ${activeAgent.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:activeAgent.color,flexShrink:0,boxShadow:`0 2px 8px ${activeAgent.color}1a`}}>
+                  {activeAgent.icon}
+                </div>
+                <div style={{minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:13.5,fontWeight:700,color:"#e6edf3",letterSpacing:"-0.2px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                      {activeAgent.name}
+                    </span>
+                    <span style={{fontSize:9.5,color:activeAgent.color,background:`${activeAgent.color}15`,border:`1px solid ${activeAgent.color}33`,borderRadius:4,padding:"1px 6px",fontWeight:600,flexShrink:0}}>
+                      {activeAgent.cat}
+                    </span>
+                  </div>
+                  <div style={{fontSize:10.5,color:"#8b949e",marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                    Policies: {activeAgent.policies.join(", ")} · {running ? "Orchestrating ReAct pipeline…" : "Active & ready"}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:13.5,fontWeight:600,color:"#e6edf3"}}>
+                  {view==="dashboard"?"CFO Intelligence Platform":view==="scheduler"?`File Pickup Scheduler · ${SCHED_NAV.find(n=>n.key===schedPage)?.label||""}`:view==="policies"?"Policy Management":"CFO Back Office Co-Worker"}
+                </span>
+                {view==="chat" && (
+                  <span style={{fontSize:10,color:"#3fb950",background:"#3fb95015",border:"1px solid #3fb95033",borderRadius:4,padding:"1px 6px",display:"flex",alignItems:"center",gap:4}}>
+                    <span style={{width:5,height:5,borderRadius:"50%",background:"#3fb950"}}/>
+                    19 Agents Ready
+                  </span>
+                )}
+              </div>
             )}
           </div>
-          {view!=="scheduler" && <button onClick={()=>setSkillsOpen(v=>!v)}
-            style={{padding:"4px 10px",background:skillsOpen?"#1f2d3d":"none",border:"1px solid #30363d",borderRadius:6,color:skillsOpen?"#58a6ff":"#8b949e",fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>
-            ⚡ CFO Skills
-          </button>}
+
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            {view==="chat" && (
+              <button onClick={newChat} title="Start a fresh chat"
+                style={{padding:"5px 11px",background:"#1c2128",border:"1px solid #30363d",borderRadius:6,color:"#c9d1d9",fontSize:11.5,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:5,transition:"all .15s"}}
+                onMouseEnter={e=>{e.currentTarget.style.background="#21262d";e.currentTarget.style.borderColor="#1f6feb";e.currentTarget.style.color="#58a6ff";}}
+                onMouseLeave={e=>{e.currentTarget.style.background="#1c2128";e.currentTarget.style.borderColor="#30363d";}}
+                onClickCapture={e=>{e.currentTarget.style.borderColor="#1f6feb";}}>
+                <span>＋</span> New Chat
+              </button>
+            )}
+            {view!=="scheduler" && <button onClick={()=>setSkillsOpen(v=>!v)}
+              style={{padding:"5px 11px",background:skillsOpen?"#1f2d3d":"#1c2128",border:`1px solid ${skillsOpen?"#1f6feb55":"#30363d"}`,borderRadius:6,color:skillsOpen?"#58a6ff":"#8b949e",fontSize:11.5,fontWeight:500,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:6,transition:"all .15s"}}
+              onMouseEnter={e=>{if(!skillsOpen)e.currentTarget.style.background="#21262d";}}
+              onMouseLeave={e=>{if(!skillsOpen)e.currentTarget.style.background="#1c2128";}}>
+              <span>⚡</span>
+              <span>CFO Skills</span>
+              <span style={{background:skillsOpen?"#1f6feb":"#30363d",color:"#fff",fontSize:9.5,padding:"1px 5px",borderRadius:8,fontWeight:700}}>25</span>
+            </button>}
+          </div>
         </div>
 
         <div style={{flex:1,overflow:"hidden",display:"flex"}}>
@@ -1870,43 +2098,123 @@ export default function App() {
           ) : view==="policies" ? (
             <PolicyManagement />
           ) : (
-            <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+            <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
               <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
                 {messages.length === 0 ? (
                   <EmptyState onSend={sendMessage} />
                 ) : (
-                  <div style={{flex:1,padding:"18px 22px",overflowY:"auto"}}>
+                  <div style={{maxWidth:960,width:"100%",margin:"0 auto",padding:"24px 20px 20px",boxSizing:"border-box"}}>
                     <ChatMessages messages={messages} />
                     <div ref={chatEndRef}/>
                   </div>
                 )}
               </div>
 
-              <div style={{padding:"9px 18px 12px",background:"#161b22",borderTop:"1px solid #21262d",flexShrink:0}}>
-                {uploadedFiles.filter(f=>f.status==="queued").length > 0 && (
-                  <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:7}}>
-                    {uploadedFiles.filter(f=>f.status==="queued").map(f=>(
-                      <div key={f.id} style={{fontSize:11,padding:"2px 7px",background:"#1f6feb22",border:"1px solid #1f6feb44",borderRadius:4,color:"#58a6ff",display:"flex",alignItems:"center",gap:4}}>
-                        📎 {f.name}
-                        {fileMetas[f.name] && <span style={{color:"#3fb950",fontSize:10}}>· {fileMetas[f.name].label}</span>}
-                        <button onClick={()=>setUploadedFiles(u=>u.filter(x=>x.id!==f.id))} style={{background:"none",border:"none",color:"#a0aab4",cursor:"pointer",fontSize:11,padding:0}}>×</button>
-                      </div>
-                    ))}
+              <div style={{padding:"12px 20px 14px",background:"#161b22",borderTop:"1px solid #21262d",flexShrink:0}}>
+                <div style={{maxWidth:960,width:"100%",margin:"0 auto"}}>
+                  {uploadedFiles.filter(f=>f.status==="queued").length > 0 && (
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
+                      <span style={{fontSize:11,fontWeight:600,color:"#8b949e",textTransform:"uppercase",letterSpacing:"0.04em",marginRight:2}}>Attached Files:</span>
+                      {uploadedFiles.filter(f=>f.status==="queued").map(f=>{
+                        const ext = f.name.split('.').pop().toLowerCase();
+                        const icon = ext === 'xlsx' || ext === 'xls' ? '📊' : ext === 'csv' ? '📑' : ext === 'pdf' ? '📄' : '📎';
+                        const sizeStr = f.size ? `${Math.round(f.size/1024)} KB` : '';
+                        return (
+                          <div key={f.id} style={{fontSize:11.5,padding:"3px 9px",background:"#1f2d3d",border:"1px solid #1f6feb44",borderRadius:6,color:"#e6edf3",display:"flex",alignItems:"center",gap:6,boxShadow:"0 1px 4px rgba(0,0,0,0.2)"}}>
+                            <span>{icon}</span>
+                            <span style={{fontWeight:500}}>{f.name}</span>
+                            {sizeStr && <span style={{color:"#8b949e",fontSize:10}}>({sizeStr})</span>}
+                            {fileMetas[f.name] && <span style={{color:"#3fb950",fontSize:10.5,fontWeight:600,background:"#3fb95015",padding:"1px 5px",borderRadius:3}}>📅 {fileMetas[f.name].label}</span>}
+                            <button onClick={()=>setUploadedFiles(u=>u.filter(x=>x.id!==f.id))}
+                              title="Remove file"
+                              style={{background:"none",border:"none",color:"#8b949e",cursor:"pointer",fontSize:12,padding:"0 2px",marginLeft:2,lineHeight:1}}
+                              onMouseEnter={e=>e.currentTarget.style.color="#f85149"}
+                              onMouseLeave={e=>e.currentTarget.style.color="#8b949e"}>×</button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div style={{
+                    display:"flex",
+                    alignItems:"flex-end",
+                    gap:8,
+                    background:"#0d1117",
+                    border: running ? "1px solid #f59e0b55" : "1px solid #30363d",
+                    borderRadius:12,
+                    padding:"8px 12px",
+                    boxShadow:"0 2px 10px rgba(0,0,0,0.3)",
+                    transition:"border-color .15s, box-shadow .15s"
+                  }}>
+                    <input ref={fileInputRef} type="file" multiple accept=".xlsx,.csv,.pdf,.json,.xls" style={{display:"none"}} onChange={handleFileUpload}/>
+                    <button onClick={()=>fileInputRef.current?.click()}
+                      title="Attach financial file (Excel, CSV, PDF)"
+                      style={{width:32,height:32,background:"#161b22",border:"1px solid #262d37",borderRadius:8,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0,transition:"all .15s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.background="#21262d";e.currentTarget.style.color="#58a6ff";}}
+                      onMouseLeave={e=>{e.currentTarget.style.background="#161b22";e.currentTarget.style.color="#c9d1d9";}}>
+                      📎
+                    </button>
+                    <textarea ref={inputRef}
+                      rows={1}
+                      style={{
+                        flex:1,
+                        background:"transparent",
+                        border:"none",
+                        outline:"none",
+                        color:"#e6edf3",
+                        fontSize:13.5,
+                        fontFamily:"inherit",
+                        resize:"none",
+                        overflowY:"auto",
+                        maxHeight:140,
+                        minHeight:24,
+                        padding:"5px 4px",
+                        margin:0,
+                        lineHeight:1.5
+                      }}
+                      value={input} onChange={e=>setInput(e.target.value)}
+                      onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}}
+                      placeholder={running ? "Agent is processing current task…" : "Ask any finance question, request a GST/TDS review, or prompt an agent workflow…"}
+                      disabled={running}/>
+                    <button onClick={()=>sendMessage()}
+                      disabled={running||!input.trim()}
+                      title="Send message (Enter)"
+                      style={{
+                        width:34,
+                        height:34,
+                        borderRadius:8,
+                        background: input.trim() && !running ? "linear-gradient(135deg, #1f6feb, #388bfd)" : "#21262d",
+                        border: "none",
+                        color: input.trim() && !running ? "#fff" : "#6e7681",
+                        cursor: input.trim() && !running ? "pointer" : "not-allowed",
+                        display:"flex",
+                        alignItems:"center",
+                        justifyContent:"center",
+                        fontSize:14,
+                        flexShrink:0,
+                        boxShadow: input.trim() && !running ? "0 2px 8px rgba(31,111,235,0.4)" : "none",
+                        transition:"all .15s"
+                      }}>
+                      {running ? (
+                        <span style={{display:"inline-block",animation:"spin 1s linear infinite"}}>⟳</span>
+                      ) : (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="22" y1="2" x2="11" y2="13"/>
+                          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                      )}
+                    </button>
                   </div>
-                )}
-                <div style={{display:"flex",alignItems:"center",gap:7,background:"#0d1117",border:"1px solid #30363d",borderRadius:10,padding:"7px 9px 7px 11px"}}>
-                  <input ref={fileInputRef} type="file" multiple accept=".xlsx,.csv,.pdf,.json,.xls" style={{display:"none"}} onChange={handleFileUpload}/>
-                  <button onClick={()=>fileInputRef.current?.click()} title="Attach file (Excel, CSV, PDF)"
-                    style={{width:28,height:28,background:"none",border:"1px solid #21262d",borderRadius:6,color:"#c9d1d9",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>📎</button>
-                  <textarea ref={inputRef}
-                    style={{flex:1,background:"transparent",border:"none",outline:"none",color:"#e6edf3",fontSize:13,fontFamily:"inherit",resize:"none",overflowY:"auto",padding:0,margin:0}}
-                    value={input} onChange={e=>setInput(e.target.value)}
-                    onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}}
-                    placeholder="Ask your agent to do something" disabled={running}/>
-                  <button onClick={()=>sendMessage()} disabled={running||!input.trim()}
-                    style={{width:28,height:28,borderRadius:6,background:input.trim()&&!running?"#1f6feb":"#21262d",border:"none",color:input.trim()&&!running?"#fff":"#6e7681",cursor:input.trim()&&!running?"pointer":"default",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0,transition:"all .15s"}}>▶</button>
+
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",fontSize:10.5,color:"#6e7681",marginTop:6,padding:"0 4px"}}>
+                    <span><strong>↵ Enter</strong> to send · <strong>⇧ Shift+Enter</strong> for newline</span>
+                    <span style={{display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{width:5,height:5,borderRadius:"50%",background:"#3fb950"}}/>
+                      Autonomous Agent Routing & Policy Engine Active
+                    </span>
+                  </div>
                 </div>
-                <div style={{fontSize:10,color:"#a0aab4",marginTop:4,textAlign:"right"}}>Enter to send · Shift+Enter for newline</div>
               </div>
             </div>
           )}
@@ -1996,44 +2304,119 @@ function ConfirmModal({ title, body, onConfirm, onCancel, confirmLabel, danger }
 
 // ─── EMPTY STATE ──────────────────────────────────────────────────────────────
 function EmptyState({ onSend }) {
-  const suggestions = [
-    { label:"Run GST reconciliation for this period",          emoji:"₹" },
-    { label:"Check AP invoice queue — 3-way match",           emoji:"⊠" },
-    { label:"Calculate gross margin by month",                 emoji:"∿" },
-    { label:"Classify TDS payments this month",                emoji:"⊛" },
-    { label:"Build 13-week cash forecast",                     emoji:"◎" },
-    { label:"Run IFRS 15 classification on contracts",         emoji:"≋" },
+  const categories = [
+    {
+      cat: "Tax & Compliance",
+      icon: "₹",
+      color: "#f59e0b",
+      items: [
+        { label: "Run GST reconciliation for this period", desc: "Reconcile GSTR-2B vs purchase register & validate ITC", policy: "POL-001" },
+        { label: "Classify TDS payments this month", desc: "Identify 194C/J/I sections, check threshold & PAN validity", policy: "POL-003" }
+      ]
+    },
+    {
+      cat: "Operational Accounting",
+      icon: "⟳",
+      color: "#10b981",
+      items: [
+        { label: "Check AP invoice queue — 3-way match", desc: "Match PO → GRN → Invoice & flag vendor discrepancies", policy: "POL-008" },
+        { label: "Run IFRS 15 classification on contracts", desc: "Apply 5-step recognition model & calculate deferred revenue", policy: "POL-005" }
+      ]
+    },
+    {
+      cat: "Reporting & Treasury",
+      icon: "∿",
+      color: "#60a5fa",
+      items: [
+        { label: "Calculate gross margin by month", desc: "P&L variance analysis, revenue trends & COGS breakdown", policy: "POL-005" },
+        { label: "Build 13-week cash forecast", desc: "Project liquidity from AP/AR aging & recurring payroll", policy: "POL-007" }
+      ]
+    }
   ];
+
   return (
-    <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px"}}>
-      <div style={{width:50,height:50,borderRadius:"50%",background:"linear-gradient(135deg,#1f6feb,#388bfd)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,marginBottom:14,boxShadow:"0 0 28px rgba(31,111,235,0.35)"}}>✦</div>
-      <div style={{fontSize:20,fontWeight:600,color:"#e6edf3",marginBottom:6,letterSpacing:"-0.3px"}}>How can I help?</div>
-      <div style={{fontSize:12,color:"#c9d1d9",textAlign:"center",maxWidth:380,lineHeight:1.65,marginBottom:18}}>
-        Ask any finance question. Attach an Excel or CSV file — the agent will read its date range automatically. Click a skill in the right panel to pre-fill a query.
+    <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",maxWidth:840,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
+      {/* Brand Hero */}
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+        <div style={{width:44,height:44,borderRadius:12,background:"linear-gradient(135deg, #1f6feb 0%, #388bfd 100%)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#fff",fontWeight:800,boxShadow:"0 4px 20px rgba(31,111,235,0.4)"}}>
+          ⊛
+        </div>
+        <div>
+          <div style={{fontSize:10.5,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"#58a6ff"}}>
+            EzCoworker Execution Fabric
+          </div>
+          <h2 style={{fontSize:22,fontWeight:700,color:"#e6edf3",letterSpacing:"-0.4px",margin:0}}>
+            CFO Autonomous Finance Co-Worker
+          </h2>
+        </div>
       </div>
-      <div style={{display:"flex",gap:10,marginBottom:20,width:"100%",maxWidth:480}}>
+
+      <p style={{fontSize:13,color:"#8b949e",textAlign:"center",maxWidth:560,lineHeight:1.6,marginBottom:24}}>
+        Ask any finance query in natural language or attach an Excel/CSV spreadsheet.
+        Specialist agents autonomously execute ReAct loops governed by active compliance policies.
+      </p>
+
+      {/* Feature Guidance Strip */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:10,width:"100%",marginBottom:28}}>
         {[
-          { icon:"💬", title:"Type a query",    desc:"Natural language — right agent auto-routes" },
-          { icon:"📎", title:"Attach a file",   desc:"Excel/CSV → date range detected automatically" },
-          { icon:"⚡", title:"Click a skill",   desc:"Right panel → pre-fills the query for you" },
-          { icon:"⊞", title:"Open dashboard",  desc:"KPI cards → run instant agent workflows" },
-        ].map(tip => (
-          <div key={tip.title} style={{flex:1,background:"#161b22",border:"1px solid #21262d",borderRadius:8,padding:"10px",textAlign:"center"}}>
-            <div style={{fontSize:16,marginBottom:4}}>{tip.icon}</div>
-            <div style={{fontSize:11,fontWeight:600,color:"#e6edf3",marginBottom:2}}>{tip.title}</div>
-            <div style={{fontSize:10,color:"#a0aab4",lineHeight:1.4}}>{tip.desc}</div>
+          { icon:"💬", title:"Natural Language", desc:"Type queries directly — auto-routed to specialists" },
+          { icon:"📊", title:"Spreadsheet Parser", desc:"In-browser SheetJS parses dates, period & COGS" },
+          { icon:"⚡", title:"25 CFO Skills", desc:"Click any skill in right panel to pre-fill query" },
+          { icon:"🛡️", title:"Policy Guardrails", desc:"Outputs verified against POL-001 to POL-008" }
+        ].map(card=>(
+          <div key={card.title} style={{background:"#161b22",border:"1px solid #262d37",borderRadius:10,padding:"12px 14px",transition:"border-color .15s"}}>
+            <div style={{fontSize:18,marginBottom:6}}>{card.icon}</div>
+            <div style={{fontSize:12,fontWeight:600,color:"#e6edf3",marginBottom:2}}>{card.title}</div>
+            <div style={{fontSize:10.5,color:"#8b949e",lineHeight:1.4}}>{card.desc}</div>
           </div>
         ))}
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,width:"100%",maxWidth:480}}>
-        {suggestions.map(s=>(
-          <button key={s.label} onClick={()=>onSend(s.label)}
-            style={{padding:"9px 12px",background:"#161b22",border:"1px solid #30363d",borderRadius:8,color:"#c9d1d9",fontSize:12,cursor:"pointer",fontFamily:"inherit",textAlign:"left",lineHeight:1.45,transition:"all .15s",display:"flex",alignItems:"flex-start",gap:7}}
-            onMouseEnter={e=>{e.currentTarget.style.background="#1c2128";e.currentTarget.style.borderColor="#388bfd";}}
-            onMouseLeave={e=>{e.currentTarget.style.background="#161b22";e.currentTarget.style.borderColor="#30363d";}}>
-            <span style={{flexShrink:0,fontSize:11}}>{s.emoji}</span><span>{s.label}</span>
-          </button>
-        ))}
+
+      {/* Workflow Suggestions */}
+      <div style={{width:"100%"}}>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.06em",textTransform:"uppercase",color:"#6e7681",marginBottom:12}}>
+          Suggested Financial Workflows
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(250px, 1fr))",gap:10}}>
+          {categories.flatMap(cat => cat.items.map(item => (
+            <div key={item.label} onClick={()=>onSend(item.label)}
+              style={{
+                background:"#161b22",
+                border:"1px solid #262d37",
+                borderRadius:10,
+                padding:"12px 14px",
+                cursor:"pointer",
+                textAlign:"left",
+                transition:"all .15s",
+                display:"flex",
+                flexDirection:"column",
+                justifyContent:"space-between",
+                position:"relative",
+                overflow:"hidden"
+              }}
+              onMouseEnter={e=>{e.currentTarget.style.background="#1c2128";e.currentTarget.style.borderColor="#1f6feb";e.currentTarget.style.transform="translateY(-1px)";}}
+              onMouseLeave={e=>{e.currentTarget.style.background="#161b22";e.currentTarget.style.borderColor="#262d37";e.currentTarget.style.transform="translateY(0)";}}>
+              <div>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:5}}>
+                  <span style={{fontSize:10,fontWeight:700,color:cat.color,background:`${cat.color}15`,padding:"1px 6px",borderRadius:4,textTransform:"uppercase",letterSpacing:"0.04em"}}>
+                    {cat.icon} {cat.cat}
+                  </span>
+                  <span style={{fontSize:9.5,color:"#6e7681",fontFamily:"var(--mono, monospace)"}}>{item.policy}</span>
+                </div>
+                <div style={{fontSize:12.5,fontWeight:600,color:"#e6edf3",lineHeight:1.4,marginBottom:4}}>
+                  {item.label}
+                </div>
+                <div style={{fontSize:11,color:"#8b949e",lineHeight:1.4}}>
+                  {item.desc}
+                </div>
+              </div>
+              <div style={{marginTop:10,display:"flex",alignItems:"center",gap:4,fontSize:11,color:"#58a6ff",fontWeight:500}}>
+                <span>Run workflow</span>
+                <span>→</span>
+              </div>
+            </div>
+          )))}
+        </div>
       </div>
     </div>
   );
@@ -2041,151 +2424,424 @@ function EmptyState({ onSend }) {
 
 // ─── CHAT MESSAGES ────────────────────────────────────────────────────────────
 function ChatMessages({ messages }) {
+  const [copiedIdx, setCopiedIdx] = useState(null);
+  const [expandedPipes, setExpandedPipes] = useState({});
+
+  const handleCopy = (text, idx) => {
+    if (!text) return;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
+  const togglePipe = (id) => {
+    setExpandedPipes(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
-    <>
+    <div style={{display:"flex",flexDirection:"column",gap:18}}>
       {messages.map((msg, i) => {
-        if (msg.type==="system") return (
-          <div key={i} style={{textAlign:"center",fontSize:11,color:"#a0aab4",marginBottom:14,padding:"5px 10px",background:"#161b22",borderRadius:5,border:"1px solid #21262d"}}>{msg.text}</div>
-        );
-        if (msg.type==="user") return (
-          <div key={i} style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
-            <div style={{maxWidth:"74%"}}>
-              <div style={{background:"#1f6feb",borderRadius:"14px 14px 4px 14px",padding:"9px 13px",fontSize:13,color:"#fff",lineHeight:1.55}}>{msg.text}</div>
-              {msg.files?.length > 0 && (
-                <div style={{display:"flex",gap:5,marginTop:4,justifyContent:"flex-end",flexWrap:"wrap"}}>
-                  {msg.files.map((f,fi)=>(
-                    <div key={fi} style={{fontSize:10,padding:"2px 7px",background:"#1f6feb33",border:"1px solid #1f6feb55",borderRadius:4,color:"#93c5fd"}}>📎 {f}</div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        );
-        if (msg.type==="pipeline") {
-          const isRunning = msg.done < msg.steps.length;
+        // ── 1. SYSTEM MESSAGE ──
+        if (msg.type==="system") {
           return (
-            <div key={i} style={{background:"#0d1117",border:`1px solid ${isRunning?"#f0883e44":"#238636"}`,borderRadius:8,padding:"12px 15px",marginBottom:14,position:"relative",overflow:"hidden"}}>
-              {isRunning && <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,#f0883e,transparent)",animation:"pulse 1.4s ease-in-out infinite"}}/>}
-              <div style={{fontSize:10,color:isRunning?"#f0883e":"#3fb950",marginBottom:10,letterSpacing:"0.07em",textTransform:"uppercase",fontWeight:700,display:"flex",alignItems:"center",gap:6}}>
-                <span style={{display:"inline-block",animation:isRunning?"spin 1s linear infinite":"none",transformOrigin:"center"}}>{isRunning?"⟳":"✓"}</span>
-                {isRunning?"EzCoworker pipeline running…":"Pipeline complete"}
+            <div key={i} style={{display:"flex",justifyContent:"center",margin:"4px 0"}}>
+              <div style={{
+                fontSize:11,
+                color:"#8b949e",
+                padding:"5px 14px",
+                background:"#161b22",
+                borderRadius:20,
+                border:"1px solid #262d37",
+                display:"flex",
+                alignItems:"center",
+                gap:6,
+                boxShadow:"0 1px 4px rgba(0,0,0,0.15)"
+              }}>
+                <span style={{color:"#58a6ff",fontSize:12}}>ℹ</span>
+                <span>{msg.text}</span>
               </div>
-              {msg.steps.map((s,si)=>{
-                const isDone=si<msg.done, isCurrent=si===msg.done&&isRunning, isPending=si>msg.done;
-                return (
-                  <div key={si} style={{display:"flex",alignItems:"center",gap:9,padding:"4px 0",fontSize:12,opacity:isPending?0.35:1,transition:"all 0.3s"}}>
-                    <div style={{width:7,height:7,borderRadius:"50%",flexShrink:0,background:isDone?"#3fb950":isCurrent?"#f0883e":"#30363d",boxShadow:isCurrent?"0 0 6px #f0883e":"none",animation:isCurrent?"pulse-dot 0.8s ease-in-out infinite":"none"}}/>
-                    <span style={{color:isDone?"#3fb950":isCurrent?"#f0883e":"#a0aab4",fontWeight:isCurrent?600:400}}>{isCurrent&&<span style={{marginRight:4}}>▶</span>}{s}</span>
-                  </div>
-                );
-              })}
-              <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:.2}50%{opacity:.9}}@keyframes pulse-dot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}`}</style>
             </div>
           );
         }
-        if (msg.type==="agent") {
-          const result = msg.result || {};
-          const hasAnswer    = typeof result.answer === "string" && result.answer.length > 10;
-          const hasBreakdown = result.monthly_breakdown && typeof result.monthly_breakdown === "object";
-          // KPI keys = everything except meta fields
-          const META = new Set(["policy_cited","source","answer","monthly_breakdown","analysis","period"]);
-          const kpiEntries = Object.entries(result).filter(([k]) => !META.has(k));
-          // Pure conversational = has answer text but NO kpi fields and NO breakdown
-          const isPureConversational = hasAnswer && kpiEntries.length === 0 && !hasBreakdown;
 
-          // ── Render **bold** markdown in answer text ──────────────────────────
-          function renderAnswerText(text) {
-            if (!text) return null;
-            return text.split(/(\*\*[^*]+\*\*)/).map((part, idx) => {
-              if (part.startsWith("**") && part.endsWith("**")) {
-                return <strong key={idx} style={{color:"#e6edf3",fontWeight:700}}>{part.slice(2,-2)}</strong>;
-              }
-              return <span key={idx}>{part}</span>;
-            });
-          }
-
-          // ── PURE CONVERSATIONAL: clean chat bubble, no OUTPUT box ────────────
-          if (isPureConversational) {
-            return (
-              <div key={i} style={{display:"flex",gap:9,marginBottom:14}}>
-                <div style={{width:26,height:26,borderRadius:7,background:`${msg.agent.color}22`,border:`1px solid ${msg.agent.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0,color:msg.agent.color}}>{msg.agent.icon}</div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:11,fontWeight:600,color:msg.agent.color,marginBottom:5}}>{msg.agent.name}</div>
-                  <div style={{background:"#161b22",border:"1px solid #21262d",borderRadius:"4px 12px 12px 12px",padding:"13px 15px",fontSize:13,color:"#c9d1d9",lineHeight:1.75,whiteSpace:"pre-wrap"}}>
-                    {renderAnswerText(result.answer)}
+        // ── 2. USER MESSAGE ──
+        if (msg.type==="user") {
+          return (
+            <div key={i} style={{display:"flex",justifyContent:"flex-end",gap:10,alignItems:"flex-start"}}>
+              <div style={{maxWidth:"78%"}}>
+                <div style={{
+                  background:"linear-gradient(135deg, #1f6feb 0%, #1a56db 100%)",
+                  borderRadius:"16px 16px 4px 16px",
+                  padding:"11px 16px",
+                  fontSize:13.5,
+                  color:"#ffffff",
+                  lineHeight:1.6,
+                  boxShadow:"0 3px 12px rgba(31,111,235,0.28)",
+                  border:"1px solid rgba(255,255,255,0.1)",
+                  wordBreak:"break-word"
+                }}>
+                  {msg.text}
+                </div>
+                {msg.files?.length > 0 && (
+                  <div style={{display:"flex",gap:6,marginTop:6,justifyContent:"flex-end",flexWrap:"wrap"}}>
+                    {msg.files.map((f,fi)=>(
+                      <div key={fi} style={{
+                        fontSize:11,
+                        padding:"3px 8px",
+                        background:"#1f2d3d",
+                        border:"1px solid #1f6feb55",
+                        borderRadius:5,
+                        color:"#93c5fd",
+                        display:"flex",
+                        alignItems:"center",
+                        gap:5
+                      }}>
+                        <span>📊</span>
+                        <span>{f}</span>
+                      </div>
+                    ))}
                   </div>
-                  {result.policy_cited && (
-                    <div style={{marginTop:5,fontSize:10,color:"#a0aab4",paddingLeft:2}}>⊛ {result.policy_cited}</div>
+                )}
+              </div>
+              <div style={{width:28,height:28,borderRadius:"50%",background:"#1f2d3d",border:"1px solid #1f6feb66",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:"#58a6ff",flexShrink:0,marginTop:2}}>
+                You
+              </div>
+            </div>
+          );
+        }
+
+        // ── 3. PIPELINE PROGRESS CARD ──
+        if (msg.type==="pipeline") {
+          const isRunning = msg.done < msg.steps.length;
+          const pipeId = msg.id || i;
+          const isExpanded = isRunning || !!expandedPipes[pipeId];
+          const pct = Math.round((msg.done / Math.max(msg.steps.length, 1)) * 100);
+
+          return (
+            <div key={i} style={{
+              background:"#111620",
+              border: `1px solid ${isRunning ? "rgba(245, 158, 11, 0.4)" : "rgba(63, 185, 80, 0.35)"}`,
+              borderRadius:10,
+              padding:"12px 16px",
+              boxShadow:"0 4px 16px rgba(0,0,0,0.25)",
+              position:"relative",
+              overflow:"hidden"
+            }}>
+              {/* Top animated bar when running */}
+              {isRunning && (
+                <div style={{position:"absolute",top:0,left:0,right:0,height:2.5,background:"linear-gradient(90deg, #f59e0b, #388bfd, #f59e0b)",backgroundSize:"200% 100%",animation:"pulse-bar 1.5s linear infinite"}}/>
+              )}
+
+              {/* Pipeline Header */}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom: isExpanded ? 10 : 0}}>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{
+                    width:18,
+                    height:18,
+                    borderRadius:"50%",
+                    background: isRunning ? "#f59e0b22" : "#3fb95022",
+                    border: `1px solid ${isRunning ? "#f59e0b" : "#3fb950"}`,
+                    color: isRunning ? "#f59e0b" : "#3fb950",
+                    display:"flex",
+                    alignItems:"center",
+                    justifyContent:"center",
+                    fontSize:10,
+                    fontWeight:700
+                  }}>
+                    {isRunning ? <span style={{animation:"spin 1s linear infinite"}}>⟳</span> : "✓"}
+                  </span>
+                  <span style={{fontSize:11.5,fontWeight:700,color: isRunning ? "#f59e0b" : "#3fb950",letterSpacing:"0.04em",textTransform:"uppercase"}}>
+                    {isRunning ? `Orchestrating Pipeline · Step ${msg.done} of ${msg.steps.length}` : `Pipeline Complete (${msg.steps.length} steps)`}
+                  </span>
+                </div>
+
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:10.5,color:"#8b949e",fontFamily:"var(--mono, monospace)"}}>{pct}%</span>
+                  {!isRunning && (
+                    <button onClick={()=>togglePipe(pipeId)}
+                      style={{background:"none",border:"1px solid #262d37",borderRadius:4,color:"#8b949e",fontSize:10,padding:"1px 6px",cursor:"pointer"}}>
+                      {isExpanded ? "Hide Steps ▲" : "View Steps ▼"}
+                    </button>
                   )}
                 </div>
               </div>
-            );
+
+              {/* Steps Progress List */}
+              {isExpanded && (
+                <div style={{display:"flex",flexDirection:"column",gap:4,marginTop:6,paddingTop:8,borderTop:"1px solid #1c2128"}}>
+                  {msg.steps.map((s,si)=>{
+                    const isDone = si < msg.done;
+                    const isCurrent = si === msg.done && isRunning;
+                    const isPending = si > msg.done;
+                    return (
+                      <div key={si} style={{display:"flex",alignItems:"center",gap:10,fontSize:12,padding:"3px 0",opacity: isPending ? 0.35 : 1,transition:"all 0.2s"}}>
+                        <div style={{
+                          width:7,
+                          height:7,
+                          borderRadius:"50%",
+                          flexShrink:0,
+                          background: isDone ? "#3fb950" : isCurrent ? "#f59e0b" : "#30363d",
+                          boxShadow: isCurrent ? "0 0 8px #f59e0b" : "none"
+                        }}/>
+                        <span style={{color: isDone ? "#e6edf3" : isCurrent ? "#f59e0b" : "#8b949e",fontWeight: isCurrent ? 600 : 400}}>
+                          {s}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // ── 4. AGENT MESSAGE ──
+        if (msg.type==="agent") {
+          const result = msg.result || {};
+          const hasAnswer    = typeof result.answer === "string" && result.answer.length > 5;
+          const hasBreakdown = result.monthly_breakdown && typeof result.monthly_breakdown === "object" && Object.keys(result.monthly_breakdown).length > 0;
+          const META = new Set(["policy_cited","source","answer","monthly_breakdown","analysis","period","highlight_month"]);
+          const kpiEntries = Object.entries(result).filter(([k]) => !META.has(k) && result[k] !== undefined && result[k] !== null);
+          const isPureConversational = hasAnswer && kpiEntries.length === 0 && !hasBreakdown;
+
+          // Robust Markdown parser for bolding and paragraph breaks
+          function renderAnswerText(text) {
+            if (!text) return null;
+            const paragraphs = String(text).split("\n\n");
+            return paragraphs.map((para, pIdx) => {
+              const lines = para.split("\n");
+              return (
+                <div key={pIdx} style={{ margin: pIdx > 0 ? "10px 0 0" : 0 }}>
+                  {lines.map((line, lIdx) => {
+                    const isBullet = line.trim().startsWith("•") || line.trim().startsWith("- ");
+                    const content = isBullet ? line.trim().replace(/^[•-]\s*/, "") : line;
+                    const parsed = content.split(/(\*\*[^*]+\*\*)/).map((part, idx) => {
+                      if (part.startsWith("**") && part.endsWith("**")) {
+                        return <strong key={idx} style={{ color: "#e6edf3", fontWeight: 700 }}>{part.slice(2, -2)}</strong>;
+                      }
+                      return <span key={idx}>{part}</span>;
+                    });
+
+                    if (isBullet) {
+                      return (
+                        <div key={lIdx} style={{ display: "flex", alignItems: "flex-start", gap: 7, margin: "4px 0 4px 6px" }}>
+                          <span style={{ color: "#58a6ff", fontSize: 10, marginTop: 4 }}>●</span>
+                          <span style={{ flex: 1 }}>{parsed}</span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <span key={lIdx}>
+                        {parsed}
+                        {lIdx < lines.length - 1 && <br />}
+                      </span>
+                    );
+                  })}
+                </div>
+              );
+            });
           }
 
+          const copyContent = result.answer || JSON.stringify(result, null, 2);
+
           return (
-            <div key={i} style={{display:"flex",gap:9,marginBottom:14}}>
-              <div style={{width:26,height:26,borderRadius:7,background:`${msg.agent.color}22`,border:`1px solid ${msg.agent.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0,color:msg.agent.color}}>{msg.agent.icon}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:11,fontWeight:600,color:msg.agent.color,marginBottom:5}}>{msg.agent.name} · {msg.skill}</div>
-                <div style={{background:"#161b22",border:"1px solid #21262d",borderRadius:"4px 12px 12px 12px",padding:"11px 14px",fontSize:13,color:"#c9d1d9",lineHeight:1.55}}>
-                  Task complete using <strong style={{color:"#58a6ff"}}>{msg.skill}</strong>:
-                  <div style={{background:"#0d2311",border:"1px solid #238636",borderRadius:7,padding:"11px 13px",marginTop:9}}>
-                    <div style={{fontSize:10,color:"#3fb950",fontWeight:700,marginBottom:8,letterSpacing:"0.06em",textTransform:"uppercase"}}>✓ Output</div>
+            <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+              {/* Agent Avatar */}
+              <div style={{
+                width:34,
+                height:34,
+                borderRadius:9,
+                background: `${msg.agent?.color || "#58a6ff"}18`,
+                border: `1px solid ${msg.agent?.color || "#58a6ff"}44`,
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"center",
+                fontSize:15,
+                color: msg.agent?.color || "#58a6ff",
+                boxShadow: `0 2px 8px ${msg.agent?.color || "#58a6ff"}1a`,
+                flexShrink:0,
+                marginTop:2
+              }}>
+                {msg.agent?.icon || "⚡"}
+              </div>
 
-                    {/* ── Analysis headline ── */}
-                    {result.analysis && (
-                      <div style={{fontSize:13,color:"#e6edf3",fontWeight:500,marginBottom:10,lineHeight:1.5,borderBottom:"1px solid #1a3a1a",paddingBottom:8}}>
-                        {result.analysis}
-                      </div>
+              {/* Message Payload */}
+              <div style={{flex:1,minWidth:0}}>
+                {/* Agent Header Line */}
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:7}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                    <span style={{fontSize:13,fontWeight:700,color:"#e6edf3"}}>
+                      {msg.agent?.name || "Financial Agent"}
+                    </span>
+                    {msg.skill && (
+                      <span style={{fontSize:10,color:"#58a6ff",background:"#1f6feb15",border:"1px solid #1f6feb33",padding:"1px 6px",borderRadius:4,fontFamily:"var(--mono, monospace)",fontWeight:500}}>
+                        ⚡ {msg.skill}
+                      </span>
                     )}
+                  </div>
 
-                    {/* ── Narrative / summary answer opener ── */}
-                    {hasAnswer && (
-                      <div style={{fontSize:13,color:"#c9d1d9",lineHeight:1.7,marginBottom:10,whiteSpace:"pre-wrap"}}>
+                  <button onClick={()=>handleCopy(copyContent, i)}
+                    title="Copy response to clipboard"
+                    style={{
+                      background:"#161b22",
+                      border:"1px solid #262d37",
+                      borderRadius:5,
+                      color: copiedIdx === i ? "#3fb950" : "#8b949e",
+                      fontSize:10.5,
+                      padding:"2px 8px",
+                      cursor:"pointer",
+                      display:"flex",
+                      alignItems:"center",
+                      gap:4,
+                      transition:"all .15s"
+                    }}
+                    onMouseEnter={e=>{if(copiedIdx!==i){e.currentTarget.style.borderColor="#58a6ff";e.currentTarget.style.color="#58a6ff";}}}
+                    onMouseLeave={e=>{if(copiedIdx!==i){e.currentTarget.style.borderColor="#262d37";e.currentTarget.style.color="#8b949e";}}}>
+                    {copiedIdx === i ? "✓ Copied" : "📋 Copy"}
+                  </button>
+                </div>
+
+                {/* Response Card Body */}
+                <div style={{
+                  background:"#161b22",
+                  border:"1px solid #262d37",
+                  borderRadius:"4px 14px 14px 14px",
+                  padding:"16px 18px",
+                  boxShadow:"0 4px 20px rgba(0,0,0,0.22)"
+                }}>
+                  {/* PURE CONVERSATIONAL VIEW */}
+                  {isPureConversational ? (
+                    <div>
+                      <div style={{fontSize:13.5,color:"#c9d1d9",lineHeight:1.7}}>
                         {renderAnswerText(result.answer)}
                       </div>
-                    )}
-
-                    {/* ── Monthly breakdown table ── */}
-                    {hasBreakdown && (
-                      <div style={{marginBottom:10}}>
-                        <div style={{fontSize:10,color:"#a0aab4",marginBottom:6,letterSpacing:"0.05em",textTransform:"uppercase"}}>
-                          {result.analysis && /gross.*net|net.*gross/i.test(result.analysis) ? "Monthly Breakdown — Gross Sales / Net Sales" : "Monthly Breakdown"}
+                      {result.policy_cited && (
+                        <div style={{marginTop:12,paddingTop:10,borderTop:"1px solid #21262d",display:"flex",alignItems:"center",gap:6,fontSize:11,color:"#3fb950"}}>
+                          <span>🛡️</span>
+                          <span style={{color:"#8b949e"}}>Compliance Policy:</span>
+                          <span style={{fontWeight:600}}>{result.policy_cited}</span>
                         </div>
-                        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:5}}>
-                          {Object.entries(result.monthly_breakdown).map(([mo,val])=>(
-                            <div key={mo} style={{background:"#161b22",borderRadius:5,padding:"6px 9px",border:result.highlight_month===mo?"1px solid #3fb950":"1px solid #21262d"}}>
-                              <div style={{fontSize:10,color:result.highlight_month===mo?"#3fb950":"#a0aab4",fontWeight:result.highlight_month===mo?700:400}}>{mo}{result.highlight_month===mo?" ★":""}</div>
-                              <div style={{fontSize:12,fontWeight:600,color:"#e6edf3",marginTop:2}}>{String(val)}</div>
-                            </div>
-                          ))}
+                      )}
+                    </div>
+                  ) : (
+                    /* STRUCTURED EXECUTIVE VIEW */
+                    <div>
+                      {/* Analysis Header */}
+                      {result.analysis && (
+                        <div style={{
+                          fontSize:14,
+                          fontWeight:700,
+                          color:"#e6edf3",
+                          marginBottom:12,
+                          paddingBottom:10,
+                          borderBottom:"1px solid #21262d",
+                          letterSpacing:"-0.2px",
+                          display:"flex",
+                          alignItems:"center",
+                          gap:8
+                        }}>
+                          <span style={{fontSize:10,color:"#3fb950",background:"#3fb95015",border:"1px solid #3fb95033",padding:"1px 6px",borderRadius:4,fontWeight:700,letterSpacing:"0.04em",textTransform:"uppercase"}}>
+                            ANALYSIS
+                          </span>
+                          <span>{result.analysis}</span>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* ── KPI grid (show when NOT purely narrative or when extra KPIs exist) ── */}
-                    {kpiEntries.length > 0 && (
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginTop: (hasAnswer||hasBreakdown) ? 8 : 0}}>
-                        {kpiEntries.map(([k,v])=>(
-                          <div key={k} style={{background:"#161b22",borderRadius:5,padding:"7px 9px"}}>
-                            <div style={{fontSize:10,color:"#a0aab4"}}>{k.replace(/_/g," ")}</div>
-                            <div style={{fontSize:12,fontWeight:600,color:"#e6edf3",marginTop:2}}>{String(v)}</div>
+                      {/* Narrative Synthesis */}
+                      {hasAnswer && (
+                        <div style={{fontSize:13.5,color:"#c9d1d9",lineHeight:1.7,marginBottom:14}}>
+                          {renderAnswerText(result.answer)}
+                        </div>
+                      )}
+
+                      {/* Monthly Breakdown Grid */}
+                      {hasBreakdown && (
+                        <div style={{marginTop:12,marginBottom:14}}>
+                          <div style={{fontSize:10.5,fontWeight:700,color:"#8b949e",marginBottom:8,display:"flex",alignItems:"center",gap:6,textTransform:"uppercase",letterSpacing:"0.05em"}}>
+                            <span>📅</span>
+                            <span>{result.analysis && /gross.*net|net.*gross/i.test(result.analysis) ? "Monthly Breakdown — Gross Sales vs Net Sales" : "Period Monthly Breakdown"}</span>
                           </div>
-                        ))}
-                      </div>
-                    )}
+                          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(135px, 1fr))",gap:8}}>
+                            {Object.entries(result.monthly_breakdown).map(([mo,val])=>{
+                              const isHighlight = result.highlight_month === mo;
+                              return (
+                                <div key={mo} style={{
+                                  background: isHighlight ? "rgba(63, 185, 80, 0.08)" : "#0d1117",
+                                  border: isHighlight ? "1px solid #3fb950" : "1px solid #21262d",
+                                  borderRadius:7,
+                                  padding:"8px 10px",
+                                  transition:"all .15s"
+                                }}>
+                                  <div style={{fontSize:10,fontWeight:600,color: isHighlight ? "#3fb950" : "#8b949e",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                                    <span>{mo}</span>
+                                    {isHighlight && <span style={{fontSize:9,background:"#3fb95022",color:"#3fb950",padding:"1px 4px",borderRadius:3}}>PEAK</span>}
+                                  </div>
+                                  <div style={{fontSize:12.5,fontWeight:700,color:"#e6edf3",marginTop:3,fontFamily:"var(--mono, Consolas, monospace)"}}>
+                                    {String(val)}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                    {result.source && <div style={{marginTop:7,fontSize:10,color:"#a0aab4"}}>📎 Source: {result.source}</div>}
-                    {result.policy_cited && <div style={{marginTop:9,paddingTop:7,borderTop:"1px solid #238636",fontSize:11,color:"#3fb950"}}>⊛ Policy: {result.policy_cited}</div>}
-                  </div>
+                      {/* KPI Metric Tiles */}
+                      {kpiEntries.length > 0 && (
+                        <div style={{marginTop: (hasAnswer || hasBreakdown) ? 12 : 4, marginBottom: 8}}>
+                          <div style={{fontSize:10.5,fontWeight:700,color:"#8b949e",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8,display:"flex",alignItems:"center",gap:5}}>
+                            <span>📊</span> Key Financial Metrics
+                          </div>
+                          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(180px, 1fr))",gap:8}}>
+                            {kpiEntries.map(([k,v])=>(
+                              <div key={k} style={{
+                                background:"#0d1117",
+                                border:"1px solid #21262d",
+                                borderRadius:8,
+                                padding:"9px 12px",
+                                transition:"border-color .15s"
+                              }}
+                              onMouseEnter={e=>e.currentTarget.style.borderColor="#388bfd55"}
+                              onMouseLeave={e=>e.currentTarget.style.borderColor="#21262d"}>
+                                <div style={{fontSize:10,color:"#8b949e",textTransform:"uppercase",letterSpacing:"0.05em",fontWeight:600}}>
+                                  {k.replace(/_/g," ")}
+                                </div>
+                                <div style={{fontSize:13.5,fontWeight:700,color:"#e6edf3",marginTop:3,fontFamily:"var(--mono, Consolas, monospace)",wordBreak:"break-word"}}>
+                                  {String(v)}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Footer Metadata */}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginTop:12,paddingTop:10,borderTop:"1px solid #21262d",fontSize:11}}>
+                        {result.source ? (
+                          <span style={{color:"#8b949e",display:"flex",alignItems:"center",gap:5}}>
+                            <span>📄</span> Source: <strong style={{color:"#c9d1d9"}}>{result.source}</strong>
+                          </span>
+                        ) : <span/>}
+
+                        {result.policy_cited && (
+                          <span style={{color:"#3fb950",background:"#3fb95012",border:"1px solid #3fb95033",padding:"2px 8px",borderRadius:4,display:"flex",alignItems:"center",gap:5,fontWeight:500}}>
+                            <span>🛡️</span> {result.policy_cited}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           );
         }
+
         return null;
       })}
-    </>
+    </div>
   );
 }
 

@@ -6,7 +6,7 @@
 // Points at the running FastAPI server. Override with VITE_API_BASE in a
 // .env file (e.g. VITE_API_BASE=http://localhost:8765 for local dev, or
 // your deployed domain for production) — do not hardcode one or the other.
-const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8765";
+const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8766";
 
 async function request(path, { method = "GET", body, timeout = 30000 } = {}) {
   const controller = new AbortController();

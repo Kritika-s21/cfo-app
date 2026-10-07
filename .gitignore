@@ -1,0 +1,11 @@
+file-scheduler/.env
+file-scheduler/cfo_rules.json
+file-scheduler/agent_logs/
+file-scheduler/scheduler_logs/
+file-scheduler/scheduler_profiles/
+file-scheduler/scheduler_state.json
+file-scheduler/lance_db/
+__pycache__/*.py[cod]
+
+__pycache__/
+*.py[cod]

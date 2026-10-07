@@ -1,0 +1,273 @@
+{
+ "_note": "EzCoworker workspace skills. Accepts either name or dir. Refresh when you add skills.",
+ "skills": [
+  {
+   "name": "ceo-command-center",
+   "dir": "ceo-command-center"
+  },
+  {
+   "name": "deep-research",
+   "dir": "deep-research"
+  },
+  {
+   "name": "kpi-dashboard-design",
+   "dir": "kpi-dashboard-design"
+  },
+  {
+   "name": "doc-coauthoring",
+   "dir": "doc-coauthoring"
+  },
+  {
+   "name": "internal-comms",
+   "dir": "internal-comms"
+  },
+  {
+   "name": "rca-generator",
+   "dir": "rca-generator"
+  },
+  {
+   "name": "algorithmic-art",
+   "dir": "algorithmic-art"
+  },
+  {
+   "name": "brand-guidelines",
+   "dir": "brand-guidelines"
+  },
+  {
+   "name": "canvas-design",
+   "dir": "canvas-design"
+  },
+  {
+   "name": "slack-gif-creator",
+   "dir": "slack-gif-creator"
+  },
+  {
+   "name": "theme-factory",
+   "dir": "theme-factory"
+  },
+  {
+   "name": "Hook Development",
+   "dir": "hook-development"
+  },
+  {
+   "name": "mcp-builder",
+   "dir": "mcp-builder"
+  },
+  {
+   "name": "Skill Development",
+   "dir": "skill-development"
+  },
+  {
+   "name": "skill-creator",
+   "dir": "skill-creator"
+  },
+  {
+   "name": "docker-patterns",
+   "dir": "docker-patterns"
+  },
+  {
+   "name": "grafana-dashboards",
+   "dir": "grafana-dashboards"
+  },
+  {
+   "name": "observability",
+   "dir": "observability"
+  },
+  {
+   "name": "schema-migration",
+   "dir": "schema-migration"
+  },
+  {
+   "name": "security-audit",
+   "dir": "security-audit"
+  },
+  {
+   "name": "docx",
+   "dir": "docx"
+  },
+  {
+   "name": "pdf",
+   "dir": "pdf"
+  },
+  {
+   "name": "pptx",
+   "dir": "pptx"
+  },
+  {
+   "name": "xlsx",
+   "dir": "xlsx"
+  },
+  {
+   "name": "senior-fullstack",
+   "dir": "senior-fullstack"
+  },
+  {
+   "name": "academic-researcher",
+   "dir": "academic-researcher"
+  },
+  {
+   "name": "analytics-tracking",
+   "dir": "analytics-tracking"
+  },
+  {
+   "name": "analyzing-logs",
+   "dir": "analyzing-logs"
+  },
+  {
+   "name": "coding-agent",
+   "dir": "coding-agent"
+  },
+  {
+   "name": "competitive-landscape",
+   "dir": "competitive-landscape"
+  },
+  {
+   "name": "content-creator",
+   "dir": "content-creator"
+  },
+  {
+   "name": "content-research-writer",
+   "dir": "content-research-writer"
+  },
+  {
+   "name": "cost-aware-llm-pipeline",
+   "dir": "cost-aware-llm-pipeline"
+  },
+  {
+   "name": "customer-support",
+   "dir": "customer-support"
+  },
+  {
+   "name": "Data Privacy Compliance",
+   "dir": "data-privacy-compliance"
+  },
+  {
+   "name": "data-analyst",
+   "dir": "data-analyst"
+  },
+  {
+   "name": "data-storytelling",
+   "dir": "data-storytelling"
+  },
+  {
+   "name": "dbt-transformation-patterns",
+   "dir": "dbt-transformation-patterns"
+  },
+  {
+   "name": "editor",
+   "dir": "editor"
+  },
+  {
+   "name": "fact-checker",
+   "dir": "fact-checker"
+  },
+  {
+   "name": "google-analytics",
+   "dir": "google-analytics"
+  },
+  {
+   "name": "meeting-insights-analyzer",
+   "dir": "meeting-insights-analyzer"
+  },
+  {
+   "name": "onboarding-cro",
+   "dir": "onboarding-cro"
+  },
+  {
+   "name": "pe-diligence-risk",
+   "dir": "pe-diligence-risk"
+  },
+  {
+   "name": "perplexity-search",
+   "dir": "perplexity-search"
+  },
+  {
+   "name": "prd",
+   "dir": "prd"
+  },
+  {
+   "name": "project-planner",
+   "dir": "project-planner"
+  },
+  {
+   "name": "react-admin",
+   "dir": "react-admin"
+  },
+  {
+   "name": "slides",
+   "dir": "slides"
+  },
+  {
+   "name": "social-content",
+   "dir": "social-content"
+  },
+  {
+   "name": "task-coordination-strategies",
+   "dir": "task-coordination-strategies"
+  },
+  {
+   "name": "trading-skill-v2",
+   "dir": "trading-skill"
+  },
+  {
+   "name": "ui-ux-pro-max",
+   "dir": "ui-ux-pro-max"
+  },
+  {
+   "name": "using-superpowers",
+   "dir": "using-superpowers"
+  },
+  {
+   "name": "visualization-expert",
+   "dir": "visualization-expert"
+  },
+  {
+   "name": "estimating-work",
+   "dir": "estimating-work"
+  },
+  {
+   "name": "project-estimation",
+   "dir": "project-estimation"
+  },
+  {
+   "name": "dev-swarm-code-test",
+   "dir": "dev-swarm-code-test"
+  },
+  {
+   "name": "persona-testing",
+   "dir": "persona-testing"
+  },
+  {
+   "name": "test-cases",
+   "dir": "test-cases"
+  },
+  {
+   "name": "testing-integration",
+   "dir": "testing-integration"
+  },
+  {
+   "name": "agent-browser",
+   "dir": "agent-browser"
+  },
+  {
+   "name": "frontend-design",
+   "dir": "frontend-design"
+  },
+  {
+   "name": "frontend-ui",
+   "dir": "frontend-ui"
+  },
+  {
+   "name": "ui-visual-validator",
+   "dir": "ui-visual-validator"
+  },
+  {
+   "name": "web-artifacts-builder",
+   "dir": "web-artifacts-builder"
+  },
+  {
+   "name": "webapp-testing",
+   "dir": "webapp-testing"
+  }
+ ]
+}

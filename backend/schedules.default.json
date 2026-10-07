@@ -1,0 +1,92 @@
+[
+  {
+    "id": "sch_recon",
+    "agent_id": "reconciliation",
+    "name": "Bank Reconciliation",
+    "cron": "0 0 L * *",
+    "text": "Run bank reconciliation for the period and flag exceptions",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_close",
+    "agent_id": "close_orchestrator",
+    "name": "Month-End Close",
+    "cron": "0 6 1 * *",
+    "text": "Report month-end close checklist status and blockers",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_gst",
+    "agent_id": "gst_engine",
+    "name": "GST Reconciliation",
+    "cron": "0 9 18 * *",
+    "text": "Run GST 2B reconciliation and flag ITC mismatches",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_tds",
+    "agent_id": "tds_engine",
+    "name": "TDS Deposit Check",
+    "cron": "0 9 6 * *",
+    "text": "Check TDS deductions and deposit status for the month",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_cash",
+    "agent_id": "cash_forecaster",
+    "name": "13-Week Cash Forecast",
+    "cron": "0 9 * * MON",
+    "text": "Update the 13-week cash forecast and check the cash buffer",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_je",
+    "agent_id": "je_factory",
+    "name": "JE Auto-Generation",
+    "cron": "0 8 28 * *",
+    "text": "Generate recurring and accrual journal entries and check approval limits",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_review",
+    "agent_id": "review",
+    "name": "Compliance QA Gate",
+    "cron": "0 7 L * *",
+    "text": "Run the compliance QA gate across this period's agent outputs",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_ar",
+    "agent_id": "ar_engine",
+    "name": "AR Dunning Run",
+    "cron": "0 10 * * TUE,FRI",
+    "text": "Run AR aging and list invoices to escalate for dunning",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  },
+  {
+    "id": "sch_tp",
+    "agent_id": "tp_monitor",
+    "name": "Transfer Pricing Check",
+    "cron": "0 8 1,15 * *",
+    "text": "Check intercompany transactions against arm's length rules",
+    "skill": "",
+    "timezone": "Asia/Kolkata",
+    "enabled": false
+  }
+]

@@ -1,5 +1,5 @@
 // Client for OUR backend (backend/main.py). Browser requests use the HttpOnly account session.
-const BASE = import.meta.env.VITE_CFO_API_BASE || import.meta.env.VITE_API_BASE || "https://ezaicfoagentpy.ezdatamunch.com/";
+const BASE = import.meta.env.VITE_CFO_API_BASE || import.meta.env.VITE_API_BASE || "https://ezaicfoagentpy.ezdatamunch.com";
 const convByChat = {};
 
 async function api(path, { method = "GET", body } = {}) {

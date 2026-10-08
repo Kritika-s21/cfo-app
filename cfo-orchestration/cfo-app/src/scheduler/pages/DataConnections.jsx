@@ -212,12 +212,12 @@ function SqlProfiles() {
         <div className="flex-col gap-sm">
           {profiles.map((p) => (
             <Card key={p.id}>
-              <div className="row-between">
-                <div>
+              <div className="row-between" style={{ flexWrap: "wrap", gap: 12 }}>
+                <div style={{ minWidth: 0, flex: "1 1 240px" }}>
                   <b>{p.name}</b> <Badge status="accent">{p.db_type}</Badge>
-                  <div className="mono text-mid mt-sm" style={{ fontSize: 12 }}>{p.masked || "(unreadable — check SCHED_MASTER_KEY)"}</div>
+                  <div className="mono text-mid mt-sm" style={{ fontSize: 12, overflowWrap: "anywhere" }}>{p.masked || "(unreadable — check SCHED_MASTER_KEY)"}</div>
                 </div>
-                <div className="row gap-sm">
+                <div className="row gap-sm" style={{ flexShrink: 0, marginLeft: "auto" }}>
                   <Button size="sm" loading={testingId === p.id} onClick={() => test(p.id)}>🧪 Test</Button>
                   <Button size="sm" variant="danger" loading={deletingId === p.id} onClick={() => del(p.id)}>🗑 Delete</Button>
                 </div>
@@ -319,12 +319,12 @@ function VectorProfiles() {
         <div className="flex-col gap-sm">
           {profiles.map((p) => (
             <Card key={p.id}>
-              <div className="row-between">
-                <div>
+              <div className="row-between" style={{ flexWrap: "wrap", gap: 12 }}>
+                <div style={{ minWidth: 0, flex: "1 1 240px" }}>
                   <b>{p.name}</b> <span className="text-mid" style={{ fontSize: 12 }}>collection: <span className="mono">{p.collection_name}</span></span>
-                  <div className="mono text-mid mt-sm" style={{ fontSize: 12 }}>{p.db_path}</div>
+                  <div className="mono text-mid mt-sm" style={{ fontSize: 12, overflowWrap: "anywhere" }}>{p.db_path}</div>
                 </div>
-                <div className="row gap-sm">
+                <div className="row gap-sm" style={{ flexShrink: 0, marginLeft: "auto" }}>
                   <Button size="sm" loading={testingId === p.id} onClick={() => test(p.id)}>🧪 Test</Button>
                   <Button size="sm" variant="danger" loading={deletingId === p.id} onClick={() => del(p.id)}>🗑 Delete</Button>
                 </div>

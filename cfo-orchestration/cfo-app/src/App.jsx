@@ -1418,6 +1418,80 @@ Respond ONLY with a valid JSON object. No markdown fences, no text outside JSON.
 
 // ─── MAIN APP ──────────────────────────────────────────────────────────────────
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("cfo_theme") || "light";
+    } catch {
+      return "light";
+    }
+  });
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem("cfo_theme", next);
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.body.style.background = theme === "dark" ? "#090d16" : "#f8fafc";
+  }, [theme]);
+
+  const themeToggleBtn = (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: 7,
+        border: "1px solid var(--border-default, #e2e8f0)",
+        background: "var(--bg-card, #ffffff)",
+        color: "var(--text-secondary, #475569)",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        padding: 0,
+        boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+        transition: "all .15s ease",
+        flexShrink: 0,
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.background = "var(--bg-subtle, #f8fafc)";
+        e.currentTarget.style.borderColor = "var(--border-strong, #cbd5e1)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = "var(--bg-card, #ffffff)";
+        e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)";
+      }}
+    >
+      {theme === "dark" ? (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#f59e0b" }}>
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      ) : (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#64748b" }}>
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
+
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -1480,19 +1554,19 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.style.cssText = "height:100%;margin:0;padding:0;overflow:hidden;";
-    document.body.style.cssText = "height:100%;margin:0;padding:0;overflow:hidden;background:#f8fafc;";
+    document.body.style.cssText = `height:100%;margin:0;padding:0;overflow:hidden;background:${theme === "dark" ? "#090d16" : "#f8fafc"};`;
     // Invisible scrollbars globally
     const style = document.createElement("style");
     style.textContent = `
-      * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+      * { scrollbar-width: thin; scrollbar-color: ${theme === "dark" ? "#334155" : "#cbd5e1"} transparent; }
       *::-webkit-scrollbar { width: 8px; height: 8px; }
       *::-webkit-scrollbar-track { background: transparent; }
-      *::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
-      *::-webkit-scrollbar-thumb:hover { background: #484f58; background-clip: padding-box; }
+      *::-webkit-scrollbar-thumb { background: ${theme === "dark" ? "#334155" : "#cbd5e1"}; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+      *::-webkit-scrollbar-thumb:hover { background: ${theme === "dark" ? "#475569" : "#484f58"}; background-clip: padding-box; }
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     let active = true;
@@ -1780,7 +1854,7 @@ export default function App() {
   // ── AUTH SCREEN ──────────────────────────────────────────────────────────────
   if (!isLoggedIn) {
     if (authLoading) {
-      return <div style={{ display: "grid", placeItems: "center", height: "100vh", color: "#64748b", fontFamily: "sans-serif" }}>Checking your account session…</div>;
+      return <div style={{ display: "grid", placeItems: "center", height: "100vh", background: "var(--bg-app, #f8fafc)", color: "var(--text-muted, #64748b)", fontFamily: "sans-serif" }}>Checking your account session…</div>;
     }
     async function handleLogin(e) {
       e?.preventDefault();
@@ -1822,10 +1896,13 @@ export default function App() {
 
     const isLogin = authMode === "login";
     return (
-      <div style={{ position: "fixed", inset: 0, display: "flex", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", overflow: "hidden", background: "#f8fafc" }}>
+      <div style={{ position: "fixed", inset: 0, display: "flex", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", overflow: "hidden", background: theme === "dark" ? "#090d16" : "#f8fafc" }}>
+        <div style={{ position: "absolute", top: 16, right: 20, zIndex: 10 }}>
+          {themeToggleBtn}
+        </div>
         {/* ── Background ── */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,#f8fafc 0%,#f8fafc 40%,#f8fafc 100%)", zIndex: 0 }}>
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(#1f6feb08 1px,transparent 1px),linear-gradient(90deg,#1f6feb08 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
+        <div style={{ position: "absolute", inset: 0, background: theme === "dark" ? "linear-gradient(135deg, #090d16 0%, #0d1524 40%, #090d16 100%)" : "linear-gradient(135deg,#f8fafc 0%,#f8fafc 40%,#f8fafc 100%)", zIndex: 0 }}>
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${theme === "dark" ? "rgba(59,130,246,0.06)" : "#1f6feb08"} 1px,transparent 1px),linear-gradient(90deg,${theme === "dark" ? "rgba(59,130,246,0.06)" : "#1f6feb08"} 1px,transparent 1px)`, backgroundSize: "48px 48px" }} />
           <div style={{ position: "absolute", top: "15%", left: "20%", width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle,#1f6feb14 0%,transparent 70%)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", bottom: "20%", right: "30%", width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle,#15803d12 0%,transparent 70%)", pointerEvents: "none" }} />
         </div>
@@ -1833,136 +1910,145 @@ export default function App() {
         {/* ── Left brand panel ── */}
         <div style={{ flex: "0 0 52%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "60px 48px 60px 60px", position: "relative", zIndex: 1, overflow: "hidden" }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 40 }}>
-              <div style={{ width: 42, height: 42, background: "linear-gradient(135deg,#1f6feb,#388bfd)", borderRadius: 11, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#fff", fontWeight: 700, boxShadow: "0 4px 20px #1d4ed840" }}>⊛</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
+              <div style={{ width: 40, height: 40, background: "#2563eb", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, color: "#ffffff", fontWeight: 700, boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)" }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2 3 7v10l9 5 9-5V7z" /><path d="M12 22V12M3 7l9 5 9-5" />
+                </svg>
+              </div>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.3px" }}>CFO Back Office</div>
-                <div style={{ fontSize: 12, color: "#1d4ed8" }}>EzCoworker AI Platform</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: theme === "dark" ? "#f8fafc" : "#0f172a", letterSpacing: "-0.2px" }}>CFO Back Office</div>
+                <div style={{ fontSize: 12, color: "#2563eb", fontWeight: 500 }}>EzCoworker AI Platform</div>
               </div>
             </div>
-            <div style={{ fontSize: 38, fontWeight: 800, color: "#1e293b", lineHeight: 1.15, letterSpacing: "-1px", marginBottom: 18, textAlign: "left" }}>
-              AI-powered finance,<br /><span style={{ background: "linear-gradient(90deg,#1f6feb,#15803d)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>built for CFOs.</span>
+            <div style={{ fontSize: 34, fontWeight: 800, color: theme === "dark" ? "#f8fafc" : "#0f172a", lineHeight: 1.2, letterSpacing: "-0.6px", marginBottom: 16, textAlign: "left" }}>
+              AI-powered finance,<br /><span style={{ color: "#2563eb" }}>built for CFOs.</span>
             </div>
-            <div style={{ fontSize: 14, color: "#64748b", lineHeight: 1.7, marginBottom: 40, textAlign: "left" }}>14 agentic finance modules — GST, TDS, AP/AR, reconciliation, close orchestration, and more. All policy-driven. All auditable.</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ fontSize: 14, color: theme === "dark" ? "#94a3b8" : "#475569", lineHeight: 1.6, marginBottom: 36, textAlign: "left", maxWidth: 480 }}>
+              14 agentic finance modules — GST, TDS, AP/AR, reconciliation, close orchestration, and more. All policy-driven. All auditable.
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                { icon: "₹", color: "#b45309", text: "GST & TDS compliance agents" },
-                { icon: "⟳", color: "#047857", text: "Autonomous month-end close" },
-                { icon: "∿", color: "#1d4ed8", text: "Real-time P&L and cash forecasting" },
-                { icon: "⊛", color: "#6d28d9", text: "Policy-governed agent orchestration" },
+                { icon: "₹", color: "#b45309", bg: theme === "dark" ? "rgba(245,158,11,0.15)" : "#fffbeb", border: theme === "dark" ? "rgba(245,158,11,0.3)" : "#fde68a", text: "GST & TDS compliance agents" },
+                { icon: "⟳", color: "#047857", bg: theme === "dark" ? "rgba(16,185,129,0.15)" : "#ecfdf5", border: theme === "dark" ? "rgba(16,185,129,0.3)" : "#a7f3d0", text: "Autonomous month-end close" },
+                { icon: "∿", color: "#2563eb", bg: theme === "dark" ? "rgba(37,99,235,0.15)" : "#eff6ff", border: theme === "dark" ? "rgba(37,99,235,0.3)" : "#bfdbfe", text: "Real-time P&L and cash forecasting" },
+                { icon: "🛡️", color: "#6d28d9", bg: theme === "dark" ? "rgba(139,92,246,0.15)" : "#f5f3ff", border: theme === "dark" ? "rgba(139,92,246,0.3)" : "#ddd6fe", text: "Policy-governed agent orchestration" },
               ].map(f => (
-                <div key={f.text} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${f.color}18`, border: `1px solid ${f.color}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: f.color, flexShrink: 0 }}>{f.icon}</div>
-                  <span style={{ fontSize: 13, color: "#475569" }}>{f.text}</span>
+                <div key={f.text} style={{ display: "flex", alignItems: "center", gap: 12, background: theme === "dark" ? "#131c2e" : "#ffffff", padding: "10px 14px", borderRadius: 8, border: `1px solid ${theme === "dark" ? "#1e293b" : "#e2e8f0"}`, boxShadow: "0 1px 2px rgba(15, 23, 42, 0.03)", maxWidth: 460 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 6, background: f.bg, border: `1px solid ${f.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: f.color, flexShrink: 0, fontWeight: 700 }}>{f.icon}</div>
+                  <span style={{ fontSize: 12.5, color: theme === "dark" ? "#cbd5e1" : "#334155", fontWeight: 500 }}>{f.text}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* ── Right auth panel — 48%, card anchored to left of this column ── */}
+        {/* ── Right auth panel ── */}
         <div style={{ flex: "0 0 48%", display: "flex", alignItems: "center", justifyContent: "flex-start", padding: "24px 32px 24px 16px", position: "relative", zIndex: 1, overflow: "hidden" }}>
-          <div style={{ width: "100%", maxWidth: 420, background: "rgba(255,255,255,0.97)", border: "1px solid #e2e8f0", borderRadius: 16, padding: "36px 34px", boxShadow: "0 24px 80px rgba(0,0,0,0.5),0 0 0 1px #cbd5e122", backdropFilter: "blur(12px)" }}>
+          <div style={{ width: "100%", maxWidth: 400, background: theme === "dark" ? "#131c2e" : "#ffffff", border: `1px solid ${theme === "dark" ? "#1e293b" : "#e2e8f0"}`, borderRadius: 12, padding: "32px 30px", boxShadow: "0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04)" }}>
 
             {/* Card header */}
-            <div style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.5px", marginBottom: 6 }}>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: theme === "dark" ? "#f8fafc" : "#0f172a", letterSpacing: "-0.3px", marginBottom: 4 }}>
                 {isLogin ? "Welcome back" : "Create your account"}
               </div>
-              <div style={{ fontSize: 13, color: "#64748b" }}>
+              <div style={{ fontSize: 13, color: theme === "dark" ? "#94a3b8" : "#64748b" }}>
                 {isLogin ? "Sign in to your CFO Back Office workspace." : "Join EzCoworker — set up your finance workspace."}
               </div>
             </div>
 
             {/* Tab switcher */}
-            <div style={{ display: "flex", background: "#f8fafc", borderRadius: 9, padding: 3, marginBottom: 24, border: "1px solid #e2e8f0" }}>
+            <div style={{ display: "flex", background: theme === "dark" ? "#0d1524" : "#f1f5f9", borderRadius: 8, padding: 3, marginBottom: 20, border: `1px solid ${theme === "dark" ? "#1e293b" : "#e2e8f0"}` }}>
               {["login", "register"].map(mode => (
                 <button key={mode} onClick={() => { setAuthMode(mode); setAuthError(""); }}
-                  style={{ flex: 1, padding: "7px 0", borderRadius: 7, border: "none", background: authMode === mode ? "#ffffff" : "transparent", color: authMode === mode ? "#1e293b" : "#64748b", fontSize: 13, fontWeight: authMode === mode ? 600 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all .2s", boxShadow: authMode === mode ? "0 1px 6px rgba(0,0,0,0.4)" : "none" }}>
+                  style={{ flex: 1, padding: "7px 0", borderRadius: 6, border: "none", background: authMode === mode ? (theme === "dark" ? "#1e293b" : "#ffffff") : "transparent", color: authMode === mode ? (theme === "dark" ? "#f8fafc" : "#0f172a") : (theme === "dark" ? "#94a3b8" : "#64748b"), fontSize: 13, fontWeight: authMode === mode ? 600 : 500, cursor: "pointer", fontFamily: "inherit", transition: "all .15s ease", boxShadow: authMode === mode ? "0 1px 3px rgba(15, 23, 42, 0.08)" : "none" }}>
                   {mode === "login" ? "Sign In" : "Register"}
                 </button>
               ))}
             </div>
 
-            {/* Error / success banners */}
+            {/* Error banner */}
             {authError && (
-              <div style={{ background: "#dc262614", border: "1px solid #dc262644", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 12, color: "#dc2626", display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <span style={{ flexShrink: 0, marginTop: 1 }}>⚠</span>{authError}
+              <div style={{ background: theme === "dark" ? "rgba(220,38,38,0.15)" : "#fef2f2", border: `1px solid ${theme === "dark" ? "rgba(220,38,38,0.35)" : "#fecaca"}`, borderRadius: 8, padding: "10px 12px", marginBottom: 16, fontSize: 12.5, color: theme === "dark" ? "#fca5a5" : "#b91c1c", display: "flex", gap: 8, alignItems: "flex-start" }}>
+                <span style={{ flexShrink: 0, marginTop: 1 }}>⚠</span>
+                <span>{authError}</span>
               </div>
             )}
+
             {/* Form fields */}
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {!isLogin && (
                 <div>
-                  <label style={{ fontSize: 11, fontWeight: 600, color: "#64748b", display: "block", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>Full Name</label>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: theme === "dark" ? "#cbd5e1" : "#334155", display: "block", marginBottom: 5 }}>Full Name</label>
                   <input value={authName} onChange={e => { setAuthName(e.target.value); setAuthError(""); }}
                     onKeyDown={e => { if (e.key === "Enter") handleRegister(); }}
                     placeholder="e.g. Kritika Sharma"
-                    style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
-                    onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
+                    style={{ width: "100%", background: theme === "dark" ? "#0d1524" : "#ffffff", border: `1px solid ${theme === "dark" ? "#1e293b" : "#cbd5e1"}`, borderRadius: 8, padding: "9px 12px", color: theme === "dark" ? "#f8fafc" : "#0f172a", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s, box-shadow .15s" }}
+                    onFocus={e => { e.target.style.borderColor = "#2563eb"; e.target.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.12)"; }}
+                    onBlur={e => { e.target.style.borderColor = theme === "dark" ? "#1e293b" : "#cbd5e1"; e.target.style.boxShadow = "none"; }} />
                 </div>
               )}
 
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#64748b", display: "block", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>Work Email</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: theme === "dark" ? "#cbd5e1" : "#334155", display: "block", marginBottom: 5 }}>Work Email</label>
                 <input value={authEmail} onChange={e => { setAuthEmail(e.target.value); setAuthError(""); }}
                   onKeyDown={e => { if (e.key === "Enter") { isLogin ? handleLogin() : handleRegister(); } }}
                   placeholder="you@company.com" type="email" autoComplete="username"
-                  style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
-                  onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
+                  style={{ width: "100%", background: theme === "dark" ? "#0d1524" : "#ffffff", border: `1px solid ${theme === "dark" ? "#1e293b" : "#cbd5e1"}`, borderRadius: 8, padding: "9px 12px", color: theme === "dark" ? "#f8fafc" : "#0f172a", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s, box-shadow .15s" }}
+                  onFocus={e => { e.target.style.borderColor = "#2563eb"; e.target.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.12)"; }}
+                  onBlur={e => { e.target.style.borderColor = theme === "dark" ? "#1e293b" : "#cbd5e1"; e.target.style.boxShadow = "none"; }} />
               </div>
 
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#64748b", display: "block", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>Password</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: theme === "dark" ? "#cbd5e1" : "#334155", display: "block", marginBottom: 5 }}>Password</label>
                 <div style={{ position: "relative" }}>
                   <input value={authPassword} onChange={e => { setAuthPassword(e.target.value); setAuthError(""); }}
                     onKeyDown={e => { if (e.key === "Enter") { isLogin ? handleLogin() : handleRegister(); } }}
                     type={showAuthPwd ? "text" : "password"} placeholder={isLogin ? "Enter your password" : "At least 12 characters"}
                     autoComplete={isLogin ? "current-password" : "new-password"} maxLength={128}
-                    style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 42px 10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
-                    onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
+                    style={{ width: "100%", background: theme === "dark" ? "#0d1524" : "#ffffff", border: `1px solid ${theme === "dark" ? "#1e293b" : "#cbd5e1"}`, borderRadius: 8, padding: "9px 38px 9px 12px", color: theme === "dark" ? "#f8fafc" : "#0f172a", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s, box-shadow .15s" }}
+                    onFocus={e => { e.target.style.borderColor = "#2563eb"; e.target.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.12)"; }}
+                    onBlur={e => { e.target.style.borderColor = theme === "dark" ? "#1e293b" : "#cbd5e1"; e.target.style.boxShadow = "none"; }} />
                   <button onClick={() => setShowAuthPwd(v => !v)}
-                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1 }}>
+                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 13, padding: 0, lineHeight: 1 }}>
                     {showAuthPwd ? "🙈" : "👁"}
                   </button>
                 </div>
-                {!isLogin && <div style={{ fontSize: 11, color: "#64748b", marginTop: 5 }}>Use at least 12 characters. Your password is securely hashed on the server.</div>}
+                {!isLogin && <div style={{ fontSize: 11, color: theme === "dark" ? "#94a3b8" : "#64748b", marginTop: 4 }}>Use at least 12 characters. Your password is securely hashed on the server.</div>}
               </div>
 
               {!isLogin && (
-                <>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 600, color: "#64748b", display: "block", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>Confirm Password</label>
-                    <input value={authConfirm} onChange={e => { setAuthConfirm(e.target.value); setAuthError(""); }}
-                      onKeyDown={e => { if (e.key === "Enter") handleRegister(); }}
-                      type={showAuthPwd ? "text" : "password"} placeholder="Re-enter password"
-                      autoComplete="new-password" maxLength={128}
-                      style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
-                      onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
-                  </div>
-                </>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: theme === "dark" ? "#cbd5e1" : "#334155", display: "block", marginBottom: 5 }}>Confirm Password</label>
+                  <input value={authConfirm} onChange={e => { setAuthConfirm(e.target.value); setAuthError(""); }}
+                    onKeyDown={e => { if (e.key === "Enter") handleRegister(); }}
+                    type={showAuthPwd ? "text" : "password"} placeholder="Re-enter password"
+                    autoComplete="new-password" maxLength={128}
+                    style={{ width: "100%", background: theme === "dark" ? "#0d1524" : "#ffffff", border: `1px solid ${theme === "dark" ? "#1e293b" : "#cbd5e1"}`, borderRadius: 8, padding: "9px 12px", color: theme === "dark" ? "#f8fafc" : "#0f172a", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s, box-shadow .15s" }}
+                    onFocus={e => { e.target.style.borderColor = "#2563eb"; e.target.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.12)"; }}
+                    onBlur={e => { e.target.style.borderColor = theme === "dark" ? "#1e293b" : "#cbd5e1"; e.target.style.boxShadow = "none"; }} />
+                </div>
               )}
 
               <button onClick={isLogin ? handleLogin : handleRegister}
                 disabled={authSubmitting}
-                style={{ padding: "11px", background: "linear-gradient(135deg,#1f6feb,#388bfd)", border: "none", borderRadius: 8, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: "-0.2px", boxShadow: "0 4px 16px #1d4ed840", transition: "all .2s", marginTop: 4 }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 22px #1d4ed855"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px #1d4ed840"; }}>
-                {authSubmitting ? "Please wait…" : isLogin ? "Sign In →" : "Create Account →"}
+                style={{ padding: "10px", background: "#2563eb", border: "none", borderRadius: 8, color: "#ffffff", fontSize: 13.5, fontWeight: 600, cursor: authSubmitting ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: "0 1px 3px rgba(37, 99, 235, 0.3)", transition: "all .15s ease", marginTop: 4 }}
+                onMouseEnter={e => { if (!authSubmitting) e.currentTarget.style.background = "#1d4ed8"; }}
+                onMouseLeave={e => { if (!authSubmitting) e.currentTarget.style.background = "#2563eb"; }}>
+                {authSubmitting ? "Authenticating…" : isLogin ? "Sign In" : "Create Account"}
               </button>
             </div>
 
             {/* Footer hint */}
-            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid #e2e8f022", textAlign: "center" }}>
-              <span style={{ fontSize: 12, color: "#64748b" }}>
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${theme === "dark" ? "#1e293b" : "#f1f5f9"}`, textAlign: "center" }}>
+              <span style={{ fontSize: 12.5, color: theme === "dark" ? "#94a3b8" : "#64748b" }}>
+                {isLogin ? "Need an account? " : "Already have an account? "}
               </span>
               <button onClick={() => { setAuthMode(isLogin ? "register" : "login"); setAuthError(""); }}
-                style={{ background: "none", border: "none", color: "#1d4ed8", cursor: "pointer", fontSize: 12, fontFamily: "inherit", fontWeight: 600, padding: 0 }}>
+                style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontSize: 12.5, fontFamily: "inherit", fontWeight: 600, padding: 0 }}>
                 {isLogin ? "Register here" : "Sign in"}
               </button>
             </div>
-
 
           </div>
         </div>
@@ -1972,7 +2058,7 @@ export default function App() {
 
   // ── RENDER ─────────────────────────────────────────────────────────────────
   return (
-    <div style={{ display: "flex", height: "100vh", width: "100vw", background: "#f8fafc", color: "#1e293b", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", fontSize: 14, overflow: "hidden", position: "fixed", top: 0, left: 0 }}>
+    <div style={{ display: "flex", height: "100vh", width: "100vw", background: "var(--bg-app, #f8fafc)", color: "var(--text-primary, #1e293b)", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", fontSize: 14, overflow: "hidden", position: "fixed", top: 0, left: 0 }}>
 
       {/* ════ LEFT SIDEBAR ════ */}
       <Sidebar
@@ -1987,36 +2073,36 @@ export default function App() {
       />
 
       {/* ════ MAIN AREA ════ */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <div style={{ height: 52, borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", padding: "0 20px", gap: 12, flexShrink: 0, background: "#ffffff" }}>
-          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, background: "var(--bg-app, #f8fafc)" }}>
+        <div style={{ height: 56, borderBottom: "1px solid var(--border-default, #e2e8f0)", display: "flex", alignItems: "center", padding: "0 24px", gap: 16, flexShrink: 0, background: "var(--bg-card, #ffffff)", boxShadow: "0 1px 2px rgba(15, 23, 42, 0.03)" }}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
             {view === "chat" && activeAgent ? (
               <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 7, background: `${activeAgent.color}22`, border: `1px solid ${activeAgent.color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: activeAgent.color, flexShrink: 0, boxShadow: `0 2px 8px ${activeAgent.color}1a` }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: `${activeAgent.color}15`, border: `1px solid ${activeAgent.color}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, color: activeAgent.color, flexShrink: 0 }}>
                   {activeAgent.icon}
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 13.5, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary, #0f172a)", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {activeAgent.name}
                     </span>
-                    <span style={{ fontSize: 9.5, color: activeAgent.color, background: `${activeAgent.color}15`, border: `1px solid ${activeAgent.color}33`, borderRadius: 4, padding: "1px 6px", fontWeight: 600, flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, color: activeAgent.color, background: `${activeAgent.color}12`, border: `1px solid ${activeAgent.color}25`, borderRadius: 4, padding: "1px 7px", fontWeight: 600, flexShrink: 0 }}>
                       {activeAgent.cat}
                     </span>
                   </div>
-                  <div style={{ fontSize: 10.5, color: "#64748b", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div style={{ fontSize: 11, color: "var(--text-muted, #64748b)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     Policies: {activeAgent.policies.join(", ")} · {running ? "Orchestrating ReAct pipeline…" : "Active & ready"}
                   </div>
                 </div>
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 13.5, fontWeight: 600, color: "#1e293b" }}>
-                  {view === "dashboard" ? "CFO Intelligence Platform" : view === "agents" ? "Agent Registry" : view === "scheduler" ? `File Pickup Scheduler · ${SCHED_NAV.find(n => n.key === schedPage)?.label || ""}` : view === "policies" ? "Policy Management" : view === "policy-graph" ? "Policy Knowledge" : "CFO Back Office Co-Worker"}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary, #0f172a)", letterSpacing: "-0.01em" }}>
+                  {view === "dashboard" ? "CFO Intelligence Platform" : view === "agents" ? "Agent Registry" : view === "scheduler" ? `File Pickup Scheduler · ${SCHED_NAV.find(n => n.key === schedPage)?.label || ""}` : view === "policies" ? "Policy Management" : view === "policy-graph" ? "Policy Knowledge Graph" : "CFO Back Office Co-Worker"}
                 </span>
                 {view === "chat" && (
-                  <span style={{ fontSize: 10, color: "#15803d", background: "#15803d15", border: "1px solid #15803d33", borderRadius: 4, padding: "1px 6px", display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#15803d" }} />
+                  <span style={{ fontSize: 10.5, color: "#16a34a", background: theme === "dark" ? "rgba(22, 163, 74, 0.15)" : "#f0fdf4", border: `1px solid ${theme === "dark" ? "rgba(22, 163, 74, 0.3)" : "#bbf7d0"}`, borderRadius: 12, padding: "2px 8px", display: "inline-flex", alignItems: "center", gap: 5, fontWeight: 600 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
                     19 Agents Ready
                   </span>
                 )}
@@ -2026,17 +2112,51 @@ export default function App() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button type="button" onClick={openPolicyGraph} aria-current={view === "policy-graph" ? "page" : undefined}
-              style={{ padding: "5px 11px", background: view === "policy-graph" ? "#eff6ff" : "#f1f5f9", border: `1px solid ${view === "policy-graph" ? "#1d4ed855" : "#cbd5e1"}`, borderRadius: 6, color: view === "policy-graph" ? "#1d4ed8" : "#64748b", fontSize: 11.5, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "all .15s" }}>
+              style={{
+                padding: "6px 12px",
+                background: view === "policy-graph" ? (theme === "dark" ? "rgba(37,99,235,0.2)" : "#eff6ff") : "var(--bg-card, #ffffff)",
+                border: `1px solid ${view === "policy-graph" ? "#2563eb" : "var(--border-default, #e2e8f0)"}`,
+                borderRadius: 7,
+                color: view === "policy-graph" ? "#60a5fa" : "var(--text-secondary, #475569)",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+                transition: "all .15s ease"
+              }}
+              onMouseEnter={e => { if (view !== "policy-graph") { e.currentTarget.style.background = "var(--bg-subtle, #f8fafc)"; e.currentTarget.style.borderColor = "var(--border-strong, #cbd5e1)"; } }}
+              onMouseLeave={e => { if (view !== "policy-graph") { e.currentTarget.style.background = "var(--bg-card, #ffffff)"; e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; } }}>
+              <span style={{ fontSize: 12 }}>🛡️</span>
               Policy Knowledge
             </button>
             {view !== "scheduler" && view !== "agents" && <button onClick={() => setSkillsOpen(v => !v)}
-              style={{ padding: "5px 11px", background: skillsOpen ? "#eff6ff" : "#f1f5f9", border: `1px solid ${skillsOpen ? "#1d4ed855" : "#cbd5e1"}`, borderRadius: 6, color: skillsOpen ? "#1d4ed8" : "#64748b", fontSize: 11.5, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, transition: "all .15s" }}
-              onMouseEnter={e => { if (!skillsOpen) e.currentTarget.style.background = "#e2e8f0"; }}
-              onMouseLeave={e => { if (!skillsOpen) e.currentTarget.style.background = "#f1f5f9"; }}>
+              style={{
+                padding: "6px 12px",
+                background: skillsOpen ? (theme === "dark" ? "rgba(37,99,235,0.2)" : "#eff6ff") : "var(--bg-card, #ffffff)",
+                border: `1px solid ${skillsOpen ? "#2563eb" : "var(--border-default, #e2e8f0)"}`,
+                borderRadius: 7,
+                color: skillsOpen ? "#60a5fa" : "var(--text-secondary, #475569)",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 7,
+                boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+                transition: "all .15s ease"
+              }}
+              onMouseEnter={e => { if (!skillsOpen) { e.currentTarget.style.background = "var(--bg-subtle, #f8fafc)"; e.currentTarget.style.borderColor = "var(--border-strong, #cbd5e1)"; } }}
+              onMouseLeave={e => { if (!skillsOpen) { e.currentTarget.style.background = "var(--bg-card, #ffffff)"; e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; } }}>
               <span>⚡</span>
               <span>CFO Skills</span>
-              <span style={{ background: skillsOpen ? "#1f6feb" : "#cbd5e1", color: "#fff", fontSize: 9.5, padding: "1px 5px", borderRadius: 8, fontWeight: 700 }}>25</span>
+              <span style={{ background: skillsOpen ? "#2563eb" : (theme === "dark" ? "#1e293b" : "#f1f5f9"), color: skillsOpen ? "#ffffff" : (theme === "dark" ? "#cbd5e1" : "#475569"), border: `1px solid ${skillsOpen ? "#2563eb" : (theme === "dark" ? "#334155" : "#cbd5e1")}`, fontSize: 10, padding: "0 5px", borderRadius: 6, fontWeight: 700 }}>25</span>
             </button>}
+            {themeToggleBtn}
           </div>
         </div>
 
@@ -2059,36 +2179,36 @@ export default function App() {
                   <EmptyState onSend={sendMessage} />
                 ) : (
                   <div style={{ maxWidth: 960, width: "100%", margin: "0 auto", padding: "24px 20px 20px", boxSizing: "border-box" }}>
-                    <ChatMessages messages={messages} />
+                    <ChatMessages messages={messages} theme={theme} />
                     <div ref={chatEndRef} />
                   </div>
                 )}
               </div>
 
-              <div style={{ padding: "12px 20px 14px", background: "#ffffff", borderTop: "1px solid #e2e8f0", flexShrink: 0 }}>
+              <div style={{ padding: "14px 24px 16px", background: "var(--bg-card, #ffffff)", borderTop: "1px solid var(--border-default, #e2e8f0)", flexShrink: 0 }}>
                 <div style={{ maxWidth: 960, width: "100%", margin: "0 auto" }}>
                   {uploadedFiles.filter(f => f.status === "queued").length > 0 && (
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10, alignItems: "center" }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 2 }}>Attached Files:</span>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10, alignItems: "center" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary, #475569)", textTransform: "uppercase", letterSpacing: "0.05em", marginRight: 2 }}>Attached Files:</span>
                       {uploadedFiles.filter(f => f.status === "queued").map(f => {
                         const ext = f.name.split('.').pop().toLowerCase();
                         const icon = ext === 'xlsx' || ext === 'xls' ? '📊' : ext === 'csv' ? '📑' : ext === 'pdf' ? '📄' : '📎';
                         const sizeStr = f.size ? `${Math.round(f.size / 1024)} KB` : '';
                         return (
-                          <div key={f.id} style={{ fontSize: 11.5, padding: "3px 9px", background: "#eff6ff", border: "1px solid #1d4ed844", borderRadius: 6, color: "#1e293b", display: "flex", alignItems: "center", gap: 6, boxShadow: "0 1px 4px rgba(0,0,0,0.2)" }}>
+                          <div key={f.id} style={{ fontSize: 11.5, padding: "4px 10px", background: theme === "dark" ? "rgba(37,99,235,0.18)" : "#eff6ff", border: `1px solid ${theme === "dark" ? "rgba(59,130,246,0.3)" : "#bfdbfe"}`, borderRadius: 6, color: theme === "dark" ? "#93c5fd" : "#1e3a8a", display: "flex", alignItems: "center", gap: 6, boxShadow: "0 1px 2px rgba(15,23,42,0.04)" }}>
                             <span>{icon}</span>
-                            <span style={{ fontWeight: 500 }}>{f.name}</span>
-                            {sizeStr && <span style={{ color: "#64748b", fontSize: 10 }}>({sizeStr})</span>}
-                            {f.upload === "uploading" && <span style={{ color: "#a16207", fontSize: 10 }}>uploading…</span>}
-                            {f.upload === "ready" && f.fromWorkspace && <span style={{ color: "#15803d", fontSize: 10 }}>✓ from workspace</span>}
-                            {f.refreshed && <span style={{ color: "#c2410c", fontSize: 10 }} title="The scheduler picked up a newer version after you attached this file">↻ updated to latest version</span>}
-                            {f.upload === "failed" && <span title={f.error} style={{ color: "#dc2626", fontSize: 10 }}>upload failed</span>}
-                            {fileMetas[f.name] && <span style={{ color: "#15803d", fontSize: 10.5, fontWeight: 600, background: "#15803d15", padding: "1px 5px", borderRadius: 3 }}>📅 {fileMetas[f.name].label}</span>}
+                            <span style={{ fontWeight: 600 }}>{f.name}</span>
+                            {sizeStr && <span style={{ color: "var(--text-muted, #64748b)", fontSize: 10.5 }}>({sizeStr})</span>}
+                            {f.upload === "uploading" && <span style={{ color: "#b45309", fontSize: 10.5, fontWeight: 500 }}>uploading…</span>}
+                            {f.upload === "ready" && f.fromWorkspace && <span style={{ color: "#16a34a", fontSize: 10.5, fontWeight: 600 }}>✓ from workspace</span>}
+                            {f.refreshed && <span style={{ color: "#ea580c", fontSize: 10.5, fontWeight: 600 }} title="The scheduler picked up a newer version after you attached this file">↻ updated to latest version</span>}
+                            {f.upload === "failed" && <span title={f.error} style={{ color: "#dc2626", fontSize: 10.5, fontWeight: 600 }}>upload failed</span>}
+                            {fileMetas[f.name] && <span style={{ color: "#16a34a", fontSize: 10.5, fontWeight: 700, background: theme === "dark" ? "rgba(22,163,74,0.2)" : "#dcfce7", padding: "1px 6px", borderRadius: 4 }}>📅 {fileMetas[f.name].label}</span>}
                             <button onClick={() => setUploadedFiles(u => u.filter(x => x.id !== f.id))}
                               title="Remove file"
-                              style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 12, padding: "0 2px", marginLeft: 2, lineHeight: 1 }}
+                              style={{ background: "none", border: "none", color: "var(--text-muted, #64748b)", cursor: "pointer", fontSize: 14, padding: "0 2px", marginLeft: 4, lineHeight: 1 }}
                               onMouseEnter={e => e.currentTarget.style.color = "#dc2626"}
-                              onMouseLeave={e => e.currentTarget.style.color = "#64748b"}>×</button>
+                              onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted, #64748b)"}>×</button>
                           </div>
                         );
                       })}
@@ -2099,51 +2219,67 @@ export default function App() {
                     display: "flex",
                     alignItems: "flex-end",
                     gap: 8,
-                    background: "#f8fafc",
-                    border: running ? "1px solid #b4530955" : "1px solid #cbd5e1",
+                    background: "var(--bg-input, #ffffff)",
+                    border: running ? "1.5px solid #d97706" : "1.5px solid var(--border-strong, #cbd5e1)",
                     borderRadius: 12,
                     padding: "8px 12px",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
-                    transition: "border-color .15s, box-shadow .15s"
+                    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.05)",
+                    transition: "border-color .15s ease, box-shadow .15s ease"
                   }}>
                     <input ref={fileInputRef} type="file" multiple accept=".xlsx,.csv,.pdf,.json,.xls" style={{ display: "none" }} onChange={handleFileUpload} />
                     <button onClick={() => fileInputRef.current?.click()}
                       title="Attach financial file (Excel, CSV, PDF)"
-                      style={{ width: 32, height: 32, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, color: "#475569", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0, transition: "all .15s" }}
-                      onMouseEnter={e => { e.currentTarget.style.background = "#e2e8f0"; e.currentTarget.style.color = "#1d4ed8"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = "#ffffff"; e.currentTarget.style.color = "#475569"; }}>
+                      style={{ width: 34, height: 34, background: "var(--bg-subtle, #f8fafc)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 8, color: "var(--text-secondary, #475569)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0, transition: "all .15s" }}
+                      onMouseEnter={e => { e.currentTarget.style.background = theme === "dark" ? "rgba(37,99,235,0.2)" : "#eff6ff"; e.currentTarget.style.borderColor = "#bfdbfe"; e.currentTarget.style.color = "#2563eb"; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = "var(--bg-subtle, #f8fafc)"; e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; e.currentTarget.style.color = "var(--text-secondary, #475569)"; }}>
                       📎
                     </button>
                     <div style={{ position: "relative", flexShrink: 0 }}>
                       <button onClick={openPicker}
                         title="Use a file already in the workspace (picked up by the scheduler or uploaded earlier)"
-                        style={{ height: 32, padding: "0 10px", background: pickerOpen ? "#1d4ed822" : "#ffffff", border: "1px solid " + (pickerOpen ? "#1f6feb" : "#e2e8f0"), borderRadius: 8, color: "#475569", cursor: "pointer", fontSize: 12, whiteSpace: "nowrap", transition: "all .15s" }}>🗂 Scanned files</button>
+                        style={{
+                          height: 34,
+                          padding: "0 12px",
+                          background: pickerOpen ? (theme === "dark" ? "rgba(37,99,235,0.2)" : "#eff6ff") : "var(--bg-subtle, #f8fafc)",
+                          border: "1px solid " + (pickerOpen ? "#2563eb" : "var(--border-default, #e2e8f0)"),
+                          borderRadius: 8,
+                          color: pickerOpen ? "#2563eb" : "var(--text-secondary, #475569)",
+                          cursor: "pointer",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          whiteSpace: "nowrap",
+                          transition: "all .15s"
+                        }}
+                        onMouseEnter={e => { if (!pickerOpen) { e.currentTarget.style.background = theme === "dark" ? "rgba(37,99,235,0.2)" : "#eff6ff"; e.currentTarget.style.borderColor = "#bfdbfe"; e.currentTarget.style.color = "#2563eb"; } }}
+                        onMouseLeave={e => { if (!pickerOpen) { e.currentTarget.style.background = "var(--bg-subtle, #f8fafc)"; e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; e.currentTarget.style.color = "var(--text-secondary, #475569)"; } }}>
+                        🗂 Scanned files
+                      </button>
                       {pickerOpen && (
-                        <div style={{ position: "absolute", bottom: 40, left: 0, width: 380, maxHeight: 340, display: "flex", flexDirection: "column", background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: 8, boxShadow: "0 8px 24px #000a", zIndex: 50 }}>
-                          <div style={{ padding: "8px 10px", borderBottom: "1px solid #e2e8f0", display: "flex", gap: 6 }}>
+                        <div style={{ position: "absolute", bottom: 44, left: 0, width: 380, maxHeight: 340, display: "flex", flexDirection: "column", background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, boxShadow: "0 10px 25px -5px rgba(15,23,42,0.12), 0 8px 10px -6px rgba(15,23,42,0.08)", zIndex: 50 }}>
+                          <div style={{ padding: "10px 12px", borderBottom: "1px solid var(--border-default, #e2e8f0)", display: "flex", gap: 8, background: "var(--bg-subtle, #f8fafc)", borderRadius: "10px 10px 0 0" }}>
                             <input value={pickerQuery} onChange={e => setPickerQuery(e.target.value)} placeholder="Filter by file name or column…"
-                              style={{ flex: 1, background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 5, color: "#1e293b", fontSize: 11, padding: "4px 7px", outline: "none" }} />
+                              style={{ flex: 1, background: "var(--bg-input, #ffffff)", border: "1px solid var(--border-strong, #cbd5e1)", borderRadius: 6, color: "var(--text-primary, #1e293b)", fontSize: 12, padding: "5px 9px", outline: "none" }} />
                             <button onClick={async () => { setPickerState("loading"); try { setPickerFiles(await FileAPI.list()); setPickerState("idle"); } catch (err) { setPickerState("error"); setPickerError(err.message); } }}
-                              style={{ background: "none", border: "1px solid #cbd5e1", borderRadius: 5, color: "#475569", fontSize: 11, cursor: "pointer", padding: "0 7px" }}>↻</button>
+                              style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-strong, #cbd5e1)", borderRadius: 6, color: "var(--text-secondary, #475569)", fontSize: 12, cursor: "pointer", padding: "0 9px", fontWeight: 600 }}>↻</button>
                           </div>
-                          <div style={{ overflowY: "auto", padding: 4 }}>
-                            {pickerState === "loading" && <div style={{ padding: 12, fontSize: 11, color: "#64748b" }}>Loading files…</div>}
-                            {pickerState === "error" && <div style={{ padding: 12, fontSize: 11, color: "#dc2626" }}>Could not load files: {pickerError}</div>}
-                            {pickerState === "idle" && pickerFiles.length === 0 && <div style={{ padding: 12, fontSize: 11, color: "#64748b" }}>No files in the workspace yet. Trigger a scan in Scheduler, or attach a file with 📎.</div>}
+                          <div style={{ overflowY: "auto", padding: 6 }}>
+                            {pickerState === "loading" && <div style={{ padding: 14, fontSize: 12, color: "var(--text-muted, #64748b)" }}>Loading files…</div>}
+                            {pickerState === "error" && <div style={{ padding: 14, fontSize: 12, color: "#dc2626" }}>Could not load files: {pickerError}</div>}
+                            {pickerState === "idle" && pickerFiles.length === 0 && <div style={{ padding: 14, fontSize: 12, color: "var(--text-muted, #64748b)" }}>No files in the workspace yet. Trigger a scan in Scheduler, or attach a file with 📎.</div>}
                             {pickerState === "idle" && pickerFiles
                               .filter(f => { const q = pickerQuery.toLowerCase().trim(); return !q || f.name.toLowerCase().includes(q) || (f.columns || []).some(c => c.toLowerCase().includes(q)); })
                               .map(f => (
                                 <div key={f.name} onClick={() => pickWorkspaceFile(f)}
-                                  style={{ padding: "7px 9px", borderRadius: 6, cursor: "pointer", fontSize: 12, color: "#1e293b" }}
-                                  onMouseEnter={e => e.currentTarget.style.background = "#1d4ed822"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                                  style={{ padding: "8px 10px", borderRadius: 7, cursor: "pointer", fontSize: 12, color: "var(--text-primary, #0f172a)", transition: "background .12s" }}
+                                  onMouseEnter={e => e.currentTarget.style.background = "var(--bg-subtle, #f1f5f9)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                                     <span style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
-                                    <span style={{ fontSize: 10, color: f.source === "scheduler" ? "#c2410c" : "#1d4ed8", flexShrink: 0 }}>{f.source === "scheduler" ? "scheduler" : "chat"}{f.change ? ` · ${f.change}` : ""}</span>
+                                    <span style={{ fontSize: 10, color: f.source === "scheduler" ? "#ea580c" : "#2563eb", background: f.source === "scheduler" ? "rgba(234, 88, 12, 0.12)" : "rgba(37, 99, 235, 0.12)", border: `1px solid ${f.source === "scheduler" ? "rgba(234, 88, 12, 0.25)" : "rgba(37, 99, 235, 0.25)"}`, padding: "1px 5px", borderRadius: 4, flexShrink: 0, fontWeight: 600 }}>{f.source === "scheduler" ? "scheduler" : "chat"}{f.change ? ` · ${f.change}` : ""}</span>
                                   </div>
-                                  <div style={{ fontSize: 10, color: "#64748b", marginTop: 2 }}>
+                                  <div style={{ fontSize: 11, color: "var(--text-muted, #64748b)", marginTop: 3 }}>
                                     {new Date(f.uploaded_at * 1000).toLocaleString()} · {(f.size / 1024).toFixed(1)} KB{f.date_range?.label ? ` · Period: ${f.date_range.label}` : ""}
                                   </div>
-                                  {f.columns?.length > 0 && <div style={{ fontSize: 10, color: "#64748b", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={f.columns.join(", ")}>Columns: {f.columns.slice(0, 8).join(", ")}{f.columns.length > 8 ? ` +${f.columns.length - 8}` : ""}</div>}
+                                  {f.columns?.length > 0 && <div style={{ fontSize: 10.5, color: "var(--text-muted, #64748b)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={f.columns.join(", ")}>Columns: {f.columns.slice(0, 8).join(", ")}{f.columns.length > 8 ? ` +${f.columns.length - 8}` : ""}</div>}
                                 </div>
                               ))}
                           </div>
@@ -2157,44 +2293,46 @@ export default function App() {
                         background: "transparent",
                         border: "none",
                         outline: "none",
-                        color: "#1e293b",
+                        color: "var(--text-primary, #0f172a)",
                         fontSize: 13.5,
                         fontFamily: "inherit",
                         resize: "none",
                         overflowY: "auto",
                         maxHeight: 140,
                         minHeight: 24,
-                        padding: "5px 4px",
+                        padding: "6px 6px",
                         margin: 0,
                         lineHeight: 1.5
                       }}
                       value={input} onChange={e => setInput(e.target.value)}
                       onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                      placeholder={running ? "Agent is processing current task…" : "Ask any finance question, request a GST/TDS review, or prompt an agent workflow…"}
+                      placeholder={running ? "Agent is orchestrating financial task…" : "Ask any finance question, request a GST/TDS review, or prompt an agent workflow…"}
                       disabled={running} />
                     <button onClick={() => sendMessage()}
                       disabled={running || !input.trim()}
                       title="Send message (Enter)"
                       style={{
-                        width: 34,
-                        height: 34,
+                        width: 36,
+                        height: 36,
                         borderRadius: 8,
-                        background: input.trim() && !running ? "linear-gradient(135deg, #1f6feb, #388bfd)" : "#e2e8f0",
+                        background: input.trim() && !running ? "#2563eb" : "#f1f5f9",
                         border: "none",
-                        color: input.trim() && !running ? "#fff" : "#64748b",
+                        color: input.trim() && !running ? "#ffffff" : "#94a3b8",
                         cursor: input.trim() && !running ? "pointer" : "not-allowed",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: 14,
                         flexShrink: 0,
-                        boxShadow: input.trim() && !running ? "0 2px 8px rgba(31,111,235,0.4)" : "none",
+                        boxShadow: input.trim() && !running ? "0 2px 6px rgba(37,99,235,0.3)" : "none",
                         transition: "all .15s"
-                      }}>
+                      }}
+                      onMouseEnter={e => { if (input.trim() && !running) e.currentTarget.style.background = "#1d4ed8"; }}
+                      onMouseLeave={e => { if (input.trim() && !running) e.currentTarget.style.background = "#2563eb"; }}>
                       {running ? (
                         <span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⟳</span>
                       ) : (
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="22" y1="2" x2="11" y2="13" />
                           <polygon points="22 2 15 22 11 13 2 9 22 2" />
                         </svg>
@@ -2202,10 +2340,10 @@ export default function App() {
                     </button>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 10.5, color: "#64748b", marginTop: 6, padding: "0 4px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 11, color: "var(--text-muted, #64748b)", marginTop: 8, padding: "0 4px" }}>
                     <span><strong>↵ Enter</strong> to send · <strong>⇧ Shift+Enter</strong> for newline</span>
-                    <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#15803d" }} />
+                    <span style={{ display: "flex", alignItems: "center", gap: 5, color: "var(--text-secondary, #475569)" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
                       Autonomous Agent Routing & Policy Engine Active
                     </span>
                   </div>
@@ -2216,8 +2354,8 @@ export default function App() {
 
           {/* ════ RIGHT SKILLS PANEL ════ */}
           {skillsOpen && view !== "scheduler" && (
-            <div style={{ width: 240, background: "#f8fafc", borderLeft: "1px solid #e2e8f0", display: "flex", flexDirection: "column", flexShrink: 0 }}>
-              <div style={{ padding: "10px 12px 9px", borderBottom: "1px solid #e2e8f0", background: "#ffffff" }}>
+            <div style={{ width: 240, background: "var(--bg-subtle, #f8fafc)", borderLeft: "1px solid var(--border-default, #e2e8f0)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
+              <div style={{ padding: "10px 12px 9px", borderBottom: "1px solid var(--border-default, #e2e8f0)", background: "var(--bg-card, #ffffff)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span style={{ fontSize: 11, color: "#c2410c" }}>⚙</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: "#c2410c", letterSpacing: "0.04em" }}>⚡ CFO Skills</span>
@@ -2225,7 +2363,7 @@ export default function App() {
                     {CFO_SKILL_CATEGORIES.reduce((a, c) => a + c.count, 0)}
                   </span>
                 </div>
-                <div style={{ fontSize: 10, color: "#64748b", marginTop: 5, lineHeight: 1.4 }}>Click any skill to pre-fill a query</div>
+                <div style={{ fontSize: 10, color: "var(--text-muted, #64748b)", marginTop: 5, lineHeight: 1.4 }}>Click any skill to pre-fill a query</div>
               </div>
               <div style={{ flex: 1, overflowY: "auto", padding: "4px 0" }}>
                 {CFO_SKILL_CATEGORIES.map(cat => {
@@ -2234,22 +2372,22 @@ export default function App() {
                     <div key={cat.label}>
                       <div onClick={() => setExpandedCat(isExp ? null : cat.label)}
                         style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", cursor: "pointer", transition: "background .1s" }}
-                        onMouseEnter={e => e.currentTarget.style.background = "#ffffff"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                        <span style={{ fontSize: 10, color: "#64748b", flexShrink: 0 }}>{isExp ? "▼" : "▶"}</span>
+                        onMouseEnter={e => e.currentTarget.style.background = "var(--bg-card, #ffffff)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                        <span style={{ fontSize: 10, color: "var(--text-muted, #64748b)", flexShrink: 0 }}>{isExp ? "▼" : "▶"}</span>
                         <span style={{ fontSize: 10, color: cat.color, marginRight: 4 }}>{cat.icon}</span>
                         <span style={{ fontSize: 11, fontWeight: 600, color: "#c2410c", flex: 1, letterSpacing: "0.04em", textTransform: "uppercase" }}>{cat.label}</span>
-                        <span style={{ fontSize: 10, color: "#64748b" }}>{cat.count}/{cat.total}</span>
+                        <span style={{ fontSize: 10, color: "var(--text-muted, #64748b)" }}>{cat.count}/{cat.total}</span>
                         <div style={{ width: 32, height: 16, borderRadius: 8, background: "#1f6feb", position: "relative", flexShrink: 0 }}>
                           <div style={{ position: "absolute", width: 12, height: 12, borderRadius: "50%", background: "#fff", top: 2, left: 18, transition: "left .2s" }} />
                         </div>
                       </div>
                       {isExp && (
-                        <div style={{ padding: "2px 12px 8px 28px", background: "#f8fafc" }}>
+                        <div style={{ padding: "2px 12px 8px 28px", background: "var(--bg-subtle, #f8fafc)" }}>
                           {cat.skills.map(sk => (
                             <div key={sk.name} onClick={() => onSkillClick(sk)}
-                              style={{ fontSize: 11, color: "#475569", padding: "4px 6px", borderBottom: "1px solid #e2e8f022", cursor: "pointer", borderRadius: 4, transition: "all .1s", display: "flex", alignItems: "center", gap: 5 }}
-                              onMouseEnter={e => { e.currentTarget.style.color = "#1d4ed8"; e.currentTarget.style.background = "#1d4ed811"; }}
-                              onMouseLeave={e => { e.currentTarget.style.color = "#475569"; e.currentTarget.style.background = "transparent"; }}>
+                              style={{ fontSize: 11, color: "var(--text-secondary, #475569)", padding: "4px 6px", borderBottom: "1px solid var(--border-default, #e2e8f022)", cursor: "pointer", borderRadius: 4, transition: "all .1s", display: "flex", alignItems: "center", gap: 5 }}
+                              onMouseEnter={e => { e.currentTarget.style.color = "#2563eb"; e.currentTarget.style.background = "var(--primary-subtle, rgba(37,99,235,0.12))"; }}
+                              onMouseLeave={e => { e.currentTarget.style.color = "var(--text-secondary, #475569)"; e.currentTarget.style.background = "transparent"; }}>
                               <span style={{ color: cat.color, fontSize: 10 }}>⚡</span> {sk.name}
                             </div>
                           ))}
@@ -2280,17 +2418,17 @@ export default function App() {
 // ─── CONFIRM MODAL ────────────────────────────────────────────────────────────
 function ConfirmModal({ title, body, onConfirm, onCancel, confirmLabel, danger }) {
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
-      <div style={{ width: "min(400px,90vw)", background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: 12, boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
-        <div style={{ padding: "18px 20px", borderBottom: "1px solid #e2e8f0" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{title}</div>
-          <div style={{ fontSize: 13, color: "#475569", marginTop: 6 }}>{body}</div>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(15, 23, 42, 0.55)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+      <div style={{ width: "min(420px, 92vw)", background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 14, boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1)", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-default, #f1f5f9)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary, #0f172a)" }}>{title}</div>
+          <div style={{ fontSize: 13, color: "var(--text-secondary, #475569)", marginTop: 6, lineHeight: 1.5 }}>{body}</div>
         </div>
-        <div style={{ padding: "16px 20px", display: "flex", gap: 10, justifyContent: "flex-end" }}>
-          <button onClick={onCancel} style={{ padding: "6px 12px", background: "#e2e8f0", border: "1px solid #cbd5e1", borderRadius: 6, color: "#1e293b", cursor: "pointer", fontSize: 13, fontWeight: 500 }}
-            onMouseEnter={e => e.currentTarget.style.background = "#cbd5e1"} onMouseLeave={e => e.currentTarget.style.background = "#e2e8f0"}>Cancel</button>
-          <button onClick={onConfirm} style={{ padding: "6px 12px", background: danger ? "#dc2626" : "#1f6feb", border: "none", borderRadius: 6, color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 500 }}
-            onMouseEnter={e => e.currentTarget.style.opacity = "0.85"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>{confirmLabel}</button>
+        <div style={{ padding: "14px 20px", display: "flex", gap: 10, justifyContent: "flex-end", background: "var(--bg-subtle, #f8fafc)" }}>
+          <button onClick={onCancel} style={{ padding: "7px 14px", background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-strong, #cbd5e1)", borderRadius: 7, color: "var(--text-secondary, #334155)", cursor: "pointer", fontSize: 13, fontWeight: 600, transition: "background .15s" }}
+            onMouseEnter={e => e.currentTarget.style.background = "var(--bg-subtle, #f1f5f9)"} onMouseLeave={e => e.currentTarget.style.background = "var(--bg-card, #ffffff)"}>Cancel</button>
+          <button onClick={onConfirm} style={{ padding: "7px 14px", background: danger ? "#dc2626" : "#2563eb", border: "none", borderRadius: 7, color: "#ffffff", cursor: "pointer", fontSize: 13, fontWeight: 600, boxShadow: danger ? "0 2px 6px rgba(220,38,38,0.3)" : "0 2px 6px rgba(37,99,235,0.3)", transition: "opacity .15s" }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>{confirmLabel}</button>
         </div>
       </div>
     </div>
@@ -2321,7 +2459,7 @@ function EmptyState({ onSend }) {
     {
       cat: "Reporting & Treasury",
       icon: "∿",
-      color: "#1d4ed8",
+      color: "#2563eb",
       items: [
         { label: "Calculate gross margin by month", desc: "P&L variance analysis, revenue trends & COGS breakdown", policy: "POL-005" },
         { label: "Build 13-week cash forecast", desc: "Project liquidity from AP/AR aging & recurring payroll", policy: "POL-007" }
@@ -2330,82 +2468,83 @@ function EmptyState({ onSend }) {
   ];
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", maxWidth: 840, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", maxWidth: 880, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
       {/* Brand Hero */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg, #1f6feb 0%, #388bfd 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#fff", fontWeight: 800, boxShadow: "0 4px 20px rgba(31,111,235,0.4)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#fff", fontWeight: 800, boxShadow: "0 4px 14px rgba(37,99,235,0.3)" }}>
           ⊛
         </div>
         <div>
-          <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#1d4ed8" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb" }}>
             EzCoworker Execution Fabric
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.4px", margin: 0 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: "var(--text-primary, #0f172a)", letterSpacing: "-0.02em", margin: 0 }}>
             CFO Autonomous Finance Co-Worker
           </h2>
         </div>
       </div>
 
-      <p style={{ fontSize: 13, color: "#64748b", textAlign: "center", maxWidth: 560, lineHeight: 1.6, marginBottom: 24 }}>
+      <p style={{ fontSize: 13.5, color: "var(--text-muted, #64748b)", textAlign: "center", maxWidth: 580, lineHeight: 1.6, marginBottom: 28 }}>
         Ask any finance query in natural language or attach an Excel/CSV spreadsheet.
         Specialist agents autonomously execute ReAct loops governed by active compliance policies.
       </p>
 
       {/* Feature Guidance Strip */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, width: "100%", marginBottom: 28 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12, width: "100%", marginBottom: 32 }}>
         {[
           { icon: "💬", title: "Natural Language", desc: "Type queries directly — auto-routed to specialists" },
           { icon: "📊", title: "Spreadsheet Parser", desc: "In-browser SheetJS parses dates, period & COGS" },
           { icon: "⚡", title: "25 CFO Skills", desc: "Click any skill in right panel to pre-fill query" },
           { icon: "🛡️", title: "Policy Guardrails", desc: "Outputs verified against POL-001 to POL-008" }
         ].map(card => (
-          <div key={card.title} style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px", transition: "border-color .15s" }}>
-            <div style={{ fontSize: 18, marginBottom: 6 }}>{card.icon}</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: "#1e293b", marginBottom: 2 }}>{card.title}</div>
-            <div style={{ fontSize: 10.5, color: "#64748b", lineHeight: 1.4 }}>{card.desc}</div>
+          <div key={card.title} style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, padding: "14px 16px", boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)", transition: "all .15s ease" }}>
+            <div style={{ fontSize: 20, marginBottom: 8 }}>{card.icon}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary, #0f172a)", marginBottom: 4 }}>{card.title}</div>
+            <div style={{ fontSize: 11.5, color: "var(--text-muted, #64748b)", lineHeight: 1.45 }}>{card.desc}</div>
           </div>
         ))}
       </div>
 
       {/* Workflow Suggestions */}
       <div style={{ width: "100%" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#64748b", marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted, #475569)", marginBottom: 12 }}>
           Suggested Financial Workflows
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
           {categories.flatMap(cat => cat.items.map(item => (
             <div key={item.label} onClick={() => onSend(item.label)}
               style={{
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
+                background: "var(--bg-card, #ffffff)",
+                border: "1px solid var(--border-default, #e2e8f0)",
                 borderRadius: 10,
-                padding: "12px 14px",
+                padding: "14px 16px",
                 cursor: "pointer",
                 textAlign: "left",
-                transition: "all .15s",
+                boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
+                transition: "all .15s ease",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 position: "relative",
                 overflow: "hidden"
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = "#f1f5f9"; e.currentTarget.style.borderColor = "#1f6feb"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "#ffffff"; e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.transform = "translateY(0)"; }}>
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#2563eb"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(37,99,235,0.08)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; e.currentTarget.style.boxShadow = "0 1px 3px rgba(15, 23, 42, 0.04)"; e.currentTarget.style.transform = "translateY(0)"; }}>
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: cat.color, background: `${cat.color}15`, padding: "1px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: cat.color, background: `${cat.color}12`, border: `1px solid ${cat.color}25`, padding: "1px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {cat.icon} {cat.cat}
                   </span>
-                  <span style={{ fontSize: 9.5, color: "#64748b", fontFamily: "var(--mono, monospace)" }}>{item.policy}</span>
+                  <span style={{ fontSize: 10, color: "var(--text-muted, #64748b)", fontFamily: "var(--mono, monospace)", fontWeight: 600 }}>{item.policy}</span>
                 </div>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: "#1e293b", lineHeight: 1.4, marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary, #0f172a)", lineHeight: 1.4, marginBottom: 4 }}>
                   {item.label}
                 </div>
-                <div style={{ fontSize: 11, color: "#64748b", lineHeight: 1.4 }}>
+                <div style={{ fontSize: 11.5, color: "var(--text-muted, #64748b)", lineHeight: 1.45 }}>
                   {item.desc}
                 </div>
               </div>
-              <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "#1d4ed8", fontWeight: 500 }}>
+              <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 5, fontSize: 11.5, color: "#2563eb", fontWeight: 600 }}>
                 <span>Run workflow</span>
                 <span>→</span>
               </div>
@@ -2418,7 +2557,8 @@ function EmptyState({ onSend }) {
 }
 
 // ─── CHAT MESSAGES ────────────────────────────────────────────────────────────
-function ChatMessages({ messages }) {
+function ChatMessages({ messages, theme: themeProp }) {
+  const theme = themeProp || (typeof document !== "undefined" ? document.documentElement.getAttribute("data-theme") : "light") || "light";
   const [copiedIdx, setCopiedIdx] = useState(null);
   const [expandedPipes, setExpandedPipes] = useState({});
 
@@ -2444,11 +2584,11 @@ function ChatMessages({ messages }) {
             <div key={i} style={{ display: "flex", justifyContent: "center", margin: "4px 0" }}>
               <div style={{
                 fontSize: 11,
-                color: "#64748b",
+                color: "var(--text-muted, #64748b)",
                 padding: "5px 14px",
-                background: "#ffffff",
+                background: "var(--bg-card, #ffffff)",
                 borderRadius: 20,
-                border: "1px solid #e2e8f0",
+                border: "1px solid var(--border-default, #e2e8f0)",
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
@@ -2467,14 +2607,13 @@ function ChatMessages({ messages }) {
             <div key={i} style={{ display: "flex", justifyContent: "flex-end", gap: 10, alignItems: "flex-start" }}>
               <div style={{ maxWidth: "78%" }}>
                 <div style={{
-                  background: "linear-gradient(135deg, #1f6feb 0%, #1d4ed8 100%)",
+                  background: "#2563eb",
                   borderRadius: "16px 16px 4px 16px",
-                  padding: "11px 16px",
+                  padding: "12px 18px",
                   fontSize: 13.5,
                   color: "#ffffff",
                   lineHeight: 1.6,
-                  boxShadow: "0 3px 12px rgba(31,111,235,0.28)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "0 2px 8px rgba(37,99,235,0.22)",
                   wordBreak: "break-word"
                 }}>
                   {msg.text}
@@ -2484,14 +2623,15 @@ function ChatMessages({ messages }) {
                     {msg.files.map((f, fi) => (
                       <div key={fi} style={{
                         fontSize: 11,
-                        padding: "3px 8px",
-                        background: "#eff6ff",
-                        border: "1px solid #1d4ed855",
+                        padding: "3px 9px",
+                        background: theme === "dark" ? "rgba(37,99,235,0.18)" : "#eff6ff",
+                        border: `1px solid ${theme === "dark" ? "rgba(59,130,246,0.3)" : "#bfdbfe"}`,
                         borderRadius: 5,
-                        color: "#93c5fd",
+                        color: theme === "dark" ? "#93c5fd" : "#1e40af",
                         display: "flex",
                         alignItems: "center",
-                        gap: 5
+                        gap: 5,
+                        fontWeight: 500
                       }}>
                         <span>📊</span>
                         <span>{f}</span>
@@ -2500,7 +2640,7 @@ function ChatMessages({ messages }) {
                   </div>
                 )}
               </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#eff6ff", border: "1px solid #1f6feb66", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#1d4ed8", flexShrink: 0, marginTop: 2 }}>
+              <div style={{ width: 30, height: 30, borderRadius: "50%", background: theme === "dark" ? "rgba(37,99,235,0.2)" : "#eff6ff", border: `1px solid ${theme === "dark" ? "rgba(59,130,246,0.35)" : "#bfdbfe"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#3b82f6", flexShrink: 0, marginTop: 2 }}>
                 You
               </div>
             </div>
@@ -2517,47 +2657,47 @@ function ChatMessages({ messages }) {
 
           return (
             <div key={i} style={{
-              background: "#ffffff",
-              border: `1px solid ${isRunning ? "rgba(180, 83, 9, 0.28)" : isFailed ? "rgba(220, 38, 38, 0.24)" : "rgba(21, 128, 61, 0.24)"}`,
+              background: "var(--bg-card, #ffffff)",
+              border: `1px solid ${isRunning ? "#f59e0b" : isFailed ? "#fca5a5" : "#86efac"}`,
               borderRadius: 10,
-              padding: "12px 16px",
-              boxShadow: "0 4px 16px rgba(15, 23, 42, 0.08)",
+              padding: "14px 18px",
+              boxShadow: "0 1px 3px rgba(15, 23, 42, 0.05)",
               position: "relative",
               overflow: "hidden"
             }}>
               {/* Top animated bar when running */}
               {isRunning && (
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2.5, background: "linear-gradient(90deg, #b45309, #388bfd, #b45309)", backgroundSize: "200% 100%", animation: "pulse-bar 1.5s linear infinite" }} />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #d97706, #2563eb, #d97706)", backgroundSize: "200% 100%", animation: "pulse-bar 1.5s linear infinite" }} />
               )}
 
               {/* Pipeline Header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: isExpanded ? 10 : 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{
-                    width: 18,
-                    height: 18,
+                    width: 20,
+                    height: 20,
                     borderRadius: "50%",
-                    background: isRunning ? "#b4530922" : isFailed ? "#dc262622" : "#15803d22",
-                    border: `1px solid ${isRunning ? "#b45309" : isFailed ? "#dc2626" : "#15803d"}`,
-                    color: isRunning ? "#b45309" : isFailed ? "#dc2626" : "#15803d",
+                    background: isRunning ? (theme === "dark" ? "rgba(245,158,11,0.2)" : "#fef3c7") : isFailed ? (theme === "dark" ? "rgba(239,68,68,0.2)" : "#fee2e2") : (theme === "dark" ? "rgba(16,185,129,0.2)" : "#dcfce7"),
+                    border: `1px solid ${isRunning ? "#f59e0b" : isFailed ? "#ef4444" : "#22c55e"}`,
+                    color: isRunning ? "#b45309" : isFailed ? "#dc2626" : "#16a34a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 10,
+                    fontSize: 10.5,
                     fontWeight: 700
                   }}>
                     {isRunning ? <span style={{ animation: "spin 1s linear infinite" }}>⟳</span> : isFailed ? "!" : "✓"}
                   </span>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: isRunning ? "#b45309" : isFailed ? "#dc2626" : "#15803d", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: isRunning ? "#b45309" : isFailed ? "#dc2626" : "#15803d", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     {isRunning ? `Orchestrating Pipeline · Step ${msg.done} of ${msg.steps.length}` : isFailed ? "Pipeline Failed" : `Pipeline Complete (${msg.steps.length} steps)`}
                   </span>
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 10.5, color: "#64748b", fontFamily: "var(--mono, monospace)" }}>{pct}%</span>
+                  <span style={{ fontSize: 11, color: "var(--text-muted, #64748b)", fontFamily: "var(--mono, monospace)", fontWeight: 600 }}>{pct}%</span>
                   {!isRunning && !isFailed && (
                     <button onClick={() => togglePipe(pipeId)}
-                      style={{ background: "none", border: "1px solid #e2e8f0", borderRadius: 4, color: "#64748b", fontSize: 10, padding: "1px 6px", cursor: "pointer" }}>
+                      style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 5, color: "var(--text-secondary, #475569)", fontSize: 10.5, padding: "2px 8px", cursor: "pointer", fontWeight: 500 }}>
                       {isExpanded ? "Hide Steps ▲" : "View Steps ▼"}
                     </button>
                   )}
@@ -2566,7 +2706,7 @@ function ChatMessages({ messages }) {
 
               {/* Steps Progress List */}
               {isExpanded && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6, paddingTop: 8, borderTop: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 5, marginTop: 8, paddingTop: 10, borderTop: "1px solid var(--border-default, #f1f5f9)" }}>
                   {msg.steps.map((s, si) => {
                     const isDone = si < msg.done;
                     const isCurrent = si === msg.done && isRunning;
@@ -2574,14 +2714,14 @@ function ChatMessages({ messages }) {
                     return (
                       <div key={si} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, padding: "3px 0", opacity: isPending ? 0.65 : 1, transition: "all 0.2s" }}>
                         <div style={{
-                          width: 7,
-                          height: 7,
+                          width: 8,
+                          height: 8,
                           borderRadius: "50%",
                           flexShrink: 0,
-                          background: isDone ? "#15803d" : isCurrent ? "#b45309" : "#cbd5e1",
-                          boxShadow: isCurrent ? "0 0 8px #b45309" : "none"
+                          background: isDone ? "#16a34a" : isCurrent ? "#d97706" : "var(--border-strong, #cbd5e1)",
+                          boxShadow: isCurrent ? "0 0 8px #d97706" : "none"
                         }} />
-                        <span style={{ color: isDone ? "#1e293b" : isCurrent ? "#b45309" : "#64748b", fontWeight: isCurrent ? 600 : 400 }}>
+                        <span style={{ color: isDone ? "var(--text-primary, #0f172a)" : isCurrent ? "#b45309" : "var(--text-muted, #64748b)", fontWeight: isCurrent ? 600 : 400 }}>
                           {s}
                         </span>
                       </div>
@@ -2590,7 +2730,7 @@ function ChatMessages({ messages }) {
                 </div>
               )}
               {isFailed && (
-                <div role="alert" style={{ marginTop: 8, color: "#b91c1c", fontSize: 11 }}>
+                <div role="alert" style={{ marginTop: 8, color: "#dc2626", fontSize: 11.5 }}>
                   Output was not generated: {msg.error || "The pipeline stopped unexpectedly."}
                 </div>
               )}
@@ -2640,7 +2780,7 @@ function ChatMessages({ messages }) {
                     const content = isBullet ? line.trim().replace(/^[•-]\s*/, "") : line;
                     const parsed = content.split(/(\*\*[^*]+\*\*)/).map((part, idx) => {
                       if (part.startsWith("**") && part.endsWith("**")) {
-                        return <strong key={idx} style={{ color: "#1e293b", fontWeight: 700 }}>{part.slice(2, -2)}</strong>;
+                        return <strong key={idx} style={{ color: "var(--text-primary, #0f172a)", fontWeight: 700 }}>{part.slice(2, -2)}</strong>;
                       }
                       return <span key={idx}>{part}</span>;
                     });
@@ -2648,7 +2788,7 @@ function ChatMessages({ messages }) {
                     if (isBullet) {
                       return (
                         <div key={lIdx} style={{ display: "flex", alignItems: "flex-start", gap: 7, margin: "4px 0 4px 6px" }}>
-                          <span style={{ color: "#1d4ed8", fontSize: 10, marginTop: 4 }}>●</span>
+                          <span style={{ color: "#2563eb", fontSize: 10, marginTop: 4 }}>●</span>
                           <span style={{ flex: 1 }}>{parsed}</span>
                         </div>
                       );
@@ -2674,14 +2814,13 @@ function ChatMessages({ messages }) {
                 width: 34,
                 height: 34,
                 borderRadius: 9,
-                background: `${msg.agent?.color || "#1d4ed8"}18`,
-                border: `1px solid ${msg.agent?.color || "#1d4ed8"}44`,
+                background: `${msg.agent?.color || "#2563eb"}14`,
+                border: `1px solid ${msg.agent?.color || "#2563eb"}35`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 15,
-                color: msg.agent?.color || "#1d4ed8",
-                boxShadow: `0 2px 8px ${msg.agent?.color || "#1d4ed8"}1a`,
+                color: msg.agent?.color || "#2563eb",
                 flexShrink: 0,
                 marginTop: 2
               }}>
@@ -2693,11 +2832,11 @@ function ChatMessages({ messages }) {
                 {/* Agent Header Line */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 7 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>
+                    <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--text-primary, #0f172a)" }}>
                       {msg.agent?.name || "Financial Agent"}
                     </span>
                     {msg.skill && (
-                      <span style={{ fontSize: 10, color: "#1d4ed8", background: "#1f6feb15", border: "1px solid #1f6feb33", padding: "1px 6px", borderRadius: 4, fontFamily: "var(--mono, monospace)", fontWeight: 500 }}>
+                      <span style={{ fontSize: 10, color: "#2563eb", background: theme === "dark" ? "rgba(37,99,235,0.18)" : "#eff6ff", border: `1px solid ${theme === "dark" ? "rgba(59,130,246,0.3)" : "#bfdbfe"}`, padding: "1px 6px", borderRadius: 4, fontFamily: "var(--mono, monospace)", fontWeight: 600 }}>
                         ⚡ {msg.skill}
                       </span>
                     )}
@@ -2706,42 +2845,44 @@ function ChatMessages({ messages }) {
                   <button onClick={() => handleCopy(copyContent, i)}
                     title="Copy response to clipboard"
                     style={{
-                      background: "#ffffff",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: 5,
-                      color: copiedIdx === i ? "#15803d" : "#64748b",
-                      fontSize: 10.5,
-                      padding: "2px 8px",
+                      background: "var(--bg-card, #ffffff)",
+                      border: "1px solid var(--border-default, #e2e8f0)",
+                      borderRadius: 6,
+                      color: copiedIdx === i ? "#16a34a" : "var(--text-muted, #64748b)",
+                      fontSize: 11,
+                      padding: "3px 9px",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       gap: 4,
+                      fontWeight: 500,
+                      boxShadow: "0 1px 2px rgba(15,23,42,0.04)",
                       transition: "all .15s"
                     }}
-                    onMouseEnter={e => { if (copiedIdx !== i) { e.currentTarget.style.borderColor = "#1d4ed8"; e.currentTarget.style.color = "#1d4ed8"; } }}
-                    onMouseLeave={e => { if (copiedIdx !== i) { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.color = "#64748b"; } }}>
+                    onMouseEnter={e => { if (copiedIdx !== i) { e.currentTarget.style.borderColor = "#2563eb"; e.currentTarget.style.color = "#2563eb"; } }}
+                    onMouseLeave={e => { if (copiedIdx !== i) { e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; e.currentTarget.style.color = "var(--text-muted, #64748b)"; } }}>
                     {copiedIdx === i ? "✓ Copied" : "📋 Copy"}
                   </button>
                 </div>
 
                 {/* Response Card Body */}
                 <div style={{
-                  background: "#ffffff",
-                  border: "1px solid #e2e8f0",
+                  background: "var(--bg-card, #ffffff)",
+                  border: "1px solid var(--border-default, #e2e8f0)",
                   borderRadius: "4px 14px 14px 14px",
-                  padding: "16px 18px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.22)"
+                  padding: "18px 20px",
+                  boxShadow: "0 1px 4px rgba(15, 23, 42, 0.05)"
                 }}>
                   {/* PURE CONVERSATIONAL VIEW */}
                   {isPureConversational ? (
                     <div>
-                      <div style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.7 }}>
+                      <div style={{ fontSize: 13.5, color: "var(--text-secondary, #334155)", lineHeight: 1.7 }}>
                         {renderAnswerText(result.answer)}
                       </div>
                       {result.policy_cited && (
-                        <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#15803d" }}>
+                        <div style={{ marginTop: 14, paddingTop: 10, borderTop: "1px solid var(--border-default, #f1f5f9)", display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "#16a34a" }}>
                           <span>🛡️</span>
-                          <span style={{ color: "#64748b" }}>Compliance Policy:</span>
+                          <span style={{ color: "var(--text-muted, #64748b)" }}>Compliance Policy:</span>
                           <span style={{ fontWeight: 600 }}>{result.policy_cited}</span>
                         </div>
                       )}
@@ -2755,16 +2896,16 @@ function ChatMessages({ messages }) {
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
-                          gap: 7,
+                          gap: 8,
                           fontSize: 13,
                           fontWeight: 600,
-                          color: "#1e293b",
-                          marginBottom: 12,
-                          paddingBottom: 10,
-                          borderBottom: "1px solid #e2e8f0",
+                          color: "var(--text-primary, #0f172a)",
+                          marginBottom: 14,
+                          paddingBottom: 12,
+                          borderBottom: "1px solid var(--border-default, #f1f5f9)",
                           textAlign: "center",
                         }}>
-                          <span style={{ fontSize: 10, color: "#15803d", background: "#15803d15", border: "1px solid #15803d33", padding: "2px 8px", borderRadius: 4, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                          <span style={{ fontSize: 10, color: "#16a34a", background: theme === "dark" ? "rgba(22,163,74,0.18)" : "#f0fdf4", border: `1px solid ${theme === "dark" ? "rgba(22,163,74,0.3)" : "#bbf7d0"}`, padding: "2px 8px", borderRadius: 4, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                             ANALYSIS
                           </span>
                           <span style={{ maxWidth: "100%", lineHeight: 1.5 }}>{result.analysis}</span>
@@ -2773,15 +2914,15 @@ function ChatMessages({ messages }) {
 
                       {/* Narrative Synthesis */}
                       {hasAnswer && (
-                        <div style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.7, marginBottom: 14, textAlign: "left" }}>
+                        <div style={{ fontSize: 13.5, color: "var(--text-secondary, #334155)", lineHeight: 1.7, marginBottom: 16, textAlign: "left" }}>
                           {renderAnswerText(result.answer)}
                         </div>
                       )}
 
                       {/* Monthly Breakdown Grid */}
                       {hasBreakdown && (
-                        <div style={{ marginTop: 12, marginBottom: 14 }}>
-                          <div style={{ fontSize: 10.5, fontWeight: 700, color: "#64748b", marginBottom: 8, display: "flex", alignItems: "center", gap: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        <div style={{ marginTop: 14, marginBottom: 16 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary, #475569)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                             <span>📅</span>
                             <span>{result.analysis && /gross.*net|net.*gross/i.test(result.analysis) ? "Monthly Breakdown — Gross Sales vs Net Sales" : "Period Monthly Breakdown"}</span>
                           </div>
@@ -2790,17 +2931,17 @@ function ChatMessages({ messages }) {
                               const isHighlight = result.highlight_month === mo;
                               return (
                                 <div key={mo} style={{
-                                  background: isHighlight ? "rgba(63, 185, 80, 0.08)" : "#f8fafc",
-                                  border: isHighlight ? "1px solid #15803d" : "1px solid #e2e8f0",
-                                  borderRadius: 7,
+                                  background: isHighlight ? (theme === "dark" ? "rgba(22,163,74,0.18)" : "#f0fdf4") : "var(--bg-subtle, #f8fafc)",
+                                  border: isHighlight ? "1px solid #86efac" : "1px solid var(--border-default, #e2e8f0)",
+                                  borderRadius: 8,
                                   padding: "8px 10px",
                                   transition: "all .15s"
                                 }}>
-                                  <div style={{ fontSize: 10, fontWeight: 600, color: isHighlight ? "#15803d" : "#64748b", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                  <div style={{ fontSize: 10, fontWeight: 600, color: isHighlight ? "#16a34a" : "var(--text-muted, #64748b)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                                     <span>{mo}</span>
-                                    {isHighlight && <span style={{ fontSize: 9, background: "#15803d22", color: "#15803d", padding: "1px 4px", borderRadius: 3 }}>PEAK</span>}
+                                    {isHighlight && <span style={{ fontSize: 9, background: theme === "dark" ? "rgba(22,163,74,0.25)" : "#dcfce7", color: "#16a34a", padding: "1px 5px", borderRadius: 3, fontWeight: 700 }}>PEAK</span>}
                                   </div>
-                                  <div style={{ fontSize: 12.5, fontWeight: 700, color: "#1e293b", marginTop: 3, fontFamily: "var(--mono, Consolas, monospace)" }}>
+                                  <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary, #0f172a)", marginTop: 3, fontFamily: "var(--mono, Consolas, monospace)" }}>
                                     {formatValue(val)}
                                   </div>
                                 </div>
@@ -2811,44 +2952,44 @@ function ChatMessages({ messages }) {
                       )}
 
                       {/* KPI Metric Tiles */}
-                      <div style={{ marginTop: (hasAnswer || hasBreakdown) ? 12 : 4, marginBottom: 8 }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#a16207", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ marginTop: (hasAnswer || hasBreakdown) ? 14 : 4, marginBottom: 10 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#b45309", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, display: "flex", alignItems: "center", gap: 5 }}>
                           <span>📊</span> Key Financial Metrics
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 8, alignItems: "stretch" }}>
-                          <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", textAlign: "left", minWidth: 0 }}>
-                            <div style={{ fontSize: 10, color: "#a16207", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: 8 }}>Metrics</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10, alignItems: "stretch" }}>
+                          <div style={{ background: "var(--bg-subtle, #f8fafc)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 8, padding: "12px 14px", textAlign: "left", minWidth: 0 }}>
+                            <div style={{ fontSize: 10, color: "#b45309", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 8 }}>Metrics</div>
                             {metricEntries.length ? (
                               <div style={{ display: "grid", gap: 7 }}>
                                 {metricEntries.map(([key, value]) => (
-                                  <div key={key} style={{ display: "grid", gridTemplateColumns: "minmax(85px, 0.8fr) minmax(0, 1fr)", alignItems: "start", gap: 12, borderBottom: "1px solid #f1f5f9", paddingBottom: 6 }}>
-                                    <span style={{ color: "#64748b", fontSize: 11, textTransform: "capitalize", minWidth: 0 }}>{key.replace(/_/g, " ")}</span>
-                                    <span style={{ color: "#1e293b", fontSize: 12, fontWeight: 600, textAlign: "left", overflowWrap: "anywhere" }}>{formatValue(value)}</span>
+                                  <div key={key} style={{ display: "grid", gridTemplateColumns: "minmax(85px, 0.8fr) minmax(0, 1fr)", alignItems: "start", gap: 12, borderBottom: "1px solid var(--border-default, #f1f5f9)", paddingBottom: 6 }}>
+                                    <span style={{ color: "var(--text-muted, #64748b)", fontSize: 11.5, textTransform: "capitalize", minWidth: 0 }}>{key.replace(/_/g, " ")}</span>
+                                    <span style={{ color: "var(--text-primary, #0f172a)", fontSize: 12.5, fontWeight: 600, textAlign: "left", overflowWrap: "anywhere" }}>{formatValue(value)}</span>
                                   </div>
                                 ))}
                               </div>
                             ) : (
-                              <div style={{ color: "#64748b", fontSize: 12 }}>None</div>
+                              <div style={{ color: "var(--text-muted, #64748b)", fontSize: 12 }}>None</div>
                             )}
                           </div>
-                          <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", textAlign: "left", minWidth: 0 }}>
-                            <div style={{ fontSize: 10, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: 8 }}>Alerts & Warnings</div>
+                          <div style={{ background: theme === "dark" ? "rgba(220,38,38,0.12)" : "#fef2f2", border: theme === "dark" ? "1px solid rgba(239,68,68,0.3)" : "1px solid #fee2e2", borderRadius: 8, padding: "12px 14px", textAlign: "left", minWidth: 0 }}>
+                            <div style={{ fontSize: 10, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700, marginBottom: 8 }}>Alerts & Warnings</div>
                             {alerts.length ? (
                               <div style={{ display: "grid", gap: 8 }}>
                                 {alerts.map((alert, alertIndex) => {
                                   const details = isRecord(alert) ? alert : { message: alert };
                                   return (
-                                    <div key={alertIndex} style={{ borderBottom: alertIndex < alerts.length - 1 ? "1px solid #f1f5f9" : "none", paddingBottom: alertIndex < alerts.length - 1 ? 7 : 0 }}>
-                                      <div style={{ color: "#1e293b", fontSize: 12, lineHeight: 1.5, overflowWrap: "anywhere" }}>
+                                    <div key={alertIndex} style={{ borderBottom: alertIndex < alerts.length - 1 ? (theme === "dark" ? "1px solid rgba(239,68,68,0.2)" : "1px solid #fee2e2") : "none", paddingBottom: alertIndex < alerts.length - 1 ? 7 : 0 }}>
+                                      <div style={{ color: theme === "dark" ? "#fca5a5" : "#991b1b", fontSize: 12, lineHeight: 1.5, overflowWrap: "anywhere" }}>
                                         {formatValue(details.message ?? details.description ?? details.title ?? alert)}
                                       </div>
                                       {(details.severity || details.policy) && (
                                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4, fontSize: 10 }}>
                                           {details.severity && (
                                             <span style={{
-                                              color: /warning|alert|critical/i.test(details.severity) ? "#dc2626" : "#64748b",
-                                              background: /warning|alert|critical/i.test(details.severity) ? "rgba(248, 113, 113, 0.1)" : "rgba(139, 148, 158, 0.1)",
-                                              border: `1px solid ${/warning|alert|critical/i.test(details.severity) ? "rgba(248, 113, 113, 0.25)" : "rgba(139, 148, 158, 0.25)"}`,
+                                              color: /warning|alert|critical/i.test(details.severity) ? "#dc2626" : "var(--text-muted, #64748b)",
+                                              background: /warning|alert|critical/i.test(details.severity) ? (theme === "dark" ? "rgba(239,68,68,0.2)" : "#fee2e2") : "var(--bg-subtle, #f1f5f9)",
+                                              border: `1px solid ${/warning|alert|critical/i.test(details.severity) ? "#fca5a5" : "var(--border-default, #e2e8f0)"}`,
                                               borderRadius: 4,
                                               padding: "1px 5px",
                                               textTransform: "capitalize",
@@ -2857,7 +2998,7 @@ function ChatMessages({ messages }) {
                                               {details.severity}
                                             </span>
                                           )}
-                                          {details.policy && <span style={{ color: "#64748b" }}>{details.policy}</span>}
+                                          {details.policy && <span style={{ color: "var(--text-muted, #64748b)" }}>{details.policy}</span>}
                                         </div>
                                       )}
                                     </div>
@@ -2865,22 +3006,22 @@ function ChatMessages({ messages }) {
                                 })}
                               </div>
                             ) : (
-                              <div style={{ color: "#64748b", fontSize: 12 }}>None</div>
+                              <div style={{ color: "var(--text-muted, #64748b)", fontSize: 12 }}>None</div>
                             )}
                           </div>
                         </div>
                       </div>
 
                       {/* Footer Metadata */}
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginTop: 12, paddingTop: 10, borderTop: "1px solid #e2e8f0", fontSize: 11 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginTop: 14, paddingTop: 10, borderTop: "1px solid var(--border-default, #f1f5f9)", fontSize: 11.5 }}>
                         {result.source ? (
-                          <span style={{ color: "#64748b", display: "flex", alignItems: "center", gap: 5 }}>
-                            <span>📄</span> Source: <strong style={{ color: "#475569" }}>{result.source}</strong>
+                          <span style={{ color: "var(--text-muted, #64748b)", display: "flex", alignItems: "center", gap: 5 }}>
+                            <span>📄</span> Source: <strong style={{ color: "var(--text-secondary, #334155)" }}>{result.source}</strong>
                           </span>
                         ) : <span />}
 
                         {result.policy_cited && (
-                          <span style={{ color: "#15803d", background: "#15803d12", border: "1px solid #15803d33", padding: "2px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 5, fontWeight: 500 }}>
+                          <span style={{ color: "#16a34a", background: theme === "dark" ? "rgba(22,163,74,0.18)" : "#f0fdf4", border: `1px solid ${theme === "dark" ? "rgba(22,163,74,0.3)" : "#bbf7d0"}`, padding: "2px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 5, fontWeight: 600 }}>
                             <span>🛡️</span> {result.policy_cited}
                           </span>
                         )}
@@ -2922,11 +3063,11 @@ function cardKpis(agentId, result) {
 
 function DashboardView({ onOpenWorkflow, dashboardResults }) {
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "24px 28px" }}>
+    <div style={{ flex: 1, overflowY: "auto", padding: "24px 28px", background: "var(--bg-app, #f8fafc)" }}>
       <div style={{ marginBottom: 6 }}>
-        <div style={{ fontSize: 22, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.4px" }}>CFO Intelligence Platform</div>
-        <div style={{ fontSize: 12, color: "#475569", marginTop: 5, lineHeight: 1.7 }}>
-          14 agentic finance modules. Click <strong style={{ color: "#1e293b" }}>▶ Run workflow</strong> on any card. Attach an Excel/CSV first. <span style={{ color: "#15803d", marginLeft: 4 }}>● Live</span>
+        <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text-primary, #0f172a)", letterSpacing: "-0.02em" }}>CFO Intelligence Platform</div>
+        <div style={{ fontSize: 12.5, color: "var(--text-muted, #64748b)", marginTop: 4, lineHeight: 1.6 }}>
+          14 agentic finance modules. Click <strong style={{ color: "#2563eb" }}>▶ Run workflow</strong> on any card. Attach an Excel/CSV first. <span style={{ color: "#16a34a", marginLeft: 4 }}>● Live</span>
         </div>
       </div>
       {DASHBOARD_MODULES.map(section => (
@@ -2935,33 +3076,48 @@ function DashboardView({ onOpenWorkflow, dashboardResults }) {
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: section.color, flexShrink: 0 }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: section.color, letterSpacing: "0.08em", textTransform: "uppercase" }}>{section.section}</span>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
             {section.items.map(mod => {
               const live = dashboardResults[mod.id];
               const kpis = live ? cardKpis(mod.agent, live.result) : null;
               return (
                 <div key={mod.id} onClick={() => onOpenWorkflow(mod)}
-                  style={{ width: 230, flexShrink: 0, background: "#ffffff", border: `1px solid ${live ? "#15803d" : "#e2e8f0"}`, borderLeft: `3px solid ${section.color}`, borderRadius: 8, padding: "13px 14px", cursor: "pointer", position: "relative", transition: "all .15s", display: "flex", flexDirection: "column" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#f1f5f9"} onMouseLeave={e => e.currentTarget.style.background = "#ffffff"}>
-                  {mod.alert && !live && <div style={{ position: "absolute", top: 10, right: 10, width: 8, height: 8, borderRadius: "50%", background: "#dc2626" }} />}
-                  {live && <div style={{ position: "absolute", top: 8, right: 10, fontSize: 9, color: "#15803d", fontWeight: 600 }}>✓ {live.ts}</div>}
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1e293b", marginBottom: 5, lineHeight: 1.35, paddingRight: live ? 60 : 14 }}>{mod.label}</div>
+                  style={{
+                    width: 234,
+                    flexShrink: 0,
+                    background: "var(--bg-card, #ffffff)",
+                    border: `1px solid ${live ? "#86efac" : "var(--border-default, #e2e8f0)"}`,
+                    borderLeft: `3.5px solid ${section.color}`,
+                    borderRadius: 10,
+                    padding: "14px 15px",
+                    cursor: "pointer",
+                    position: "relative",
+                    boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
+                    transition: "all .15s ease",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 12px rgba(15, 23, 42, 0.08)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 1px 3px rgba(15, 23, 42, 0.04)"; e.currentTarget.style.transform = "translateY(0)"; }}>
+                  {mod.alert && !live && <div style={{ position: "absolute", top: 12, right: 12, width: 8, height: 8, borderRadius: "50%", background: "#ef4444" }} />}
+                  {live && <div style={{ position: "absolute", top: 10, right: 12, fontSize: 10, color: "#16a34a", fontWeight: 700, background: "#dcfce7", padding: "1px 6px", borderRadius: 4 }}>✓ {live.ts}</div>}
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--text-primary, #0f172a)", marginBottom: 6, lineHeight: 1.35, paddingRight: live ? 60 : 14 }}>{mod.label}</div>
                   {live && kpis ? (
                     <div style={{ flex: 1, marginBottom: 8 }}>
                       {kpis.map(({ key, val }) => (
                         <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
-                          <span style={{ fontSize: 9, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>{key}</span>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1e293b", marginLeft: 6, textAlign: "right", maxWidth: "55%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+                          <span style={{ fontSize: 9.5, color: "var(--text-muted, #64748b)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{key}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary, #0f172a)", marginLeft: 6, textAlign: "right", maxWidth: "55%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
                         </div>
                       ))}
-                      {live.fileNames?.length > 0 && <div style={{ fontSize: 9, color: "#64748b", marginTop: 4 }}>📎 {live.fileNames[0]}</div>}
+                      {live.fileNames?.length > 0 && <div style={{ fontSize: 9.5, color: "#2563eb", marginTop: 4, fontWeight: 500 }}>📎 {live.fileNames[0]}</div>}
                     </div>
                   ) : (
-                    <div style={{ fontSize: 10, color: "#475569", lineHeight: 1.5, flex: 1, marginBottom: 10 }}>{mod.desc}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted, #64748b)", lineHeight: 1.5, flex: 1, marginBottom: 12 }}>{mod.desc}</div>
                   )}
-                  <div style={{ fontSize: 11, color: section.color, display: "flex", alignItems: "center", gap: 4, fontWeight: 500, borderTop: "1px solid #e2e8f0", paddingTop: 8, marginTop: "auto" }}>
+                  <div style={{ fontSize: 11.5, color: "#2563eb", display: "flex", alignItems: "center", gap: 5, fontWeight: 600, borderTop: "1px solid var(--border-default, #f1f5f9)", paddingTop: 10, marginTop: "auto" }}>
                     <span style={{ fontSize: 12 }}>▶</span> {live ? "Re-run workflow" : "Run workflow"}
-                    <span style={{ fontSize: 10, marginLeft: "auto", color: "#64748b" }}>→ opens in chat</span>
+                    <span style={{ fontSize: 10, marginLeft: "auto", color: "var(--text-muted, #94a3b8)", fontWeight: 400 }}>→ opens in chat</span>
                   </div>
                 </div>
               );
@@ -3004,43 +3160,43 @@ function AgentRegistryView({ agents, skillsByAgent, runCounts, runCountError, on
   const displayedRuns = runCounts ? Number(runCounts.total_runs).toLocaleString() : runCountError ? "—" : "…";
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "20px 26px 30px", color: "#1e293b", background: "#f8fafc" }}>
-      <div style={{ marginBottom: 16 }}>
-        <h1 style={{ fontSize: 24, lineHeight: 1.2, margin: 0, letterSpacing: "-0.02em", color: "#1e293b", fontWeight: 700 }}>Agent Registry</h1>
-        <p style={{ margin: "6px 0 0", fontSize: 12, color: "#64748b", maxWidth: 1100, lineHeight: 1.5 }}>
+    <div style={{ flex: 1, overflowY: "auto", padding: "24px 28px 36px", color: "var(--text-primary, #0f172a)", background: "var(--bg-app, #f8fafc)" }}>
+      <div style={{ marginBottom: 20 }}>
+        <h1 style={{ fontSize: 24, lineHeight: 1.2, margin: 0, letterSpacing: "-0.02em", color: "var(--text-primary, #0f172a)", fontWeight: 800 }}>Agent Registry</h1>
+        <p style={{ margin: "6px 0 0", fontSize: 12.5, color: "var(--text-muted, #64748b)", maxWidth: 1100, lineHeight: 1.55 }}>
           19 registered agents — each defined by a SKILL.md, assigned policies, model configuration, triggers, and data connections. Click any agent for full details.
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12, marginBottom: 16 }}>
-        <div style={{ background: "rgba(255,255,255,0.96)", border: "1px solid #eff6ff", borderRadius: 10, minHeight: 82, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.1em", color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>Total Agents</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: "#1d4ed8", letterSpacing: "-0.04em" }}>19</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 14, marginBottom: 20 }}>
+        <div style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, minHeight: 84, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center", boxShadow: "0 1px 3px rgba(15,23,42,0.04)" }}>
+          <div style={{ fontSize: 10.5, letterSpacing: "0.08em", color: "var(--text-muted, #64748b)", textTransform: "uppercase", fontWeight: 600, marginBottom: 4 }}>Total Agents</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: "#2563eb", letterSpacing: "-0.03em" }}>19</div>
         </div>
 
         {runCountError && (
-          <div role="alert" style={{ margin: "-4px 0 14px", padding: "9px 12px", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.35)", borderRadius: 8, color: "#b91c1c", fontSize: 12 }}>
+          <div role="alert" style={{ margin: "-4px 0 14px", padding: "9px 12px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, color: "#dc2626", fontSize: 12 }}>
             Could not load real pipeline run counts: {runCountError}
           </div>
         )}
 
-        <div style={{ background: "rgba(255,255,255,0.96)", border: "1px solid #eff6ff", borderRadius: 10, minHeight: 82, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.1em", color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>Active</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: "#047857", letterSpacing: "-0.04em" }}>{activeCount}</div>
+        <div style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, minHeight: 84, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center", boxShadow: "0 1px 3px rgba(15,23,42,0.04)" }}>
+          <div style={{ fontSize: 10.5, letterSpacing: "0.08em", color: "var(--text-muted, #64748b)", textTransform: "uppercase", fontWeight: 600, marginBottom: 4 }}>Active</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: "#16a34a", letterSpacing: "-0.03em" }}>{activeCount}</div>
         </div>
 
-        <div style={{ background: "rgba(255,255,255,0.96)", border: "1px solid #eff6ff", borderRadius: 10, minHeight: 82, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.1em", color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>Total Pipeline Runs</div>
-          <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", color: "#1e293b" }}>{displayedRuns}</div>
+        <div style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, minHeight: 84, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center", boxShadow: "0 1px 3px rgba(15,23,42,0.04)" }}>
+          <div style={{ fontSize: 10.5, letterSpacing: "0.08em", color: "var(--text-muted, #64748b)", textTransform: "uppercase", fontWeight: 600, marginBottom: 4 }}>Total Pipeline Runs</div>
+          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary, #0f172a)" }}>{displayedRuns}</div>
         </div>
 
-        <div style={{ background: "rgba(255,255,255,0.96)", border: "1px solid #eff6ff", borderRadius: 10, minHeight: 82, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.1em", color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>Categories</div>
-          <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", color: "#1e293b" }}>{orderedCategories.length - 1}</div>
+        <div style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, minHeight: 84, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center", boxShadow: "0 1px 3px rgba(15,23,42,0.04)" }}>
+          <div style={{ fontSize: 10.5, letterSpacing: "0.08em", color: "var(--text-muted, #64748b)", textTransform: "uppercase", fontWeight: 600, marginBottom: 4 }}>Categories</div>
+          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--text-primary, #0f172a)" }}>{orderedCategories.length - 1}</div>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14, paddingTop: 2 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
         {orderedCategories.map(category => {
           const active = selectedCategory === category;
           return (
@@ -3049,17 +3205,20 @@ function AgentRegistryView({ agents, skillsByAgent, runCounts, runCountError, on
               type="button"
               onClick={() => setSelectedCategory(category)}
               style={{
-                border: active ? "1px solid #93c5fd" : "1px solid #e2e8f0",
-                background: active ? "#dbeafe" : "#ffffff",
-                color: active ? "#1d4ed8" : "#475569",
+                border: active ? "1px solid #2563eb" : "1px solid var(--border-default, #e2e8f0)",
+                background: active ? "#2563eb" : "var(--bg-card, #ffffff)",
+                color: active ? "#ffffff" : "var(--text-secondary, #475569)",
                 borderRadius: 999,
-                padding: "5px 10px",
+                padding: "5px 12px",
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: "pointer",
-                minHeight: 26,
+                minHeight: 28,
+                boxShadow: active ? "0 2px 4px rgba(37,99,235,0.2)" : "0 1px 2px rgba(15,23,42,0.03)",
                 transition: "all 0.15s ease",
               }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.background = "var(--bg-subtle, #f8fafc)"; }}
+              onMouseLeave={e => { if (!active) e.currentTarget.style.background = "var(--bg-card, #ffffff)"; }}
             >
               {category}
             </button>
@@ -3067,7 +3226,7 @@ function AgentRegistryView({ agents, skillsByAgent, runCounts, runCountError, on
         })}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gridAutoRows: "minmax(154px, auto)", gap: 12, alignItems: "stretch" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gridAutoRows: "minmax(154px, auto)", gap: 14, alignItems: "stretch" }}>
         {filteredAgents.map((agent) => {
           const runs = runCounts ? Number(runCounts.by_agent[agent.id] || 0).toLocaleString() : runCountError ? "—" : "…";
           const policies = agent.policies || [];
@@ -3076,59 +3235,61 @@ function AgentRegistryView({ agents, skillsByAgent, runCounts, runCountError, on
             <article
               key={agent.id}
               style={{
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
+                background: "var(--bg-card, #ffffff)",
+                border: "1px solid var(--border-default, #e2e8f0)",
                 borderRadius: 12,
-                padding: "9px 10px 8px",
+                padding: "12px 14px",
                 minHeight: 154,
                 boxSizing: "border-box",
-                boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+                boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
                 display: "flex",
                 flexDirection: "column",
+                transition: "all .15s ease"
               }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 12px rgba(15, 23, 42, 0.07)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 1px 3px rgba(15, 23, 42, 0.04)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6, flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8, flexShrink: 0 }}>
                 <div
                   style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 7,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
                     display: "grid",
                     placeItems: "center",
-                    background: "#eff6ff",
-                    border: `1px solid ${agent.color || "#1d4ed8"}44`,
-                    color: "#1d4ed8",
-                    fontSize: 14,
+                    background: "var(--bg-subtle, #eff6ff)",
+                    border: `1px solid ${agent.color || "#2563eb"}35`,
+                    color: agent.color || "#2563eb",
+                    fontSize: 15,
                     fontWeight: 700,
-                    boxShadow: "inset 0 0 0 1px rgba(29, 78, 216, 0.06)",
                   }}
                 >
                   {agent.icon}
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", lineHeight: 1.25, overflowWrap: "anywhere" }}>{agent.name}</div>
-                  <div style={{ fontSize: 9, color: "#64748b", marginTop: 2, letterSpacing: "0.02em", overflowWrap: "anywhere" }}>{agent.slug}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--text-primary, #0f172a)", lineHeight: 1.25, overflowWrap: "anywhere" }}>{agent.name}</div>
+                  <div style={{ fontSize: 9.5, color: "var(--text-muted, #64748b)", marginTop: 2, letterSpacing: "0.02em", overflowWrap: "anywhere" }}>{agent.slug}</div>
                 </div>
               </div>
 
-              <p style={{ margin: 0, color: "#475569", fontSize: 11, lineHeight: "15px", height: 45, flexShrink: 0, overflow: "hidden", display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflowWrap: "anywhere" }}>{agent.desc}</p>
+              <p style={{ margin: 0, color: "var(--text-muted, #64748b)", fontSize: 11.5, lineHeight: "16px", height: 48, flexShrink: 0, overflow: "hidden", display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflowWrap: "anywhere" }}>{agent.desc}</p>
 
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, marginTop: 5, marginBottom: 6, flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, marginTop: 6, marginBottom: 8, flexShrink: 0 }}>
                 <span style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  background: "rgba(16, 185, 129, 0.12)",
-                  color: "#047857",
-                  border: "1px solid rgba(52, 211, 153, 0.28)",
+                  background: "#dcfce7",
+                  color: "#15803d",
+                  border: "1px solid #bbf7d0",
                   borderRadius: 999,
-                  padding: "2px 7px",
-                  fontSize: 9,
+                  padding: "2px 8px",
+                  fontSize: 9.5,
                   fontWeight: 700,
                   textTransform: "lowercase",
                 }}>
                   active
                 </span>
-                <span style={{ fontSize: 10, color: "#64748b", fontWeight: 500 }}>{runs} runs</span>
+                <span style={{ fontSize: 10.5, color: "var(--text-muted, #64748b)", fontWeight: 600 }}>{runs} runs</span>
               </div>
 
               <div style={{ display: "flex", flexWrap: "wrap", alignContent: "flex-start", gap: 5, marginTop: "auto" }}>
@@ -3138,14 +3299,14 @@ function AgentRegistryView({ agents, skillsByAgent, runCounts, runCountError, on
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
-                      background: "#f1f5f9",
-                      border: "1px solid #cbd5e1",
+                      background: "var(--bg-subtle, #f1f5f9)",
+                      border: "1px solid var(--border-default, #e2e8f0)",
                       borderRadius: 4,
-                      color: "#475569",
-                      fontWeight: 700,
-                      padding: "2px 5px",
-                      fontSize: 8,
-                      letterSpacing: "0.04em",
+                      color: "var(--text-secondary, #475569)",
+                      fontWeight: 600,
+                      padding: "2px 6px",
+                      fontSize: 8.5,
+                      letterSpacing: "0.03em",
                       lineHeight: 1.2,
                       whiteSpace: "nowrap",
                     }}

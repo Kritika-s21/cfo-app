@@ -1,21 +1,35 @@
-:root {
+:root, [data-theme="light"] {
   color-scheme: light;
-  --app-bg: #f8fafc;
-  --app-surface: #ffffff;
-  --app-surface-muted: #f1f5f9;
-  --app-border: #e2e8f0;
-  --app-text: #1e293b;
-  --app-text-muted: #64748b;
-  --app-accent: #1d4ed8;
-  --app-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --app-bg: var(--bg-app, #f8fafc);
+  --app-surface: var(--bg-card, #ffffff);
+  --app-surface-muted: var(--bg-subtle, #f1f5f9);
+  --app-border: var(--border-default, #e2e8f0);
+  --app-border-strong: var(--border-strong, #cbd5e1);
+  --app-text: var(--text-primary, #0f172a);
+  --app-text-muted: var(--text-muted, #64748b);
+  --app-accent: var(--primary, #2563eb);
+  --app-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
   color: var(--app-text);
   background: var(--app-bg);
-  font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
 }
 
-html,
-body,
-#root {
+[data-theme="dark"] {
+  color-scheme: dark;
+  --app-bg: var(--bg-app, #090d16);
+  --app-surface: var(--bg-card, #131c2e);
+  --app-surface-muted: var(--bg-subtle, #1e293b);
+  --app-border: var(--border-default, #1e293b);
+  --app-border-strong: var(--border-strong, #334155);
+  --app-text: var(--text-primary, #f8fafc);
+  --app-text-muted: var(--text-muted, #94a3b8);
+  --app-accent: var(--primary, #3b82f6);
+  --app-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  color: var(--app-text);
+  background: var(--app-bg);
+}
+
+html, body, #root {
   min-width: 320px;
   min-height: 100%;
   background: var(--app-bg);
@@ -35,17 +49,18 @@ body {
   border: 0;
 }
 
-button,
-input,
-select,
-textarea {
+button, input, select, textarea {
   font: inherit;
 }
 
-input,
-select,
-textarea {
+input, select, textarea {
   color-scheme: light;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  color-scheme: dark;
 }
 
 ::selection {
@@ -53,62 +68,20 @@ textarea {
   background: #dbeafe;
 }
 
-* {
-  scrollbar-color: #cbd5e1 transparent;
+[data-theme="dark"] ::selection {
+  color: #f8fafc;
+  background: rgba(37, 99, 235, 0.35);
 }
 
-*::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.sb {
-  --sb-bg: #ffffff;
-  --sb-line: #e2e8f0;
-  --sb-hi: #1e293b;
-  --sb-mid: #475569;
-  --sb-low: #64748b;
-  box-shadow: 1px 0 0 rgba(15, 23, 42, 0.03);
-}
-
-.sb-icon-btn:hover,
-.sb-item:hover,
-.sb-chat:hover,
-.sb-chev:hover {
-  background-color: #f1f5f9;
-}
-
-.sb-chats .sb-label {
-  background: linear-gradient(#ffffff 78%, rgba(255, 255, 255, 0));
-}
-
-.sb-search input {
-  background: #ffffff;
-  color: #1e293b;
-}
-
-.sb-body {
-  scrollbar-color: #cbd5e1 transparent;
-}
-
-.sb-body::-webkit-scrollbar-thumb,
-.sb-body::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
-
-.sb-foot {
-  background: #f8fafc;
-}
-
-.sb-av::after {
-  border-color: #ffffff;
-}
-
+/* Scheduler root token alignments */
 .sch-root {
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 16px 48px rgba(15, 23, 42, 0.14);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="dark"] .sch-root {
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 }

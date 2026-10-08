@@ -39,7 +39,7 @@
   justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-soft);
-  background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+  background: var(--bg-1);
 }
 .sch-root .panel-head-left{ display: flex; align-items: center; gap: 12px; }
 .sch-root .panel-head-right{ display: flex; align-items: center; gap: 6px; }
@@ -93,9 +93,9 @@
 .sch-root .btn-default:hover{ background: var(--bg-3); }
 .sch-root .btn-primary{ background: var(--accent); color: #fff; }
 .sch-root .btn-primary:hover{ filter: brightness(1.08); }
-.sch-root .btn-success{ background: var(--good); color: #04120a; }
+.sch-root .btn-success{ background: var(--good); color: #ffffff; }
 .sch-root .btn-success:hover{ filter: brightness(1.08); }
-.sch-root .btn-warn{ background: var(--warn); color: #241703; }
+.sch-root .btn-warn{ background: var(--warn); color: #ffffff; }
 .sch-root .btn-warn:hover{ filter: brightness(1.08); }
 .sch-root .btn-danger{ background: var(--bad-dim); color: var(--bad); border-color: rgba(239,106,106,0.35); }
 .sch-root .btn-danger:hover{ background: rgba(239,106,106,0.22); }

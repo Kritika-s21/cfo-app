@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AgentAPI, PolicyAPI } from "../lib/ezcoworker.js";
 
-const C = { bg: "#f8fafc", card: "#ffffff", line: "#e2e8f0", text: "#1e293b", mute: "#64748b", blue: "#1d4ed8", warn: "#c2410c", red: "#dc2626", green: "#15803d" };
-const pill = (c) => ({ fontSize: 10, padding: "2px 8px", background: c + "22", border: `1px solid ${c}44`, borderRadius: 10, color: c, fontWeight: 600 });
-const btn = (primary) => ({ padding: "6px 14px", background: primary ? "#1f6feb" : C.card, border: primary ? "none" : `1px solid ${C.line}`, borderRadius: 7, color: primary ? "#fff" : C.text, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" });
-const field = { width: "100%", boxSizing: "border-box", padding: "8px 10px", background: C.bg, border: `1px solid ${C.line}`, borderRadius: 6, color: C.text, fontSize: 12, fontFamily: "inherit" };
+const C = { bg: "var(--bg-app, #f8fafc)", card: "var(--bg-card, #ffffff)", line: "var(--border-default, #e2e8f0)", text: "var(--text-primary, #0f172a)", mute: "var(--text-muted, #64748b)", blue: "#2563eb", warn: "#b45309", red: "#dc2626", green: "#047857" };
+const pill = (c) => ({ fontSize: 11, padding: "2px 8px", background: c + "15", border: `1px solid ${c}35`, borderRadius: 6, color: c, fontWeight: 600 });
+const btn = (primary) => ({ padding: "7px 14px", background: primary ? "#2563eb" : C.card, border: primary ? "none" : `1px solid ${C.line}`, borderRadius: 7, color: primary ? "#ffffff" : "var(--text-secondary, #334155)", fontSize: 12.5, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all .15s ease", boxShadow: primary ? "0 1px 3px rgba(37, 99, 235, 0.2)" : "0 1px 2px rgba(15, 23, 42, 0.04)" });
+const field = { width: "100%", boxSizing: "border-box", padding: "8px 12px", background: "var(--bg-input, #ffffff)", border: `1px solid ${C.line}`, borderRadius: 7, color: C.text, fontSize: 13, fontFamily: "inherit", outline: "none" };
 const EMPTY = { id: "", name: "", version: "v1.0", category: "Governance", owner: "", critical: false, always_load: false, agents: [], body: "## Rules\n- " };
 
 export default function PolicyManagement() {
@@ -84,7 +84,7 @@ export default function PolicyManagement() {
     <div style={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text, fontFamily: "inherit" }}>
       <style>{`
         .policy-management-scroll {
-          scrollbar-color: #cbd5e1 #ffffff;
+          scrollbar-color: var(--border-strong, #cbd5e1) var(--bg-card, #ffffff);
           scrollbar-width: auto;
         }
         .policy-management-scroll::-webkit-scrollbar {
@@ -92,15 +92,15 @@ export default function PolicyManagement() {
           height: 10px;
         }
         .policy-management-scroll::-webkit-scrollbar-track {
-          background: #ffffff;
+          background: var(--bg-card, #ffffff);
         }
         .policy-management-scroll::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border: 2px solid #ffffff;
+          background: var(--border-strong, #cbd5e1);
+          border: 2px solid var(--bg-card, #ffffff);
           border-radius: 8px;
         }
         .policy-management-scroll::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
+          background: var(--text-muted, #94a3b8);
         }
       `}</style>
       <div style={{ padding: "22px 28px 12px" }}>
@@ -120,7 +120,7 @@ export default function PolicyManagement() {
       <div style={{ padding: "0 28px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", borderBottom: `1px solid ${C.line}` }}>
           {[["list", "Policy List"], ["matrix", "Agent Matrix"]].map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)} style={{ padding: "7px 18px", background: "none", border: "none", borderBottom: `2px solid ${tab === k ? "#1f6feb" : "transparent"}`, color: tab === k ? C.blue : C.mute, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{l}</button>))}
+            <button key={k} onClick={() => setTab(k)} style={{ padding: "8px 18px", background: "none", border: "none", borderBottom: `2px solid ${tab === k ? "#2563eb" : "transparent"}`, color: tab === k ? "#2563eb" : C.mute, fontSize: 13, fontWeight: tab === k ? 600 : 500, cursor: "pointer", fontFamily: "inherit" }}>{l}</button>))}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <input ref={fileRef} type="file" accept=".md,text/markdown" multiple style={{ display: "none" }} onChange={onUpload} />
@@ -171,8 +171,8 @@ export default function PolicyManagement() {
             <table style={{ borderCollapse: "collapse", fontSize: 11 }}>
               <thead><tr><th style={{ textAlign: "left", padding: 8, color: C.mute }}>Agent</th>{policies.map((p) => <th key={p.id} style={{ padding: 8, color: p.critical ? C.warn : C.blue }}>{p.id}</th>)}</tr></thead>
               <tbody>{agents.map((a, i) => (
-                <tr key={a.id} style={{ background: i % 2 ? "#f8fafc" : "transparent" }}>
-                  <td style={{ padding: "7px 8px", color: "#475569" }}>{a.id}</td>
+                <tr key={a.id} style={{ background: i % 2 ? "var(--bg-subtle, #f8fafc)" : "transparent" }}>
+                  <td style={{ padding: "7px 8px", color: "var(--text-secondary, #475569)" }}>{a.id}</td>
                   {policies.map((p) => <td key={p.id} style={{ textAlign: "center" }}>{((p.agents || []).includes(a.id) || p.always_load) && <span style={{ display: "inline-block", width: 9, height: 9, borderRadius: "50%", background: "#15803d", opacity: (p.agents || []).includes(a.id) ? 1 : .45 }} title={p.always_load && !(p.agents || []).includes(a.id) ? "always_load" : ""} />}</td>)}
                 </tr>))}</tbody>
             </table>

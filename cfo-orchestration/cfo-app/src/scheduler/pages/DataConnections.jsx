@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Panel, Card, Tabs, Button, Input, Field, Empty, Badge, useToast } from "../components/ui.jsx";
+import { Panel, Card, Tabs, Button, Input, Select, TextArea, Field, Empty, Badge, useToast } from "../components/ui.jsx";
 import { ConnectionsAPI } from "../api.js";
 
 export default function DataConnections() {
@@ -145,37 +145,37 @@ function SqlProfiles() {
         <div className="section-label mb-sm">Add a SQL database</div>
         <div className="flex-col gap-sm">
           <Field label="Connection name">
-            <Input placeholder="e.g. Marketing Analytics DB" value={name} onChange={(e) => setName(e.target.value)} className="w-full" />
+            <Input placeholder="e.g. Marketing Analytics DB" value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
           <Field label="Database type">
-            <select value={dbType} onChange={(e) => onDbTypeChange(e.target.value)} className="select w-full">
+            <Select value={dbType} onChange={(e) => onDbTypeChange(e.target.value)}>
               <option value="mssql">SQL Server (mssql)</option>
               <option value="postgresql">PostgreSQL</option>
               <option value="mysql">MySQL</option>
               <option value="other">Other</option>
-            </select>
+            </Select>
           </Field>
 
           {!advanced && dbType !== "other" ? (
             <>
               <div className="grid grid-2">
                 <Field label="Host / server">
-                  <Input placeholder="e.g. myserver.database.windows.net" value={host} onChange={(e) => setHost(e.target.value)} className="w-full" />
+                  <Input placeholder="e.g. myserver.database.windows.net" value={host} onChange={(e) => setHost(e.target.value)} />
                 </Field>
                 <Field label="Port">
-                  <Input placeholder={DB_DEFAULTS[dbType]?.port} value={port} onChange={(e) => setPort(e.target.value)} className="w-full" />
+                  <Input placeholder={DB_DEFAULTS[dbType]?.port} value={port} onChange={(e) => setPort(e.target.value)} />
                 </Field>
               </div>
               <Field label="Database name">
-                <Input placeholder="e.g. Sales_1" value={database} onChange={(e) => setDatabase(e.target.value)} className="w-full" />
+                <Input placeholder="e.g. Sales_1" value={database} onChange={(e) => setDatabase(e.target.value)} />
               </Field>
               <div className="grid grid-2">
                 <Field label="Username">
-                  <Input placeholder="e.g. app_user" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full" autoComplete="off" />
+                  <Input placeholder="e.g. app_user" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="off" />
                 </Field>
                 <Field label="Password">
                   <div className="row gap-sm">
-                    <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full" autoComplete="new-password" />
+                    <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} style={{ flex: 1 }} autoComplete="new-password" />
                     <Button size="sm" variant="ghost" onClick={() => setShowPassword((s) => !s)}>{showPassword ? "🙈" : "👁"}</Button>
                   </div>
                 </Field>
@@ -185,8 +185,7 @@ function SqlProfiles() {
           ) : (
             <>
               <Field label="Connection string">
-                <textarea
-                  className="textarea w-full mono"
+                <TextArea
                   rows={3}
                   placeholder={"mssql+pyodbc://user:password@myserver.database.windows.net/mydb?driver=ODBC+Driver+17+for+SQL+Server\n\nor the semicolon form: Server=...;Database=...;UID=...;PWD=..."}
                   value={rawConnStr}
@@ -229,8 +228,6 @@ function SqlProfiles() {
       )}
       <style>{`.section-label{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-mid)}
         .flex-col{display:flex;flex-direction:column}
-        .textarea{background:var(--bg-3);border:1px solid var(--border-soft);border-radius:8px;padding:10px 12px;font-size:13px;resize:vertical}
-        .select{background:var(--bg-3);border:1px solid var(--border-soft);border-radius:8px;padding:8px 12px;font-size:13px}
         .link-btn{background:none;border:none;color:var(--accent-hi);font-size:12.5px;cursor:pointer;padding:2px 0;text-align:left;text-decoration:underline;width:fit-content}`}</style>
     </>
   );
@@ -301,13 +298,13 @@ function VectorProfiles() {
         <div className="text-mid mb-sm" style={{ fontSize: 12.5 }}>Point LanceDB at any folder you have write access to — a local path, a mounted network drive, etc. Each store keeps its own collection name.</div>
         <div className="flex-col gap-sm">
           <Field label="Store name">
-            <Input placeholder="e.g. Marketing Embeddings" value={name} onChange={(e) => setName(e.target.value)} className="w-full" />
+            <Input placeholder="e.g. Marketing Embeddings" value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
           <Field label="Folder path">
-            <Input placeholder={"/data/vector_stores/marketing  or  D:\\vector_stores\\marketing"} value={path} onChange={(e) => setPath(e.target.value)} className="w-full" />
+            <Input placeholder={"/data/vector_stores/marketing  or  D:\\vector_stores\\marketing"} value={path} onChange={(e) => setPath(e.target.value)} />
           </Field>
           <Field label="Collection name">
-            <Input value={collection} onChange={(e) => setCollection(e.target.value)} className="w-full" />
+            <Input value={collection} onChange={(e) => setCollection(e.target.value)} />
           </Field>
           <div>
             <Button variant="primary" loading={saving} onClick={submit}>➕ Add vector store</Button>

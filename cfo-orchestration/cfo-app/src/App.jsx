@@ -1446,6 +1446,31 @@ export default function App() {
   const [authConfirm, setAuthConfirm] = useState("");
   const [authError, setAuthError] = useState("");
   const [showAuthPwd, setShowAuthPwd] = useState(false);
+  // Responsive breakpoints for the auth (login/register) screen:
+  //   authNarrow → stacked single-column layout (≤ 900px)
+  //   authTiny   → extra-compact spacing (≤ 480px)
+  const [authNarrow, setAuthNarrow] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia ? window.matchMedia("(max-width: 900px)").matches : false
+  );
+  const [authTiny, setAuthTiny] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia ? window.matchMedia("(max-width: 480px)").matches : false
+  );
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
+    const narrow = window.matchMedia("(max-width: 900px)");
+    const tiny = window.matchMedia("(max-width: 480px)");
+    const sync = () => { setAuthNarrow(narrow.matches); setAuthTiny(tiny.matches); };
+    sync();
+    if (typeof narrow.addEventListener === "function") {
+      narrow.addEventListener("change", sync);
+      tiny.addEventListener("change", sync);
+      return () => { narrow.removeEventListener("change", sync); tiny.removeEventListener("change", sync); };
+    }
+    // Safari ≤ 13 fallback
+    narrow.addListener(sync);
+    tiny.addListener(sync);
+    return () => { narrow.removeListener(sync); tiny.removeListener(sync); };
+  }, []);
   const [dashboardResults, setDashboardResults] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatToDelete, setChatToDelete] = useState(null);
@@ -1822,7 +1847,7 @@ export default function App() {
 
     const isLogin = authMode === "login";
     return (
-      <div style={{ position: "fixed", inset: 0, display: "flex", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", overflow: "hidden", background: "#f8fafc" }}>
+      <div style={{ position: "fixed", inset: 0, display: "flex", flexDirection: authNarrow ? "column" : "row", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", overflow: "hidden", background: "#f8fafc" }}>
         {/* ── Background ── */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,#f8fafc 0%,#f8fafc 40%,#f8fafc 100%)", zIndex: 0 }}>
           <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(#1f6feb08 1px,transparent 1px),linear-gradient(90deg,#1f6feb08 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
@@ -1831,8 +1856,8 @@ export default function App() {
         </div>
 
         {/* ── Left brand panel ── */}
-        <div style={{ flex: "0 0 52%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "60px 48px 60px 60px", position: "relative", zIndex: 1, overflow: "hidden" }}>
-          <div>
+        <div style={{ flex: authNarrow ? "0 0 auto" : "0 0 52%", boxSizing: "border-box", display: authNarrow ? "none" : "flex", flexDirection: "column", justifyContent: "flex-start", padding: "60px 48px 60px 60px", position: "relative", zIndex: 1, overflowY: "auto", overflowX: "hidden" }}>
+          <div style={{ margin: "auto 0" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 40 }}>
               <div style={{ width: 42, height: 42, background: "linear-gradient(135deg,#1f6feb,#388bfd)", borderRadius: 11, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#fff", fontWeight: 700, boxShadow: "0 4px 20px #1d4ed840" }}>⊛</div>
               <div>
@@ -1840,7 +1865,7 @@ export default function App() {
                 <div style={{ fontSize: 12, color: "#1d4ed8" }}>EzCoworker AI Platform</div>
               </div>
             </div>
-            <div style={{ fontSize: 38, fontWeight: 800, color: "#1e293b", lineHeight: 1.15, letterSpacing: "-1px", marginBottom: 18, textAlign: "left" }}>
+            <div style={{ fontSize: "clamp(30px, 3.2vw, 38px)", fontWeight: 800, color: "#1e293b", lineHeight: 1.15, letterSpacing: "-1px", marginBottom: 18, textAlign: "left" }}>
               AI-powered finance,<br /><span style={{ background: "linear-gradient(90deg,#1f6feb,#15803d)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>built for CFOs.</span>
             </div>
             <div style={{ fontSize: 14, color: "#64748b", lineHeight: 1.7, marginBottom: 40, textAlign: "left" }}>14 agentic finance modules — GST, TDS, AP/AR, reconciliation, close orchestration, and more. All policy-driven. All auditable.</div>
@@ -1860,9 +1885,20 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── Right auth panel — 48%, card anchored to left of this column ── */}
-        <div style={{ flex: "0 0 48%", display: "flex", alignItems: "center", justifyContent: "flex-start", padding: "24px 32px 24px 16px", position: "relative", zIndex: 1, overflow: "hidden" }}>
-          <div style={{ width: "100%", maxWidth: 420, background: "rgba(255,255,255,0.97)", border: "1px solid #e2e8f0", borderRadius: 16, padding: "36px 34px", boxShadow: "0 24px 80px rgba(0,0,0,0.5),0 0 0 1px #cbd5e122", backdropFilter: "blur(12px)" }}>
+        {/* ── Right auth panel — 48% on desktop (card anchored left); full-width, centered & scrollable when stacked ── */}
+        <div style={{ flex: authNarrow ? "1 1 auto" : "0 0 48%", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: authNarrow ? "center" : "flex-start", justifyContent: "flex-start", padding: authNarrow ? (authTiny ? "20px 12px 28px" : "28px 16px 32px") : "24px 32px 24px 16px", position: "relative", zIndex: 1, overflowY: "auto", overflowX: "hidden" }}>
+          <div style={{ width: "100%", maxWidth: 490, minWidth: 0, boxSizing: "border-box", margin: "auto 0", background: "rgba(255,255,255,0.97)", border: "1px solid #e2e8f0", borderRadius: 16, padding: authNarrow ? (authTiny ? "24px 16px" : "28px 22px") : "36px 34px", boxShadow: "0 24px 80px rgba(0,0,0,0.5),0 0 0 1px #cbd5e122", backdropFilter: "blur(12px)" }}>
+
+            {/* Compact brand header — only shown in the stacked (narrow) layout */}
+            {authNarrow && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
+                <div style={{ width: 38, height: 38, flexShrink: 0, background: "linear-gradient(135deg,#1f6feb,#388bfd)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, color: "#fff", fontWeight: 700, boxShadow: "0 4px 20px #1d4ed840" }}>⊛</div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.3px", lineHeight: 1.2 }}>CFO Back Office</div>
+                  <div style={{ fontSize: 11, color: "#1d4ed8" }}>EzCoworker AI Platform</div>
+                </div>
+              </div>
+            )}
 
             {/* Card header */}
             <div style={{ marginBottom: 28 }}>
@@ -1898,7 +1934,7 @@ export default function App() {
                   <input value={authName} onChange={e => { setAuthName(e.target.value); setAuthError(""); }}
                     onKeyDown={e => { if (e.key === "Enter") handleRegister(); }}
                     placeholder="e.g. Kritika Sharma"
-                    style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
+                    style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: authNarrow ? 16 : 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
                     onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
                 </div>
               )}
@@ -1908,7 +1944,7 @@ export default function App() {
                 <input value={authEmail} onChange={e => { setAuthEmail(e.target.value); setAuthError(""); }}
                   onKeyDown={e => { if (e.key === "Enter") { isLogin ? handleLogin() : handleRegister(); } }}
                   placeholder="you@company.com" type="email" autoComplete="username"
-                  style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
+                  style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: authNarrow ? 16 : 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
                   onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
               </div>
 
@@ -1919,7 +1955,7 @@ export default function App() {
                     onKeyDown={e => { if (e.key === "Enter") { isLogin ? handleLogin() : handleRegister(); } }}
                     type={showAuthPwd ? "text" : "password"} placeholder={isLogin ? "Enter your password" : "At least 12 characters"}
                     autoComplete={isLogin ? "current-password" : "new-password"} maxLength={128}
-                    style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 42px 10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
+                    style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 42px 10px 14px", color: "#1e293b", fontSize: authNarrow ? 16 : 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
                     onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
                   <button onClick={() => setShowAuthPwd(v => !v)}
                     style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1 }}>
@@ -1937,7 +1973,7 @@ export default function App() {
                       onKeyDown={e => { if (e.key === "Enter") handleRegister(); }}
                       type={showAuthPwd ? "text" : "password"} placeholder="Re-enter password"
                       autoComplete="new-password" maxLength={128}
-                      style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
+                      style={{ width: "100%", background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 8, padding: "10px 14px", color: "#1e293b", fontSize: authNarrow ? 16 : 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }}
                       onFocus={e => e.target.style.borderColor = "#1f6feb"} onBlur={e => e.target.style.borderColor = "#cbd5e1"} />
                   </div>
                 </>

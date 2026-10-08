@@ -193,6 +193,26 @@ function readChatHistory(email) {
   }
 }
 
+// ─── RIGHT SKILLS PANEL ICONS (sidebar-style stroke SVGs, no emoji/chars) ───────
+const RS_PATHS = {
+  swap: <><path d="M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7" /></>,
+  tax: <><path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4L10 21l-2-1.4L6 21z" /><path d="M9 8h6M9 12h6" /></>,
+  ops: <><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5" /></>,
+  close: <><circle cx="12" cy="12" r="9" /><path d="m8.5 12.5 2.5 2.5 5-5" /></>,
+  report: <><path d="M3 3v18h18" /><path d="M7 15l4-4 3 3 5-6" /></>,
+  cash: <><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 10h18M16 15h2" /></>,
+  qa: <><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z" /><path d="m9 12 2 2 4-4" /></>,
+};
+const RS_ICON = {
+  "CONSOLIDATION & MULTI-GL": "swap",
+  "COMPLIANCE & TAX": "tax",
+  "OPERATIONAL FINANCE": "ops",
+  "MONTH-END CLOSE": "close",
+  "REPORTING & ANALYTICS": "report",
+  "TREASURY & CASH": "cash",
+  "QA & REVIEW": "qa",
+};
+
 // ─── CFO SKILLS PANEL DATA ─────────────────────────────────────────────────────
 const CFO_SKILL_CATEGORIES = [
   {
@@ -1510,6 +1530,7 @@ export default function App() {
   const [agentRunCountError, setAgentRunCountError] = useState("");
   const [skillsOpen, setSkillsOpen] = useState(true);
   const [expandedCat, setExpandedCat] = useState(null);
+  const [skillQ, setSkillQ] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [authSubmitting, setAuthSubmitting] = useState(false);
@@ -2390,48 +2411,89 @@ export default function App() {
 
           {/* ════ RIGHT SKILLS PANEL ════ */}
           {skillsOpen && view !== "scheduler" && (
-            <div style={{ width: 240, background: "var(--bg-subtle, #f8fafc)", borderLeft: "1px solid var(--border-default, #e2e8f0)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
-              <div style={{ padding: "10px 12px 9px", borderBottom: "1px solid var(--border-default, #e2e8f0)", background: "var(--bg-card, #ffffff)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 11, color: "#c2410c" }}>⚙</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#c2410c", letterSpacing: "0.04em" }}>⚡ CFO Skills</span>
-                  <span style={{ marginLeft: "auto", background: "#1f6feb", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 700, color: "#fff" }}>
+            <div style={{ width: 264, background: "var(--bg-card, #ffffff)", borderLeft: "1px solid var(--border-default, #e2e8f0)", display: "flex", flexDirection: "column", flexShrink: 0, minHeight: 0, fontSize: 13, color: "var(--text-secondary, #334155)", userSelect: "none" }}>
+              <div style={{ padding: "16px 14px 12px", borderBottom: "1px solid var(--border-default, #e2e8f0)", flexShrink: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", color: "#ffffff", background: "linear-gradient(135deg, #f59e0b, #d97706)", boxShadow: "0 2px 6px rgba(217, 119, 6, 0.3)" }}>
+                    <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L18.5 10H12z" /></svg>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <b style={{ display: "block", fontSize: 14, fontWeight: 700, color: "var(--text-primary, #0f172a)", letterSpacing: "-0.2px", whiteSpace: "nowrap" }}>CFO Skills</b>
+                    <span style={{ display: "block", fontSize: 11, color: "var(--text-muted, #64748b)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Click a skill to pre-fill</span>
+                  </div>
+                  <span style={{ fontSize: 10.5, fontWeight: 700, background: "var(--bg-subtle, #f1f5f9)", border: "1px solid var(--border-default, #e2e8f0)", color: "var(--text-secondary, #475569)", padding: "1px 7px", borderRadius: 10, flexShrink: 0 }}>
                     {CFO_SKILL_CATEGORIES.reduce((a, c) => a + c.count, 0)}
                   </span>
                 </div>
-                <div style={{ fontSize: 10, color: "var(--text-muted, #64748b)", marginTop: 5, lineHeight: 1.4 }}>Click any skill to pre-fill a query</div>
+                <div style={{ position: "relative", marginTop: 10 }}>
+                  <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", pointerEvents: "none" }}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+                  <input value={skillQ} onChange={e => setSkillQ(e.target.value)} placeholder="Search skills…"
+                    style={{ width: "100%", height: 32, boxSizing: "border-box", background: "var(--bg-subtle, #f8fafc)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 8, fontSize: 12.5, padding: "0 8px 0 30px", color: "var(--text-primary, #0f172a)", outline: "none" }}
+                    onFocus={e => { e.currentTarget.style.borderColor = "#2563eb"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.12)"; }}
+                    onBlur={e => { e.currentTarget.style.borderColor = "var(--border-default, #e2e8f0)"; e.currentTarget.style.boxShadow = "none"; }} />
+                </div>
               </div>
-              <div style={{ flex: 1, overflowY: "auto", padding: "4px 0" }}>
+              <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px 12px", minHeight: 0 }}>
                 {CFO_SKILL_CATEGORIES.map(cat => {
-                  const isExp = expandedCat === cat.label;
+                  const q = skillQ.trim().toLowerCase();
+                  const matches = q
+                    ? cat.skills.filter(sk => (sk.name || "").toLowerCase().includes(q) || (cat.label || "").toLowerCase().includes(q))
+                    : cat.skills;
+                  if (q && matches.length === 0) return null;
+                  const isExp = q ? true : expandedCat === cat.label;
                   return (
-                    <div key={cat.label}>
-                      <div onClick={() => setExpandedCat(isExp ? null : cat.label)}
-                        style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", cursor: "pointer", transition: "background .1s" }}
-                        onMouseEnter={e => e.currentTarget.style.background = "var(--bg-card, #ffffff)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                        <span style={{ fontSize: 10, color: "var(--text-muted, #64748b)", flexShrink: 0 }}>{isExp ? "▼" : "▶"}</span>
-                        <span style={{ fontSize: 10, color: cat.color, marginRight: 4 }}>{cat.icon}</span>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: "#c2410c", flex: 1, letterSpacing: "0.04em", textTransform: "uppercase" }}>{cat.label}</span>
-                        <span style={{ fontSize: 10, color: "var(--text-muted, #64748b)" }}>{cat.count}/{cat.total}</span>
-                        <div style={{ width: 32, height: 16, borderRadius: 8, background: "#1f6feb", position: "relative", flexShrink: 0 }}>
-                          <div style={{ position: "absolute", width: 12, height: 12, borderRadius: "50%", background: "#fff", top: 2, left: 18, transition: "left .2s" }} />
-                        </div>
+                    <div key={cat.label} style={{ marginBottom: 12 }}>
+                      <div onClick={() => setExpandedCat(isExp && !q ? null : cat.label)}
+                        style={{ display: "flex", alignItems: "center", gap: 8, padding: "2px 2px 0", cursor: "pointer" }}>
+                        <span style={{ width: 26, height: 26, borderRadius: 7, flexShrink: 0, display: "grid", placeItems: "center", color: cat.color, background: `${cat.color}14`, border: `1px solid ${cat.color}30` }}>
+                          <svg viewBox="0 0 24 24" width={13} height={13} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">{RS_PATHS[RS_ICON[cat.label]]}</svg>
+                        </span>
+                        <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--text-primary, #0f172a)", flex: 1, minWidth: 0, letterSpacing: "0.05em", textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat.label}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted, #64748b)", background: "var(--bg-subtle, #f1f5f9)", border: "1px solid var(--border-default, #e2e8f0)", padding: "0 6px", borderRadius: 8, flexShrink: 0 }}>{q ? `${matches.length}/${cat.total}` : `${cat.count}`}</span>
+                        <span style={{ display: "grid", placeItems: "center", width: 20, height: 20, borderRadius: 6, color: "var(--text-muted, #64748b)", flexShrink: 0 }}>
+                          <svg viewBox="0 0 24 24" width={13} height={13} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ transform: isExp ? "rotate(180deg)" : "none", transition: "transform .18s" }}><path d="m6 9 6 6 6-6" /></svg>
+                        </span>
                       </div>
                       {isExp && (
-                        <div style={{ padding: "2px 12px 8px 28px", background: "var(--bg-subtle, #f8fafc)" }}>
-                          {cat.skills.map(sk => (
-                            <div key={sk.name} onClick={() => onSkillClick(sk)}
-                              style={{ fontSize: 11, color: "var(--text-secondary, #475569)", padding: "4px 6px", borderBottom: "1px solid var(--border-default, #e2e8f022)", cursor: "pointer", borderRadius: 4, transition: "all .1s", display: "flex", alignItems: "center", gap: 5 }}
-                              onMouseEnter={e => { e.currentTarget.style.color = "#2563eb"; e.currentTarget.style.background = "var(--primary-subtle, rgba(37,99,235,0.12))"; }}
-                              onMouseLeave={e => { e.currentTarget.style.color = "var(--text-secondary, #475569)"; e.currentTarget.style.background = "transparent"; }}>
-                              <span style={{ color: cat.color, fontSize: 10 }}>⚡</span> {sk.name}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 7 }}>
+                          {matches.map(sk => (
+                            <div key={sk.name} onClick={() => onSkillClick(sk)} title={sk.query}
+                              style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e9eef5)", borderRadius: 9, padding: "7px 8px", cursor: "pointer", transition: "border-color .13s, box-shadow .13s", display: "flex", alignItems: "center", gap: 8 }}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = `${cat.color}66`; e.currentTarget.style.boxShadow = "0 2px 8px rgba(15,23,42,0.08)"; const b = e.currentTarget.querySelector("[data-run]"); if (b) { b.style.background = cat.color; b.style.color = "#fff"; b.style.borderColor = cat.color; } }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-default, #e9eef5)"; e.currentTarget.style.boxShadow = "none"; const b = e.currentTarget.querySelector("[data-run]"); if (b) { b.style.background = `${cat.color}12`; b.style.color = cat.color; } }}>
+                              <span style={{ width: 28, height: 28, borderRadius: 7, flexShrink: 0, display: "grid", placeItems: "center", color: cat.color, background: `${cat.color}12`, border: `1px solid ${cat.color}30` }}>
+                                <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L18.5 10H12z" /></svg>
+                              </span>
+                              <span style={{ flex: 1, minWidth: 0 }}>
+                                <span style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                                  <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-primary, #0f172a)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sk.name}</span>
+                                  <span style={{ fontSize: 8.5, fontWeight: 800, letterSpacing: "0.06em", color: cat.color, background: `${cat.color}12`, border: `1px solid ${cat.color}30`, borderRadius: 4, padding: "0 4px", flexShrink: 0 }}>SKILL</span>
+                                </span>
+                                <span style={{ display: "block", fontSize: 10.5, color: "var(--text-muted, #64748b)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sk.query}</span>
+                              </span>
+                              <span data-run="1" title="Run skill" style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "grid", placeItems: "center", color: cat.color, background: `${cat.color}12`, border: `1px solid ${cat.color}30`, transition: "all .13s" }}>
+                                <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                              </span>
                             </div>
                           ))}
+                          {matches.length === 0 && (
+                            <div style={{ fontSize: 11.5, color: "var(--text-muted, #64748b)", padding: "8px 10px", textAlign: "center" }}>No skills match “{skillQ}”.</div>
+                          )}
                         </div>
                       )}
                     </div>
                   );
                 })}
+                {skillQ.trim() && CFO_SKILL_CATEGORIES.every(cat =>
+                  !cat.skills.some(sk => (sk.name || "").toLowerCase().includes(skillQ.trim().toLowerCase()) || (cat.label || "").toLowerCase().includes(skillQ.trim().toLowerCase()))
+                ) && (
+                  <div style={{ textAlign: "center", padding: "16px 12px", background: "var(--bg-subtle, #f8fafc)", border: "1px dashed var(--border-default, #e2e8f0)", borderRadius: 10, fontSize: 12, color: "var(--text-muted, #64748b)" }}>
+                    No skills found.<br />Try “GST”, “bank” or “close”.
+                  </div>
+                )}
+              </div>
+              <div style={{ padding: "8px 14px 10px", borderTop: "1px solid var(--border-default, #e2e8f0)", flexShrink: 0, fontSize: 10.5, color: "var(--text-muted, #94a3b8)", textAlign: "center" }}>
+                25 skills · expand a group to run one
               </div>
             </div>
           )}
@@ -2467,6 +2529,29 @@ function ConfirmModal({ title, body, onConfirm, onCancel, confirmLabel, danger }
             onMouseEnter={e => e.currentTarget.style.opacity = "0.9"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>{confirmLabel}</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── EMPTY STATE ICONS (sidebar-style stroke SVGs, no emoji) ───────────────────
+const ES_PATHS = {
+  logo: <><path d="M12 2 3 7v10l9 5 9-5V7z" /><path d="M12 22V12M3 7l9 5 9-5" /></>,
+  chat: <><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.4 0-2.8-.3-4-1L3 20l1.2-4.3A8.5 8.5 0 1 1 21 11.5z" /><path d="M8.5 11.5h7M8.5 14h4" /></>,
+  sheet: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9.5h18M3 14.5h18M9 9.5V20M15 9.5V20" /></>,
+  skills: <><path d="M13 2 4.5 13.5H11l-1 8.5L18.5 10H12z" /></>,
+  shield: <><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z" /><path d="m9 12 2 2 4-4" /></>,
+};
+function ESIcon({ n, color }) {
+  return (
+    <div style={{
+      width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color, background: `${color}14`, border: `1px solid ${color}30`, marginBottom: 10,
+    }}>
+      <svg viewBox="0 0 24 24" width={17} height={17} fill="none"
+        stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        {ES_PATHS[n]}
+      </svg>
     </div>
   );
 }
@@ -2507,8 +2592,10 @@ function EmptyState({ onSend }) {
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", maxWidth: 880, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
       {/* Brand Hero */}
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#fff", fontWeight: 800, boxShadow: "0 4px 14px rgba(37,99,235,0.3)" }}>
-          ⊛
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 4px 14px rgba(37,99,235,0.3)" }}>
+          <svg viewBox="0 0 24 24" width={24} height={24} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            {ES_PATHS.logo}
+          </svg>
         </div>
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb" }}>
@@ -2528,13 +2615,13 @@ function EmptyState({ onSend }) {
       {/* Feature Guidance Strip */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12, width: "100%", marginBottom: 32 }}>
         {[
-          { icon: "💬", title: "Natural Language", desc: "Type queries directly — auto-routed to specialists" },
-          { icon: "📊", title: "Spreadsheet Parser", desc: "In-browser SheetJS parses dates, period & COGS" },
-          { icon: "⚡", title: "25 CFO Skills", desc: "Click any skill in right panel to pre-fill query" },
-          { icon: "🛡️", title: "Policy Guardrails", desc: "Outputs verified against POL-001 to POL-008" }
+          { icon: "chat", color: "#2563eb", title: "Natural Language", desc: "Type queries directly — auto-routed to specialists" },
+          { icon: "sheet", color: "#047857", title: "Spreadsheet Parser", desc: "In-browser SheetJS parses dates, period & COGS" },
+          { icon: "skills", color: "#b45309", title: "25 CFO Skills", desc: "Click any skill in right panel to pre-fill query" },
+          { icon: "shield", color: "#7c3aed", title: "Policy Guardrails", desc: "Outputs verified against POL-001 to POL-008" }
         ].map(card => (
           <div key={card.title} style={{ background: "var(--bg-card, #ffffff)", border: "1px solid var(--border-default, #e2e8f0)", borderRadius: 10, padding: "14px 16px", boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)", transition: "all .15s ease" }}>
-            <div style={{ fontSize: 20, marginBottom: 8 }}>{card.icon}</div>
+            <ESIcon n={card.icon} color={card.color} />
             <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary, #0f172a)", marginBottom: 4 }}>{card.title}</div>
             <div style={{ fontSize: 11.5, color: "var(--text-muted, #64748b)", lineHeight: 1.45 }}>{card.desc}</div>
           </div>

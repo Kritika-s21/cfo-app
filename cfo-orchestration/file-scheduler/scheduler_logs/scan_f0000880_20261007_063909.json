@@ -1,0 +1,50 @@
+{
+  "scan_id": "f0000880",
+  "scheduler_id": "financial-data-scan",
+  "scheduler_name": "Scheduler",
+  "trigger": "manual",
+  "started_at": "2026-10-07T06:39:09.695196+00:00",
+  "finished_at": "2026-10-07T06:39:09.705175+00:00",
+  "duration_seconds": 0.009979,
+  "sources_scanned": 1,
+  "source_diagnostics": [
+    {
+      "source_id": "local",
+      "source_type": "LocalFolderSource",
+      "files_visible": 3,
+      "new_files": 1,
+      "modified_files": 0,
+      "error": null
+    }
+  ],
+  "extraction_mode": "background",
+  "extraction_pending": false,
+  "summary": {
+    "total_new": 1,
+    "total_modified": 0,
+    "total_files": 1
+  },
+  "new_files": [
+    {
+      "file_name": "cash_forecast_13wk.csv",
+      "file_type": ".csv",
+      "file_size_bytes": 837,
+      "path": "C:\\Users\\USER\\Downloads\\sample data\\cash_forecast_13wk.csv",
+      "source_id": "local",
+      "source_type": "local",
+      "last_modified": "2026-10-05T12:45:33.002211+00:00",
+      "status": "new",
+      "discovered_at": "2026-10-07T06:39:09.704174+00:00",
+      "extraction_method": "pandas",
+      "content_preview": "Week,Week Starting,Opening Cash,Inflows,Outflows,Closing Cash,Weekly Opex\r\n1,2026-07-06,18000000,10000000,13000000,15000000,13000000\r\n2,2026-07-13,15000000,12000000,13000000,14000000,13000000\r\n3,2026-07-20,14000000,9000000,11000000,12000000,11000000\r\n4,2026-07-27,12000000,12000000,13000000,11000000,13000000\r\n5,2026-08-03,11000000,13000000,12000000,12000000,12000000\r\n6,2026-08-10,12000000,10000000,13000000,9000000,13000000\r\n7,2026-08-17,9000000,13000000,12000000,10000000,12000000\r\n8,2026-08-24,10",
+      "extracted_content": "Week,Week Starting,Opening Cash,Inflows,Outflows,Closing Cash,Weekly Opex\r\n1,2026-07-06,18000000,10000000,13000000,15000000,13000000\r\n2,2026-07-13,15000000,12000000,13000000,14000000,13000000\r\n3,2026-07-20,14000000,9000000,11000000,12000000,11000000\r\n4,2026-07-27,12000000,12000000,13000000,11000000,13000000\r\n5,2026-08-03,11000000,13000000,12000000,12000000,12000000\r\n6,2026-08-10,12000000,10000000,13000000,9000000,13000000\r\n7,2026-08-17,9000000,13000000,12000000,10000000,12000000\r\n8,2026-08-24,10000000,12000000,12000000,10000000,12000000\r\n9,2026-08-31,10000000,12000000,14500000,7500000,14500000\r\n10,2026-09-07,7500000,10000000,13500000,4000000,13500000\r\n11,2026-09-14,4000000,10000000,14500000,-500000,14500000\r\n12,2026-09-21,-500000,10000000,14500000,-5000000,14500000\r\n13,2026-09-28,-5000000,9000000,16500000,-12500000,16500000\r\n"
+    }
+  ],
+  "modified_files": [],
+  "errors": [],
+  "metadata": {
+    "frequency": "minutely",
+    "timezone": "Asia/Kolkata",
+    "next_run": "2026-10-07T12:10:00+05:30"
+  }
+}

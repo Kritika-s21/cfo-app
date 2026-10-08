@@ -1,0 +1,50 @@
+{
+  "scan_id": "27a6499d",
+  "scheduler_id": "financial-data-scan",
+  "scheduler_name": "Scheduler",
+  "trigger": "auto",
+  "started_at": "2026-10-07T06:45:00.169303+00:00",
+  "finished_at": "2026-10-07T06:45:00.175839+00:00",
+  "duration_seconds": 0.006536,
+  "sources_scanned": 1,
+  "source_diagnostics": [
+    {
+      "source_id": "local",
+      "source_type": "LocalFolderSource",
+      "files_visible": 3,
+      "new_files": 0,
+      "modified_files": 1,
+      "error": null
+    }
+  ],
+  "extraction_mode": "background",
+  "extraction_pending": false,
+  "summary": {
+    "total_new": 0,
+    "total_modified": 1,
+    "total_files": 1
+  },
+  "new_files": [],
+  "modified_files": [
+    {
+      "file_name": "cash_forecast_13wk.csv",
+      "file_type": ".csv",
+      "file_size_bytes": 684,
+      "path": "C:\\Users\\USER\\Downloads\\sample data\\cash_forecast_13wk.csv",
+      "source_id": "local",
+      "source_type": "local",
+      "last_modified": "2026-10-07T06:44:10.094658+00:00",
+      "status": "modified",
+      "discovered_at": "2026-10-07T06:45:00.174357+00:00",
+      "extraction_method": "pandas",
+      "content_preview": "Week,Week Starting,Opening Cash,Inflows,Outflows,Closing Cash,Weekly Opex\r\n1.0,06-07-2026,18000000.0,10000000.0,13000000.0,15000000.0,13000000.0\r\n2.0,13-07-2026,15000000.0,12000000.0,13000000.0,14000000.0,13000000.0\r\n3.0,20-07-2026,14000000.0,9000000.0,11000000.0,12000000.0,11000000.0\r\n4.0,27-07-2026,12000000.0,12000000.0,13000000.0,11000000.0,13000000.0\r\n5.0,03-08-2026,11000000.0,13000000.0,12000000.0,12000000.0,12000000.0\r\n6.0,10-08-2026,12000000.0,10000000.0,13000000.0,9000000.0,13000000.0\r\n7",
+      "extracted_content": "Week,Week Starting,Opening Cash,Inflows,Outflows,Closing Cash,Weekly Opex\r\n1.0,06-07-2026,18000000.0,10000000.0,13000000.0,15000000.0,13000000.0\r\n2.0,13-07-2026,15000000.0,12000000.0,13000000.0,14000000.0,13000000.0\r\n3.0,20-07-2026,14000000.0,9000000.0,11000000.0,12000000.0,11000000.0\r\n4.0,27-07-2026,12000000.0,12000000.0,13000000.0,11000000.0,13000000.0\r\n5.0,03-08-2026,11000000.0,13000000.0,12000000.0,12000000.0,12000000.0\r\n6.0,10-08-2026,12000000.0,10000000.0,13000000.0,9000000.0,13000000.0\r\n7.0,17-08-2026,9000000.0,13000000.0,12000000.0,10000000.0,12000000.0\r\n8.0,24-08-2026,10000000.0,12000000.0,12000000.0,10000000.0,12000000.0\r\n9.0,31-08-2026,10000000.0,12000000.0,14500000.0,7500000.0,14500000.0\r\n10.0,07-09-2026,7500000.0,10000000.0,13500000.0,4000000.0,13500000.0\r\n,,,,,,\r\n,,,,,,\r\n,,,,,,\r\n"
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "frequency": "minutely",
+    "timezone": "Asia/Kolkata",
+    "next_run": "2026-10-07T12:15:00+05:30"
+  }
+}

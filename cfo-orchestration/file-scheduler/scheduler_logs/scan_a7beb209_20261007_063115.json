@@ -1,0 +1,50 @@
+{
+  "scan_id": "a7beb209",
+  "scheduler_id": "financial-data-scan",
+  "scheduler_name": "Scheduler",
+  "trigger": "manual",
+  "started_at": "2026-10-07T06:31:15.853635+00:00",
+  "finished_at": "2026-10-07T06:31:15.868206+00:00",
+  "duration_seconds": 0.014571,
+  "sources_scanned": 1,
+  "source_diagnostics": [
+    {
+      "source_id": "local",
+      "source_type": "LocalFolderSource",
+      "files_visible": 1,
+      "new_files": 1,
+      "modified_files": 0,
+      "error": null
+    }
+  ],
+  "extraction_mode": "background",
+  "extraction_pending": false,
+  "summary": {
+    "total_new": 1,
+    "total_modified": 0,
+    "total_files": 1
+  },
+  "new_files": [
+    {
+      "file_name": "ap_invoices_june_2026.csv",
+      "file_type": ".csv",
+      "file_size_bytes": 1463,
+      "path": "C:\\Users\\USER\\Downloads\\sample data\\ap_invoices_june_2026.csv",
+      "source_id": "local",
+      "source_type": "local",
+      "last_modified": "2026-10-05T12:45:32.962712+00:00",
+      "status": "new",
+      "discovered_at": "2026-10-07T06:31:15.862023+00:00",
+      "extraction_method": "pandas",
+      "content_preview": "Invoice No,Vendor,Invoice Date,Due Date,Terms,Amount,Currency,Payment Method,Approval Status,GL Account\r\nINV-1001,Acme Cloud Ltd,2026-06-02,2026-07-02,Net 30,420000,INR,NEFT,Approved,6100\r\nINV-1002,Globex Logistics,2026-06-03,2026-07-03,Net 30,185000,INR,NEFT,Approved,6200\r\nINV-1003,Initech Software,2026-06-05,2026-06-20,Net 15,62000,USD,Wire,Pending,6100\r\nINV-1004,Initech Software,2026-06-05,2026-06-20,Net 15,62000,USD,Wire,Pending,6100\r\nINV-1005,Umbrella Consulting,2026-06-07,2026-07-07,Net 30",
+      "extracted_content": "Invoice No,Vendor,Invoice Date,Due Date,Terms,Amount,Currency,Payment Method,Approval Status,GL Account\r\nINV-1001,Acme Cloud Ltd,2026-06-02,2026-07-02,Net 30,420000,INR,NEFT,Approved,6100\r\nINV-1002,Globex Logistics,2026-06-03,2026-07-03,Net 30,185000,INR,NEFT,Approved,6200\r\nINV-1003,Initech Software,2026-06-05,2026-06-20,Net 15,62000,USD,Wire,Pending,6100\r\nINV-1004,Initech Software,2026-06-05,2026-06-20,Net 15,62000,USD,Wire,Pending,6100\r\nINV-1005,Umbrella Consulting,2026-06-07,2026-07-07,Net 30,750000,INR,NEFT,Approved,6300\r\nINV-1006,Stark Hardware,2026-06-09,2026-07-09,Net 30,48500,USD,Wire,Approved,1500\r\nINV-1007,Wayne Facilities,2026-06-10,2026-07-10,Net 30,95000,INR,NEFT,Approved,6400\r\nINV-1008,Hooli Marketing,2026-06-12,2026-07-12,Net 30,310000,INR,NEFT,Approved,6500\r\nINV-1009,Vandelay Imports,2026-06-14,2026-06-14,Immediate,120000,INR,UPI,Approved,1500\r\nINV-1010,Soylent Foods,2026-06-15,2026-07-15,Net 30,56000,INR,NEFT,Approved,6900\r\nINV-1011,Pied Piper Data,2026-06-16,2026-07-16,Net 30,140000,USD,Wire,Pending,6100\r\nINV-1012,Acme Cloud Ltd,2026-06-18,2026-07-18,Net 30,420000,INR,NEFT,Approved,6100\r\nINV-1013,Cyberdyne Security,2026-06-19,2026-05-30,Net 30,230000,INR,NEFT,Approved,6100\r\nINV-1014,Gringotts Advisory,2026-06-20,2026-07-20,Net 30,88000,INR,NEFT,Approved,6300\r\nINV-1015,Oscorp Labs,2026-06-22,2026-07-22,Net 30,67000,INR,NEFT,Approved,XXXX\r\nINV-1016,Massive Dynamic,2026-06-24,2026-07-24,Net 30,510000,INR,NEFT,Approved,6200\r\n"
+    }
+  ],
+  "modified_files": [],
+  "errors": [],
+  "metadata": {
+    "frequency": "minutely",
+    "timezone": "Asia/Kolkata",
+    "next_run": "2026-10-07T12:05:00+05:30"
+  }
+}

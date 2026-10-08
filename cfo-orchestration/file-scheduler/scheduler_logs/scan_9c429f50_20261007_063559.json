@@ -1,0 +1,50 @@
+{
+  "scan_id": "9c429f50",
+  "scheduler_id": "financial-data-scan",
+  "scheduler_name": "Scheduler",
+  "trigger": "manual",
+  "started_at": "2026-10-07T06:35:59.577738+00:00",
+  "finished_at": "2026-10-07T06:35:59.612746+00:00",
+  "duration_seconds": 0.035008,
+  "sources_scanned": 1,
+  "source_diagnostics": [
+    {
+      "source_id": "local",
+      "source_type": "LocalFolderSource",
+      "files_visible": 2,
+      "new_files": 1,
+      "modified_files": 0,
+      "error": null
+    }
+  ],
+  "extraction_mode": "background",
+  "extraction_pending": false,
+  "summary": {
+    "total_new": 1,
+    "total_modified": 0,
+    "total_files": 1
+  },
+  "new_files": [
+    {
+      "file_name": "ar_aging_30jun2026.csv",
+      "file_type": ".csv",
+      "file_size_bytes": 703,
+      "path": "C:\\Users\\USER\\Downloads\\sample data\\ar_aging_30jun2026.csv",
+      "source_id": "local",
+      "source_type": "local",
+      "last_modified": "2026-10-05T12:45:32.972659+00:00",
+      "status": "new",
+      "discovered_at": "2026-10-07T06:35:59.609328+00:00",
+      "extraction_method": "pandas",
+      "content_preview": "Customer ID,Customer,Invoice No,Invoice Date,Outstanding Amount,Days Past Due\r\nCUST-01,Tata Retail,INV-A501,2026-05-30,1250000,0\r\nCUST-01,Tata Retail,INV-A530,2026-06-18,900000,0\r\nCUST-02,Reliance Digital,INV-A502,2026-05-02,2100000,28\r\nCUST-03,Infosys BPM,INV-A503,2026-04-10,640000,51\r\nCUST-04,Mahindra Auto,INV-A504,2026-03-05,1800000,87\r\nCUST-05,Wipro Enterprises,INV-A505,2026-02-20,950000,102\r\nCUST-06,HCL Tech,INV-A506,2026-06-10,430000,0\r\nCUST-07,Bharti Telecom,INV-A507,2026-01-15,2750000,13",
+      "extracted_content": "Customer ID,Customer,Invoice No,Invoice Date,Outstanding Amount,Days Past Due\r\nCUST-01,Tata Retail,INV-A501,2026-05-30,1250000,0\r\nCUST-01,Tata Retail,INV-A530,2026-06-18,900000,0\r\nCUST-02,Reliance Digital,INV-A502,2026-05-02,2100000,28\r\nCUST-03,Infosys BPM,INV-A503,2026-04-10,640000,51\r\nCUST-04,Mahindra Auto,INV-A504,2026-03-05,1800000,87\r\nCUST-05,Wipro Enterprises,INV-A505,2026-02-20,950000,102\r\nCUST-06,HCL Tech,INV-A506,2026-06-10,430000,0\r\nCUST-07,Bharti Telecom,INV-A507,2026-01-15,2750000,138\r\nCUST-08,Adani Ports,INV-A508,2026-05-20,1320000,10\r\nCUST-09,ITC Foods,INV-A509,2026-04-28,780000,33\r\nCUST-10,L&T Infra,INV-A510,2026-06-20,3100000,0\r\nCUST-11,Zomato Ltd,INV-A511,2026-03-22,560000,70\r\n"
+    }
+  ],
+  "modified_files": [],
+  "errors": [],
+  "metadata": {
+    "frequency": "minutely",
+    "timezone": "Asia/Kolkata",
+    "next_run": "2026-10-07T12:10:00+05:30"
+  }
+}

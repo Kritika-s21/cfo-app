@@ -1,0 +1,40 @@
+{
+  "financial-data-scan": {
+    "name": "Financial data scan",
+    "frequency": "minutely",
+    "timezone": "Asia/Kolkata",
+    "minutely_interval": 5,
+    "hourly_minute": 0,
+    "daily_hour": 9,
+    "daily_minute": 0,
+    "weekly_weekday": 0,
+    "weekly_hour": 9,
+    "weekly_minute": 0,
+    "monthly_dom": 1,
+    "monthly_hour": 9,
+    "monthly_minute": 0,
+    "cron_expression": "0 9 * * 1",
+    "weekly_day_name": "Monday",
+    "json_template": "{\n  \"scheduler_id\": \"{{scheduler_id}}\",\n  \"scheduler_name\": \"{{scheduler_name}}\",\n  \"scan_id\": \"{{scan_id}}\",\n  \"trigger\": \"{{trigger}}\",\n  \"started_at\": \"{{started_at}}\",\n  \"summary\": {\n    \"total_new\": \"{{total_new}}\",\n    \"total_modified\": \"{{total_modified}}\",\n    \"total_files\": \"{{total_files}}\"\n  },\n  \"new_files\": \"{{new_files_array}}\",\n  \"modified_files\": \"{{modified_files_array}}\",\n  \"metadata\": {\n    \"next_run\": \"{{next_run}}\"\n  }\n}",
+    "output_mode": "Save JSON log",
+    "log_dir": "scheduler_logs/",
+    "sql_profile_id": "financial-data-2e4fa2",
+    "vector_profile_id": null,
+    "status": "paused",
+    "sources": [
+      {
+        "source_id": "local",
+        "source_type": "local",
+        "pattern": "*",
+        "credentials": {},
+        "path": "C:\\Users\\USER\\Downloads\\sample data",
+        "recursive": true,
+        "_uid": "src-7yanlyo"
+      }
+    ],
+    "created_at": "2026-10-07T06:31:10.758Z",
+    "id": "financial-data-scan",
+    "updated_at": "2026-10-07T06:45:12.680506+00:00",
+    "run_started_at": "2026-10-07T06:43:25.855Z"
+  }
+}

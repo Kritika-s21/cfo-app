@@ -1,0 +1,202 @@
+2026-10-06 12:18:17,010 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 12:18:17,177 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 12:18:17,313 [INFO] uvicorn.error — Started server process [22272]
+2026-10-06 12:18:17,314 [INFO] uvicorn.error — Waiting for application startup.
+2026-10-06 12:18:17,316 [INFO] uvicorn.error — Application startup complete.
+2026-10-06 12:18:17,325 [ERROR] uvicorn.error — [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8765): only one usage of each socket address (protocol/network address/port) is normally permitted
+2026-10-06 12:18:17,325 [INFO] uvicorn.error — Waiting for application shutdown.
+2026-10-06 12:18:17,326 [INFO] uvicorn.error — Application shutdown complete.
+2026-10-06 12:18:22,982 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 12:18:23,081 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 12:18:23,129 [INFO] uvicorn.error — Started server process [20132]
+2026-10-06 12:18:23,129 [INFO] uvicorn.error — Waiting for application startup.
+2026-10-06 12:18:23,131 [INFO] uvicorn.error — Application startup complete.
+2026-10-06 12:18:23,135 [ERROR] uvicorn.error — [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8765): only one usage of each socket address (protocol/network address/port) is normally permitted
+2026-10-06 12:18:23,135 [INFO] uvicorn.error — Waiting for application shutdown.
+2026-10-06 12:18:23,135 [INFO] uvicorn.error — Application shutdown complete.
+2026-10-06 12:19:56,342 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 15:04:38,555 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 15:10:41,752 [INFO] api.server — Loaded 0 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 15:11:57,594 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-06 15:12:19,821 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-06 15:15:00+05:30
+2026-10-06 15:12:19,827 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-06 15:12:23,831 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-06 15:15:00+05:30
+2026-10-06 15:12:23,840 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-06 15:12:23,852 [INFO] scheduler.engine — Scheduler 2e495e82-66d4-4981-a256-7c042b63cb4b started
+2026-10-06 15:12:23,856 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-06T15:15:00+05:30 (UTC: 2026-10-06T09:45:00+00:00) | Wait: 156s (0.0h)
+2026-10-06 15:12:26,314 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-06 15:15:00+05:30
+2026-10-06 15:12:26,321 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-06 15:12:26,329 [INFO] scheduler.engine — Scan 94eb1d67-4115-48c3-bd05-b7bee8ec8ee1 started — 1 source(s)
+2026-10-06 15:12:26,352 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_94eb1d67_20261006_094226.json
+2026-10-06 15:12:26,353 [INFO] api.server — Submitting 3 pipeline(s)...
+2026-10-06 15:12:26,353 [INFO] api.server — Submitting pipeline for ar_aging_30jun2026.csv
+2026-10-06 15:12:26,355 [INFO] api.server — [d72d9d9d] Pipeline START ar_aging_30jun2026.csv
+2026-10-06 15:12:26,356 [INFO] api.server — Submitting pipeline for cash_forecast_13wk.csv
+2026-10-06 15:12:26,357 [INFO] api.server — [046bd1ae] Pipeline START cash_forecast_13wk.csv
+2026-10-06 15:12:26,358 [INFO] api.server — Submitting pipeline for sales_cogs_h1_2026.csv
+2026-10-06 15:12:26,360 [INFO] api.server — [396afa34] Pipeline START sales_cogs_h1_2026.csv
+2026-10-06 15:12:26,360 [INFO] scheduler.engine — Scan 94eb1d67-4115-48c3-bd05-b7bee8ec8ee1 done — 3 new, 0 modified (0.0s) | Mode: minutely | Next scan in: 3m
+2026-10-06 15:12:28,875 [INFO] scheduler.engine — Config changed mid-sleep — recomputing next run now.
+2026-10-06 15:12:28,876 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-06T15:15:00+05:30 (UTC: 2026-10-06T09:45:00+00:00) | Wait: 151s (0.0h)
+2026-10-06 15:12:29,720 [WARNING] agent.sql_ingestion — No SQL connection available — skipping SQL ingestion for C:\Users\USER\AppData\Local\Programs\Python\Python311\sample file\ar_aging_30jun2026.csv (no sql_connection_string, sql_profile_id, or SQL_CONNECTION_STRING env var)
+2026-10-06 15:12:29,721 [WARNING] agent.sql_ingestion — No SQL connection available — skipping SQL ingestion for C:\Users\USER\AppData\Local\Programs\Python\Python311\sample file\sales_cogs_h1_2026.csv (no sql_connection_string, sql_profile_id, or SQL_CONNECTION_STRING env var)
+2026-10-06 15:12:29,722 [WARNING] agent.sql_ingestion — No SQL connection available — skipping SQL ingestion for C:\Users\USER\AppData\Local\Programs\Python\Python311\sample file\cash_forecast_13wk.csv (no sql_connection_string, sql_profile_id, or SQL_CONNECTION_STRING env var)
+2026-10-06 15:12:29,727 [WARNING] api.server — Pipeline failed for C:\Users\USER\AppData\Local\Programs\Python\Python311\sample file\ar_aging_30jun2026.csv — file NOT marked as seen; it will be retried on the next scan (a stage reported an error)
+2026-10-06 15:12:29,728 [WARNING] api.server — Pipeline failed for C:\Users\USER\AppData\Local\Programs\Python\Python311\sample file\sales_cogs_h1_2026.csv — file NOT marked as seen; it will be retried on the next scan (a stage reported an error)
+2026-10-06 15:12:29,728 [WARNING] api.server — Pipeline failed for C:\Users\USER\AppData\Local\Programs\Python\Python311\sample file\cash_forecast_13wk.csv — file NOT marked as seen; it will be retried on the next scan (a stage reported an error)
+2026-10-06 15:28:28,335 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 15:28:28,352 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-06 17:56:40,959 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-06 17:56:40,960 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 10:59:55,203 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 10:59:55,203 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 11:22:54,364 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 11:22:54,371 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 11:52:27,644 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 11:55:39,628 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 11:55:39,633 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 11:55:39,634 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 11:56:41,552 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 11:56:41,556 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 11:56:41,557 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 11:57:52,889 [INFO] scheduler.engine — Scheduler e3ae1cdb-1a67-43a4-94a4-413fb75677ea stopped
+2026-10-07 11:59:04,974 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:01:10,745 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:05:00+05:30
+2026-10-07 12:01:10,756 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:01:13,406 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:05:00+05:30
+2026-10-07 12:01:13,417 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:01:13,423 [INFO] scheduler.engine — Scheduler e3ae1cdb-1a67-43a4-94a4-413fb75677ea started
+2026-10-07 12:01:13,426 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:05:00+05:30 (UTC: 2026-10-07T06:35:00+00:00) | Wait: 227s (0.1h)
+2026-10-07 12:01:15,837 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:05:00+05:30
+2026-10-07 12:01:15,846 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:01:15,853 [INFO] scheduler.engine — Scan a7beb209-ec1b-4d6c-986e-5f9794681a0c started — 1 source(s)
+2026-10-07 12:01:15,871 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_a7beb209_20261007_063115.json
+2026-10-07 12:01:15,879 [INFO] api.server — Submitting 1 pipeline(s)...
+2026-10-07 12:01:15,882 [INFO] api.server — Submitting pipeline for ap_invoices_june_2026.csv
+2026-10-07 12:01:15,884 [INFO] api.server — [d560f8ce] Pipeline START ap_invoices_june_2026.csv
+2026-10-07 12:01:15,884 [INFO] scheduler.engine — Scan a7beb209-ec1b-4d6c-986e-5f9794681a0c done — 1 new, 0 modified (0.0s) | Mode: minutely | Next scan in: 4m
+2026-10-07 12:01:18,426 [INFO] scheduler.engine — Config changed mid-sleep — recomputing next run now.
+2026-10-07 12:01:18,426 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:05:00+05:30 (UTC: 2026-10-07T06:35:00+00:00) | Wait: 222s (0.1h)
+2026-10-07 12:01:20,180 [INFO] scheduler.cfo_bridge — [cfo_bridge] ap_invoices_june_2026.csv (local, new): 1463 bytes downloaded
+2026-10-07 12:01:22,246 [ERROR] api.server — CFO bridge failed for ap_invoices_june_2026.csv
+Traceback (most recent call last):
+  File "C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\api_server.py", line 896, in run_pipeline
+    result["stages"]["cfo_agents"] = {**_cfo_bridge.handle_file(file_info), "status": "done"}
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\cfo_bridge.py", line 132, in handle_file
+    raise RuntimeError(f"CFO upload failed: HTTP {r.status_code}: {r.text[:300]}")
+RuntimeError: CFO upload failed: HTTP 404: {"detail":"Not Found"}
+2026-10-07 12:04:11,919 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 12:04:11,945 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 12:04:11,967 [INFO] api.server — Loaded 1 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 12:04:11,989 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 12:05:38,405 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:10:00+05:30
+2026-10-07 12:05:38,411 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:05:38,420 [INFO] scheduler.engine — Scheduler 66c254ef-5e69-4403-805b-e39fddf516bc started
+2026-10-07 12:05:38,423 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:10:00+05:30 (UTC: 2026-10-07T06:40:00+00:00) | Wait: 262s (0.1h)
+2026-10-07 12:05:59,542 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:10:00+05:30
+2026-10-07 12:05:59,560 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:05:59,577 [INFO] scheduler.engine — Scan 9c429f50-c0b7-4722-8e72-656e17f427f5 started — 1 source(s)
+2026-10-07 12:05:59,620 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_9c429f50_20261007_063559.json
+2026-10-07 12:05:59,629 [INFO] api.server — Submitting 1 pipeline(s)...
+2026-10-07 12:05:59,646 [INFO] api.server — Submitting pipeline for ar_aging_30jun2026.csv
+2026-10-07 12:05:59,671 [INFO] api.server — [cde9c050] Pipeline START ar_aging_30jun2026.csv
+2026-10-07 12:05:59,672 [INFO] scheduler.engine — Scan 9c429f50-c0b7-4722-8e72-656e17f427f5 done — 1 new, 0 modified (0.0s) | Mode: minutely | Next scan in: 4m
+2026-10-07 12:06:03,483 [INFO] scheduler.engine — Config changed mid-sleep — recomputing next run now.
+2026-10-07 12:06:03,484 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:10:00+05:30 (UTC: 2026-10-07T06:40:00+00:00) | Wait: 237s (0.1h)
+2026-10-07 12:06:06,058 [INFO] scheduler.cfo_bridge — [cfo_bridge] ar_aging_30jun2026.csv (local, new): 703 bytes downloaded
+2026-10-07 12:06:09,403 [INFO] scheduler.cfo_bridge — [cfo_bridge] uploaded ar_aging_30jun2026.csv -> input/ar_aging_30jun2026.csv in 3.3s (columns: ['Customer ID', 'Customer', 'Invoice No', 'Invoice Date', 'Outstanding Amount', 'Days Past Due'])
+2026-10-07 12:06:09,404 [WARNING] scheduler.cfo_bridge — [cfo_bridge] ar_aging_30jun2026.csv: NO RULE MATCHED (6 rules loaded from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\cfo_rules.json). Columns seen: ['Customer ID', 'Customer', 'Invoice No', 'Invoice Date', 'Outstanding Amount', 'Days Past Due']. Uploaded only, no agent will run.
+2026-10-07 12:08:59,005 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:10:00+05:30
+2026-10-07 12:08:59,013 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:08:59,019 [INFO] scheduler.engine — Scheduler 66c254ef-5e69-4403-805b-e39fddf516bc started
+2026-10-07 12:08:59,022 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:10:00+05:30 (UTC: 2026-10-07T06:40:00+00:00) | Wait: 61s (0.0h)
+2026-10-07 12:09:03,807 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:10:00+05:30 (UTC: 2026-10-07T06:40:00+00:00) | Wait: 56s (0.0h)
+2026-10-07 12:09:09,677 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:10:00+05:30
+2026-10-07 12:09:09,689 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:09:09,695 [INFO] scheduler.engine — Scan f0000880-a714-4f7b-ad01-78aca6d9c1ec started — 1 source(s)
+2026-10-07 12:09:09,708 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_f0000880_20261007_063909.json
+2026-10-07 12:09:09,708 [INFO] api.server — Submitting 1 pipeline(s)...
+2026-10-07 12:09:09,708 [INFO] api.server — Submitting pipeline for cash_forecast_13wk.csv
+2026-10-07 12:09:09,709 [INFO] scheduler.engine — Scan f0000880-a714-4f7b-ad01-78aca6d9c1ec done — 1 new, 0 modified (0.0s) | Mode: minutely | Next scan in: 50s
+2026-10-07 12:09:09,710 [INFO] api.server — [9b2da551] Pipeline START cash_forecast_13wk.csv
+2026-10-07 12:09:13,631 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv (local, new): 837 bytes downloaded
+2026-10-07 12:09:13,813 [INFO] scheduler.engine — Config changed mid-sleep — recomputing next run now.
+2026-10-07 12:09:13,814 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:10:00+05:30 (UTC: 2026-10-07T06:40:00+00:00) | Wait: 46s (0.0h)
+2026-10-07 12:09:16,492 [INFO] scheduler.cfo_bridge — [cfo_bridge] uploaded cash_forecast_13wk.csv -> input/cash_forecast_13wk.csv in 2.9s (columns: ['Week', 'Week Starting', 'Opening Cash', 'Inflows', 'Outflows', 'Closing Cash', 'Weekly Opex'])
+2026-10-07 12:09:16,492 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv: matched 1 rule(s): ['cash_forecaster'] (by name: 0, by columns: 1)
+2026-10-07 12:11:29,727 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv -> agent cash_forecaster done (0 alerts)
+2026-10-07 12:13:25,839 [INFO] scheduler.engine — Schedule updated. Next run: 2026-10-07 12:15:00+05:30
+2026-10-07 12:13:25,848 [INFO] scheduler.engine — Source added: local (LocalFolderSource)
+2026-10-07 12:13:25,852 [INFO] scheduler.engine — Scheduler 66c254ef-5e69-4403-805b-e39fddf516bc started
+2026-10-07 12:13:25,855 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:15:00+05:30 (UTC: 2026-10-07T06:45:00+00:00) | Wait: 94s (0.0h)
+2026-10-07 12:13:29,226 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:15:00+05:30 (UTC: 2026-10-07T06:45:00+00:00) | Wait: 91s (0.0h)
+2026-10-07 12:13:29,535 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:15:00+05:30 (UTC: 2026-10-07T06:45:00+00:00) | Wait: 90s (0.0h)
+2026-10-07 12:15:00,169 [INFO] scheduler.engine — Scan 27a6499d-e9a8-4193-ac6d-73d8f59ff8be started — 1 source(s)
+2026-10-07 12:15:00,169 [INFO] scheduler.engine — Scan b7af7d2b-d096-4651-8fe6-014c56f9baf4 started — 1 source(s)
+2026-10-07 12:15:00,177 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_27a6499d_20261007_064500.json
+2026-10-07 12:15:00,178 [INFO] api.server — Submitting 1 pipeline(s)...
+2026-10-07 12:15:00,178 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_b7af7d2b_20261007_064500.json
+2026-10-07 12:15:00,178 [INFO] api.server — Submitting pipeline for cash_forecast_13wk.csv
+2026-10-07 12:15:00,179 [INFO] api.server — Submitting 1 pipeline(s)...
+2026-10-07 12:15:00,179 [INFO] scheduler.engine — Scan 27a6499d-e9a8-4193-ac6d-73d8f59ff8be done — 0 new, 1 modified (0.0s) | Mode: minutely | Next scan in: -0s
+2026-10-07 12:15:00,179 [INFO] api.server — Submitting pipeline for cash_forecast_13wk.csv
+2026-10-07 12:15:00,179 [INFO] api.server — [09c53b04] Pipeline START cash_forecast_13wk.csv
+2026-10-07 12:15:00,179 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:20:00+05:30 (UTC: 2026-10-07T06:50:00+00:00) | Wait: 300s (0.1h)
+2026-10-07 12:15:00,181 [INFO] api.server — [ea0a4b43] Pipeline START cash_forecast_13wk.csv
+2026-10-07 12:15:00,181 [INFO] scheduler.engine — Scan b7af7d2b-d096-4651-8fe6-014c56f9baf4 done — 0 new, 1 modified (0.0s) | Mode: minutely | Next scan in: 5m
+2026-10-07 12:15:00,182 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:20:00+05:30 (UTC: 2026-10-07T06:50:00+00:00) | Wait: 300s (0.1h)
+2026-10-07 12:15:00,200 [INFO] scheduler.engine — Scan 4a1d8cf4-70e7-4bc5-8974-17db3b6920a6 started — 1 source(s)
+2026-10-07 12:15:00,206 [INFO] api.server — Scan log stored at C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_logs\scan_4a1d8cf4_20261007_064500.json
+2026-10-07 12:15:00,206 [INFO] api.server — No new or modified files found.
+2026-10-07 12:15:00,206 [INFO] scheduler.engine — Scan 4a1d8cf4-70e7-4bc5-8974-17db3b6920a6 done — 0 new, 0 modified (0.0s) | Mode: minutely | Next scan in: 5m
+2026-10-07 12:15:00,206 [INFO] scheduler.engine — Scheduler mode: minutely | Next scan: 2026-10-07T12:20:00+05:30 (UTC: 2026-10-07T06:50:00+00:00) | Wait: 300s (0.1h)
+2026-10-07 12:15:03,971 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv (local, modified): 684 bytes downloaded
+2026-10-07 12:15:04,483 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv (local, modified): 684 bytes downloaded
+2026-10-07 12:15:07,073 [INFO] scheduler.cfo_bridge — [cfo_bridge] uploaded cash_forecast_13wk.csv -> input/cash_forecast_13wk.csv in 3.1s (columns: ['Week', 'Week Starting', 'Opening Cash', 'Inflows', 'Outflows', 'Closing Cash', 'Weekly Opex'])
+2026-10-07 12:15:07,073 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv: matched 1 rule(s): ['cash_forecaster'] (by name: 0, by columns: 1)
+2026-10-07 12:15:07,361 [INFO] scheduler.cfo_bridge — [cfo_bridge] uploaded cash_forecast_13wk.csv -> input/cash_forecast_13wk.csv in 2.9s (columns: ['Week', 'Week Starting', 'Opening Cash', 'Inflows', 'Outflows', 'Closing Cash', 'Weekly Opex'])
+2026-10-07 12:15:07,361 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv: matched 1 rule(s): ['cash_forecaster'] (by name: 0, by columns: 1)
+2026-10-07 12:17:22,239 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv -> agent cash_forecaster done (0 alerts)
+2026-10-07 12:17:25,487 [INFO] scheduler.cfo_bridge — [cfo_bridge] cash_forecast_13wk.csv -> agent cash_forecaster done (0 alerts)
+2026-10-07 12:39:42,653 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 12:41:11,244 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 12:41:11,262 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 12:41:11,269 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 12:41:11,287 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 12:41:18,256 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 12:41:18,258 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 12:41:18,263 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 12:41:18,264 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 12:41:50,599 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 12:41:50,603 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 12:41:50,608 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/cfo-orchestration-merged/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 12:41:50,609 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\cfo-orchestration-merged\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 15:19:38,007 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 15:19:38,017 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 15:19:38,077 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 15:19:38,091 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 15:39:09,030 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 15:39:09,034 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 15:39:09,040 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 15:39:09,041 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 16:30:04,966 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 16:30:04,976 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 16:30:04,995 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 16:30:04,997 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 16:36:42,646 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 16:36:42,656 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 16:36:42,691 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 16:36:42,692 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 17:07:12,444 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 17:07:12,449 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 17:07:12,457 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 17:07:12,458 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 19:00:27,535 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 19:00:27,541 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 19:00:27,553 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 19:00:27,554 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json
+2026-10-07 19:26:59,804 [WARNING] dotenv.main — python-dotenv could not parse statement starting at line 4
+2026-10-07 19:26:59,808 [INFO] scheduler.engine — State loaded from scheduler_state.json
+2026-10-07 19:26:59,813 [INFO] api.server — Loaded 5 persisted scan log(s) from [WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/file-scheduler/scheduler_logs'), WindowsPath('C:/Users/USER/Downloads/Main-cfo-app/cfo-orchestration/scheduler_new/scheduler_logs')]
+2026-10-07 19:26:59,814 [INFO] api.server — Loaded 1 scheduler profile(s) from C:\Users\USER\Downloads\Main-cfo-app\cfo-orchestration\file-scheduler\scheduler_profiles\profiles.json

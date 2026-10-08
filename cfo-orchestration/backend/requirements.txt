@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+requests
+pyyaml
+pydantic
+httpx
+python-dotenv
+sqlalchemy
+pyodbc
+lancedb
+apscheduler
+# optional embeddings: sentence-transformers  (EMBEDDINGS=sentence-transformers) or OPENAI_API_KEY (EMBEDDINGS=openai)
+openpyxl            # optional: lets the files list show xlsx column headers

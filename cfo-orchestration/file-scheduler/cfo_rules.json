@@ -1,0 +1,58 @@
+[
+  {
+    "_comment": "Rules run when a scanned file satisfies EVERY criterion in the rule. 'match' is a filename glob; 'columns_all' / 'columns_any' look at the header row, so the file can be called anything. Column names ignore case, spaces and punctuation. Adjust the column lists to your real exports. Rules without agent_id are ignored."
+  },
+  {
+    "columns_all": [
+      "Invoice No",
+      "Vendor",
+      "PO Number"
+    ],
+    "agent_id": "ap_engine",
+    "text": "Check these invoices against payment and approval policies; flag duplicates, wires above limit and bad GL codes."
+  },
+  {
+    "columns_all": [
+      "Customer",
+      "Invoice No"
+    ],
+    "columns_any": [
+      "Days Overdue",
+      "Aging Bucket",
+      "90+"
+    ],
+    "agent_id": "ar_engine",
+    "text": "Analyse AR aging, predict payment risk and flag customers past 90 days."
+  },
+  {
+    "columns_all": [
+      "Bank Amount",
+      "GL Amount"
+    ],
+    "agent_id": "reconciliation",
+    "text": "Reconcile bank vs GL and list unmatched items."
+  },
+  {
+    "columns_all": [
+      "JE Number",
+      "Debit",
+      "Credit"
+    ],
+    "agent_id": "je_factory",
+    "text": "Check journal entries against approval thresholds and flag missing approvals."
+  },
+  {
+    "columns_all": [
+      "Week",
+      "Opening Cash",
+      "Closing Cash"
+    ],
+    "agent_id": "cash_forecaster",
+    "text": "Review the 13-week cash forecast against the minimum cash buffer policy."
+  },
+  {
+    "match": "ap_invoices*.csv",
+    "agent_id": "ap_engine",
+    "text": "Filename-only rule: still supported, and combinable with columns_* when both must hold."
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "local": {
+    "C:\\Users\\USER\\Downloads\\sample data\\ap_invoices_june_2026.csv": {
+      "last_modified": "2026-10-05T12:45:32.962712+00:00",
+      "etag": null,
+      "size_bytes": 1463
+    },
+    "C:\\Users\\USER\\Downloads\\sample data\\ar_aging_30jun2026.csv": {
+      "last_modified": "2026-10-05T12:45:32.972659+00:00",
+      "etag": null,
+      "size_bytes": 703
+    },
+    "C:\\Users\\USER\\Downloads\\sample data\\cash_forecast_13wk.csv": {
+      "last_modified": "2026-10-07T06:44:10.094658+00:00",
+      "etag": null,
+      "size_bytes": 684
+    }
+  }
+}
